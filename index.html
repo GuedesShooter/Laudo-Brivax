@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brivax Laudos</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="header">
+    <img src="assets/brivax-logo.png" alt="Brivax Logo" class="logo" />
+    <h1>Brivax Laudos – Sistema de Combate a Incêndio</h1>
+  </header>
+
+  <main id="app">
+    <!-- Tela de login -->
+    <section id="login-screen" class="screen active">
+      <h2>Login do Técnico</h2>
+      <input id="nickname" type="text" placeholder="Nickname" />
+      <input id="password" type="password" placeholder="Senha" />
+      <label class="remember">
+        <input type="checkbox" id="remember" /> Lembrar-se de mim
+      </label>
+      <button onclick="login()">Entrar</button>
+      <p>Não possui conta? <a href="#" onclick="showRegister()">Cadastre-se</a></p>
+    </section>
+
+    <!-- Tela de cadastro -->
+    <section id="register-screen" class="screen">
+      <h2>Cadastrar Técnico</h2>
+      <input id="regNome" type="text" placeholder="Nome" />
+      <input id="regSobrenome" type="text" placeholder="Sobrenome" />
+      <input id="regTelefone" type="tel" placeholder="Telefone" />
+      <input id="regNick" type="text" placeholder="Nickname" />
+      <input id="regSenha" type="password" placeholder="Senha" />
+      <input id="regConfirma" type="password" placeholder="Confirmar Senha" />
+      <button onclick="register()">Cadastrar</button>
+      <button class="secondary" onclick="showLogin()">Voltar ao Login</button>
+    </section>
+
+    <!-- Seleção de sistemas -->
+    <section id="select-system" class="screen">
+      <h2>Selecione o Sistema para o Laudo</h2>
+      <button onclick="selectSystem('incendio')">Sistema Brivax de Combate a Incêndio</button>
+      <button onclick="selectSystem('fumaca')">Sistema de Detecção de Fumaça</button>
+      <button class="secondary" onclick="logout()">Sair</button>
+    </section>
+
+    <!-- Container para laudos dinâmicos -->
+    <section id="laudo-container" class="screen">
+      <h2 id="laudo-titulo"></h2>
+      <div id="laudo-form"></div>
+      <button id="btnSalvar" onclick="salvarLaudo()">Salvar Laudo</button>
+      <button id="btnGerarPDF" onclick="gerarPDF()">Gerar PDF</button>
+      <button id="btnWhats" onclick="enviarWhatsApp()">Enviar via WhatsApp</button>
+      <button id="btnEmail" onclick="enviarEmail()">Enviar por E-mail</button>
+      <button class="secondary" onclick="voltarInicio()">Voltar</button>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Brivax Sistemas de Combate a Incêndio – Sorocaba/SP</p>
+  </footer>
+
+  <script src="db.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
