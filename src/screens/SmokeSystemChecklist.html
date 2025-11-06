@@ -71,6 +71,7 @@
     .options button.selected {
       background-color: #ff7b00;
       color: #fff;
+      font-weight: 600;
     }
     textarea {
       width: 100%;
@@ -80,7 +81,7 @@
       resize: none;
       min-height: 40px;
     }
-    .signature-btn {
+    .signature-btn, .generate {
       background-color: #ff7b00;
       color: white;
       border: none;
@@ -110,6 +111,7 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.4);
       width: 95%;
       max-width: 400px;
+      text-align: center;
     }
     canvas {
       width: 100%;
@@ -121,15 +123,6 @@
       text-align: center;
       padding: 20px;
     }
-    .generate {
-      background-color: #ff7b00;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
     .preview {
       display: flex;
       flex-wrap: wrap;
@@ -138,8 +131,11 @@
     }
     .preview div {
       position: relative;
-      width: 140px;
-      height: 140px;
+      width: 130px;
+      height: 130px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     .preview img {
       width: 100%;
@@ -160,22 +156,8 @@
       cursor: pointer;
     }
   </style>
-  .options button {
-  background: #ddd;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.options button.selected {
-  background: #ff6600;
-  color: #fff;
-  font-weight: 600;
-}
-
 </head>
+
 <body>
   <header>💨 Laudo de Sistema de Fumaça - Brivax</header>
 
@@ -196,20 +178,20 @@
     </div>
 
     <div id="checklist">
-      <div class="item"><h3>0. Foto da Fachada da Loja</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>1. Foto geral do teto do ambiente</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>2. Detectores Instalados</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>3. Foto da central de detecção</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>0. Foto da Fachada da Loja</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>1. Foto geral do teto do ambiente</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>2. Detectores Instalados</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>3. Foto da central de detecção</h3><input type="file" multiple><div class="preview"></div></div>
       <div class="item"><h3>4. Teste dos detectores</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>5. Foto da sirene de alarme</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>6. Foto dos módulos de entrada e saída</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>5. Foto da sirene de alarme</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>6. Foto dos módulos de entrada e saída</h3><input type="file" multiple><div class="preview"></div></div>
       <div class="item"><h3>7. Comunicação da central com o shopping</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>8. Foto do quadro elétrico com disjuntor disponível</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>9. Foto da alimentação da central</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>10. Foto do detector manual</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>8. Foto do quadro elétrico com disjuntor disponível</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>9. Foto da alimentação da central</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>10. Foto do detector manual</h3><input type="file" multiple><div class="preview"></div></div>
       <div class="item"><h3>11. Teste geral do sistema</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
       <div class="item"><h3>12. Treinamento realizado?</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>13. Pendências</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>13. Pendências</h3><input type="file" multiple><div class="preview"></div></div>
       <div class="item"><h3>14. Observações do Técnico</h3><textarea placeholder="Observações gerais do técnico"></textarea></div>
     </div>
 
@@ -221,10 +203,12 @@
     </div>
   </div>
 
+  <!-- Modal de assinatura -->
   <div class="signature-modal" id="signatureModal">
     <div class="signature-box">
+      <h3>Assinatura</h3>
       <canvas id="signaturePad"></canvas>
-      <div style="text-align:center; margin-top:8px;">
+      <div style="margin-top:8px;">
         <button onclick="clearSignature()">Apagar</button>
         <button onclick="saveSignature()">Salvar</button>
         <button onclick="closeSignature()">Fechar</button>
@@ -235,156 +219,57 @@
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
   <script src="../js/pdf-template.js"></script>
   <script>
-    <div id="signatureModal" style="
-  display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-  background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:9999;">
-  <div style="
-    background:#fff; padding:20px; border-radius:10px; text-align:center;
-    width:90%; max-width:400px;">
-    <h3>Assinatura</h3>
-    <canvas id="signaturePad" width="350" height="200" style="
-      border:1px solid #ccc; width:100%; border-radius:8px; margin-bottom:10px;"></canvas><br>
-    <button onclick="clearSignature()">Limpar</button>
-    <button onclick="saveSignature()">Salvar</button>
-    <button onclick="closeSignature()">Fechar</button>
-  </div>
-</div>
-
-<script>
-const modal = document.getElementById("signatureModal");
-const canvas = document.getElementById("signaturePad");
-const ctx = canvas.getContext("2d");
-let drawing = false, activeField = "";
-
-function openSignature(field){
-  activeField = field;
-  modal.style.display = "flex";
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-function clearSignature(){ ctx.clearRect(0, 0, canvas.width, canvas.height); }
-function closeSignature(){ modal.style.display = "none"; }
-function saveSignature(){
-  localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL("image/png"));
-  alert(`✅ Assinatura de ${activeField} salva!`);
-  closeSignature();
-}
-
-canvas.addEventListener("mousedown", e => { drawing = true; ctx.moveTo(e.offsetX, e.offsetY); });
-canvas.addEventListener("mousemove", e => { if (drawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); }});
-canvas.addEventListener("mouseup", () => { drawing = false; });
-canvas.addEventListener("touchstart", e => {
-  e.preventDefault();
-  drawing = true;
-  const rect = canvas.getBoundingClientRect();
-  ctx.moveTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-});
-canvas.addEventListener("touchmove", e => {
-  e.preventDefault();
-  if (!drawing) return;
-  const rect = canvas.getBoundingClientRect();
-  ctx.lineTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
-  ctx.stroke();
-});
-canvas.addEventListener("touchend", () => drawing = false);
-</script>
-
+    // === Botões Laranja ===
     document.querySelectorAll('.options button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const group = btn.parentNode.querySelectorAll('button');
-    group.forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-  });
-});
-
-    function previewImages(input) {
-      const preview = input.parentNode.querySelector(".preview");
-      preview.innerHTML = "";
-      Array.from(input.files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = e => {
-          const div = document.createElement("div");
-          div.innerHTML = `<img src="${e.target.result}"><button onclick="this.parentNode.remove()">×</button>`;
-          preview.appendChild(div);
-        };
-        reader.readAsDataURL(file);
+      btn.addEventListener('click', () => {
+        const group = btn.parentNode.querySelectorAll('button');
+        group.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
       });
-    }
-
-    const modal = document.getElementById("signatureModal");
-    const canvas = document.getElementById("signaturePad");
-    const ctx = canvas.getContext("2d");
-    let drawing = false, activeField = "";
-
-    function disableScroll() { document.body.style.overflow = "hidden"; }
-    function enableScroll() { document.body.style.overflow = ""; }
-    canvas.addEventListener("mousedown", e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); disableScroll(); });
-    canvas.addEventListener("mousemove", e => { if (!drawing) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
-    canvas.addEventListener("mouseup", () => { drawing = false; enableScroll(); });
-    canvas.addEventListener("touchstart", e => { e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.beginPath(); ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top); drawing = true; disableScroll(); });
-    canvas.addEventListener("touchmove", e => { if (!drawing) return; e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top); ctx.stroke(); });
-    canvas.addEventListener("touchend", () => { drawing = false; enableScroll(); });
-
-    function openSignature(field) { activeField = field; ctx.clearRect(0, 0, canvas.width, canvas.height); modal.style.display = "flex"; }
-    function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
-    function closeSignature() { modal.style.display = "none"; enableScroll(); }
-    function saveSignature() { localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL("image/png")); modal.style.display = "none"; enableScroll(); alert(`✅ Assinatura de ${activeField} salva!`); }
-  </script>
-  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-<script src="../js/pdf-template.js"></script>
-  <script>
-document.querySelectorAll('input[type="file"]').forEach(input => {
-  input.addEventListener('change', () => {
-    let previewBox = input.parentNode.querySelector('.preview');
-    if (!previewBox) {
-      previewBox = document.createElement('div');
-      previewBox.className = 'preview';
-      previewBox.style.display = 'flex';
-      previewBox.style.flexWrap = 'wrap';
-      previewBox.style.gap = '8px';
-      previewBox.style.marginTop = '10px';
-      input.parentNode.appendChild(previewBox);
-    }
-    previewBox.innerHTML = '';
-    Array.from(input.files).forEach(file => {
-      const reader = new FileReader();
-      reader.onload = e => {
-        const box = document.createElement('div');
-        box.style.position = 'relative';
-        box.style.width = '130px';
-        box.style.height = '130px';
-        box.style.borderRadius = '6px';
-        box.style.overflow = 'hidden';
-        box.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
-        
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'cover';
-        
-        const btn = document.createElement('button');
-        btn.textContent = '×';
-        btn.style.position = 'absolute';
-        btn.style.top = '4px';
-        btn.style.right = '4px';
-        btn.style.width = '22px';
-        btn.style.height = '22px';
-        btn.style.border = 'none';
-        btn.style.borderRadius = '50%';
-        btn.style.background = 'rgba(0,0,0,0.6)';
-        btn.style.color = '#fff';
-        btn.style.cursor = 'pointer';
-        btn.onclick = () => box.remove();
-        
-        box.appendChild(img);
-        box.appendChild(btn);
-        previewBox.appendChild(box);
-      };
-      reader.readAsDataURL(file);
     });
-  });
-});
-</script>
 
+    // === Pré-visualização de imagens ===
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const preview = input.parentNode.querySelector('.preview');
+        preview.innerHTML = '';
+        Array.from(input.files).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = e => {
+            const div = document.createElement('div');
+            div.innerHTML = `<img src="${e.target.result}"><button onclick="this.parentNode.remove()">×</button>`;
+            preview.appendChild(div);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    });
+
+    // === Assinatura ===
+    const modal = document.getElementById('signatureModal');
+    const canvas = document.getElementById('signaturePad');
+    const ctx = canvas.getContext('2d');
+    let drawing = false, activeField = '';
+
+    function openSignature(field) {
+      activeField = field;
+      modal.style.display = 'flex';
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    function closeSignature() { modal.style.display = 'none'; }
+    function saveSignature() {
+      localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL('image/png'));
+      alert(`✅ Assinatura de ${activeField} salva!`);
+      closeSignature();
+    }
+
+    canvas.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+    canvas.addEventListener('mousemove', e => { if (drawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); }});
+    canvas.addEventListener('mouseup', () => { drawing = false; });
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.beginPath(); ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top); drawing = true; });
+    canvas.addEventListener('touchmove', e => { if (!drawing) return; e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top); ctx.stroke(); });
+    canvas.addEventListener('touchend', () => drawing = false);
+  </script>
 </body>
 </html>
