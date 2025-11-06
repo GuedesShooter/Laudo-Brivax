@@ -256,12 +256,24 @@
     canvas.addEventListener("touchmove", e => { if (!drawing) return; e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top); ctx.stroke(); });
     canvas.addEventListener("touchend", () => { drawing = false; enableScroll(); });
 
-    function openSignature(field) { activeField = field; ctx.clearRect(0, 0, canvas.width, canvas.height); modal.style.display = "flex"; }
+      <script>
+    function openSignature(field) {
+      activeField = field;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      modal.style.display = "flex";
+    }
     function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
     function closeSignature() { modal.style.display = "none"; enableScroll(); }
-    function saveSignature() { localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL("image/png")); modal.style.display = "none"; enableScroll(); alert(`✅ Assinatura de ${activeField} salva!`); }
+    function saveSignature() {
+      localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL("image/png"));
+      modal.style.display = "none";
+      enableScroll();
+      alert(`✅ Assinatura de ${activeField} salva!`);
+    }
   </script>
+
+  <!-- 🧾 Biblioteca PDF e Template -->
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-<script src="../js/pdf-template.js"></script>
+  <script src="../js/pdf-template.js"></script>
 </body>
 </html>
