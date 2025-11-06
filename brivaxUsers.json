@@ -6,5 +6,13 @@
     "username": "ADM",
     "password": "1234",
     "tipo": "admin"
+  },
+  {
+    "nome": "Fabrício",
+    "sobrenome": "Piazza",
+    "celular": "15998442928",
+    "username": "FABRICIOPIAZZA",
+    "password": "f1a2f3a4",
+    "tipo": "usuario"
   }
 ]
