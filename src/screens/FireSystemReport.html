@@ -1,54 +1,62 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8" />
-<title>Laudo de Sistema de Incêndio - Brivax</title>
-<link rel="stylesheet" href="../styles/report.css" />
-<script src="../js/fireSystem.js" defer></script>
-</head>
-<body>
-<header>
-  <img src="../../assets/brivax-logo.png" class="logo" />
-  <h1>Brivax Laudos Técnicos - Sistema de Incêndio</h1>
-</header>
+// === SystemFireReport.js ===
+// Gera e envia PDF do Laudo de Sistema de Incêndio
 
-<section class="cliente-section">
-  <h3>Dados do Cliente</h3>
-  <div class="cliente-grid">
-    <label>Nome do Cliente</label>
-    <input type="text" id="clienteNome" required />
-    <label>CNPJ / CPF</label>
-    <input type="text" id="clienteDocumento" required />
-    <label>Endereço da Instalação</label>
-    <input type="text" id="clienteEndereco" required />
-    <label>Telefone</label>
-    <input type="tel" id="clienteTelefone" required />
-    <label>E-mail</label>
-    <input type="email" id="clienteEmail" required />
-  </div>
-</section>
+async function gerarLaudoIncendio() {
+  const loja = document.getElementById("emailCliente").value || "Loja não informada";
+  const tecnicoResponsavel = document.getElementById("tecnicoResponsavel")?.value || "";
+  const ajudanteResponsavel = document.getElementById("ajudanteResponsavel")?.value || "";
+  const dataEntrega = document.getElementById("dataEntrega")?.value || new Date().toLocaleDateString();
 
-<section id="itens">
-  <h2>Checklist de Instalação e Funcionamento</h2>
-  <div id="listaIncendio"></div>
-</section>
+  const itens = [];
+  document.querySelectorAll(".item").forEach((div, i) => {
+    const nome = div.querySelector("h3")?.innerText || `Item ${i}`;
+    const obs = div.querySelector("textarea")?.value || "";
+    const files = Array.from(div.querySelectorAll('input[type="file"]'))
+      .flatMap(input => Array.from(input.files))
+      .slice(0, 4);
 
-<section id="assinaturas">
-  <h3>Assinaturas</h3>
-  <div class="assinatura">
-    <p>Técnico Responsável</p>
-    <canvas id="assinaturaTecnico"></canvas>
-    <button onclick="limparAssinatura('tecnico')">Apagar</button>
-  </div>
-  <div class="assinatura">
-    <p>Cliente / Responsável</p>
-    <canvas id="assinaturaCliente"></canvas>
-    <button onclick="limparAssinatura('cliente')">Apagar</button>
-  </div>
-</section>
+    const fotos = [];
+    for (const file of files) fotos.push(URL.createObjectURL(file));
+    itens.push({ nome, observacao: obs, fotos });
+  });
 
-<footer>
-  <button onclick="gerarLaudo('incendio')">Gerar e Enviar</button>
-</footer>
-</body>
-</html>
+  // Numeração automática
+  const nAtual = parseInt(localStorage.getItem("brvNumLaudo") || "33") + 1;
+  localStorage.setItem("brvNumLaudo", nAtual);
+  const numero = `BRV-2025-${String(nAtual).padStart(3, "0")}`;
+
+  const dados = {
+    titulo: "Laudo Técnico – Sistema de Incêndio",
+    loja,
+    tecnicoResponsavel,
+    ajudanteResponsavel,
+    dataEntrega,
+    numero,
+    itens,
+  };
+
+  const pdfBytes = await gerarPDFBrivax(dados);
+  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  const fileName = `Laudo_${numero}_${loja}.pdf`;
+  const url = URL.createObjectURL(blob);
+
+  // Download automático
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = fileName;
+  a.click();
+
+  // Envio por e-mail
+  const assunto = `Laudo Loja ${loja} - ${dataEntrega}`;
+  const corpo = `Olá, segue abaixo o PDF do laudo de entrega de serviço.\n\nQualquer dúvida estamos à disposição.\nA equipe Brivax agradece!`;
+  window.open(`mailto:${document.getElementById("emailCliente").value}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`);
+
+  // WhatsApp
+  const telefone = document.getElementById("telefoneCliente").value.replace(/\D/g, "");
+  if (telefone) {
+    const msg = `Olá! Aqui é da Brivax. Seu laudo técnico está pronto ✅\nEnviamos o PDF do laudo de entrega do serviço para conferência.`;
+    window.open(`https://wa.me/55${telefone}?text=${encodeURIComponent(msg)}`, "_blank");
+  }
+
+  alert("✅ Laudo gerado e enviado com sucesso!");
+}
