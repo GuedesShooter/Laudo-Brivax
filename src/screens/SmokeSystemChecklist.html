@@ -235,6 +235,14 @@
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
   <script src="../js/pdf-template.js"></script>
   <script>
+    document.querySelectorAll('.options button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.parentNode.querySelectorAll('button');
+    group.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
     function previewImages(input) {
       const preview = input.parentNode.querySelector(".preview");
       preview.innerHTML = "";
