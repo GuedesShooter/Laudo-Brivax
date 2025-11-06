@@ -219,36 +219,77 @@
   </div>
 
   <script>
-    const buttons = document.querySelectorAll('.options button');
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const group = btn.parentNode.querySelectorAll('button');
-        group.forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-      });
-    });
+  const modal = document.getElementById('signatureModal');
+  const canvas = document.getElementById('signaturePad');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let activeField = '';
 
-    const modal = document.getElementById('signatureModal');
-    const canvas = document.getElementById('signaturePad');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
-    let activeField = '';
+  // 📱 Detecta se é toque (mobile)
+  function getPosition(e) {
+    if (e.touches && e.touches[0]) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: e.touches[0].clientX - rect.left,
+        y: e.touches[0].clientY - rect.top
+      };
+    } else {
+      return { x: e.offsetX, y: e.offsetY };
+    }
+  }
 
-    canvas.addEventListener('mousedown', e => {
-      drawing = true;
-      ctx.moveTo(e.offsetX, e.offsetY);
-    });
-    canvas.addEventListener('mousemove', e => {
-      if (!drawing) return;
-      ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.stroke();
-    });
-    canvas.addEventListener('mouseup', () => drawing = false);
-    function openSignature(field){ activeField = field; modal.style.display='flex'; ctx.clearRect(0,0,canvas.width,canvas.height);}
-    function clearSignature(){ ctx.clearRect(0,0,canvas.width,canvas.height);}
-    function saveSignature(){ alert("Assinatura salva para "+activeField); modal.style.display='none'; }
-    function closeSignature(){ modal.style.display='none'; }
-  </script>
+  function startDrawing(e) {
+    e.preventDefault(); // 🧱 bloqueia o scroll da página
+    drawing = true;
+    const pos = getPosition(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  }
+
+  function draw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const pos = getPosition(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.stroke();
+  }
+
+  function stopDrawing() {
+    drawing = false;
+    ctx.closePath();
+  }
+
+  // 🖋️ Eventos de mouse e toque
+  canvas.addEventListener('mousedown', startDrawing);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stopDrawing);
+  canvas.addEventListener('mouseleave', stopDrawing);
+
+  canvas.addEventListener('touchstart', startDrawing, { passive: false });
+  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchend', stopDrawing);
+
+  // 🪄 Controle do modal
+  function openSignature(field) {
+    activeField = field;
+    modal.style.display = 'flex';
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  function clearSignature() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  function saveSignature() {
+    alert("Assinatura salva para " + activeField);
+    modal.style.display = 'none';
+  }
+  function closeSignature() {
+    modal.style.display = 'none';
+  }
+</script>
   <!-- Biblioteca PDF-LIB -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 
