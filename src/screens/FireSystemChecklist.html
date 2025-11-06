@@ -277,21 +277,40 @@
     canvas.addEventListener('touchstart', e => { e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.beginPath(); ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top); drawing = true; });
     canvas.addEventListener('touchmove', e => { if (!drawing) return; e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top); ctx.stroke(); });
     canvas.addEventListener('touchend', () => drawing = false);
-  </script>
-  <!-- Bibliotecas -->
+ <!-- Biblioteca principal do PDF -->
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 
-<!-- Template do PDF -->
-<script src="../js/pdf-template.js"></script>
-
-<!-- Scripts do checklist (já existentes no arquivo) -->
+<!-- Template do PDF (ajustado) -->
 <script>
-  document.querySelectorAll('.options button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const group = btn.parentNode.querySelectorAll('button');
-      group.forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    });
+(async function loadPDFScript() {
+  try {
+    const script = document.createElement("script");
+    script.src = "../js/pdf-template.js"; // 👈 AJUSTE ESTE CAMINHO se necessário
+    document.body.appendChild(script);
+    script.onload = () => console.log("✅ pdf-template.js carregado com sucesso!");
+    script.onerror = () => alert("❌ Erro: o arquivo pdf-template.js não foi encontrado.");
+  } catch (err) {
+    console.error("Erro ao carregar o script PDF:", err);
+  }
+})();
+</script>
+
+<script>
+  // Verifica se o botão funciona
+  document.querySelector(".generate").addEventListener("click", async () => {
+    try {
+      console.log("🔹 Botão Baixar Laudo clicado");
+      if (typeof gerarPDFFire !== "function") {
+        alert("❌ A função gerarPDFFire() não foi carregada. Verifique o caminho do pdf-template.js");
+        return;
+      }
+      alert("⏳ Gerando PDF, aguarde...");
+      await gerarPDFFire();
+      alert("✅ PDF gerado com sucesso!");
+    } catch (e) {
+      console.error("Erro ao gerar PDF:", e);
+      alert("❌ Ocorreu um erro ao gerar o PDF.");
+    }
   });
 </script>
 </body>
