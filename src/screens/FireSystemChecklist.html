@@ -308,6 +308,14 @@
       }
     });
   </script>
+  document.querySelectorAll('.options button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.parentNode.querySelectorAll('button');
+    group.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  });
+});
+
   <script>
 document.querySelectorAll('input[type="file"]').forEach(input => {
   input.addEventListener('change', () => {
