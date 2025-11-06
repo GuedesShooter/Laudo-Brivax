@@ -1,0 +1,23 @@
+async function gerarLaudoFumaca() {
+  const dados = {
+    tipoSistema: "Smoke System",
+    tecnico: document.getElementById("tecnicoResponsavel").value,
+    ajudante: document.getElementById("ajudanteResponsavel").value,
+    dataEntrega: document.getElementById("dataEntrega").value,
+    emailCliente: document.getElementById("emailCliente").value,
+    telefoneCliente: document.getElementById("telefoneCliente").value,
+  };
+
+  const imagens = [];
+  document.querySelectorAll("#checklist input[type='file']").forEach(input => {
+    if (input.files.length > 0) {
+      for (const file of input.files) {
+        imagens.push(file);
+      }
+    }
+  });
+
+  await gerarPDFBrivax(dados, imagens);
+
+  alert("✅ Laudo gerado e pronto para envio!");
+}
