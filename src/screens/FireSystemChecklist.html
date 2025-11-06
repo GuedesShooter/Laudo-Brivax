@@ -256,7 +256,8 @@
     canvas.addEventListener("touchmove", e => { if (!drawing) return; e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top); ctx.stroke(); });
     canvas.addEventListener("touchend", () => { drawing = false; enableScroll(); });
 
-      <script>
+      <!-- 📜 Script de assinatura -->
+  <script>
     function openSignature(field) {
       activeField = field;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -272,8 +273,17 @@
     }
   </script>
 
-  <!-- 🧾 Biblioteca PDF e Template -->
+  <!-- 🧾 Biblioteca PDF + Template Brivax -->
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
   <script src="../js/pdf-template.js"></script>
+
+  <!-- 🔧 Teste temporário para ver se o botão está ativo -->
+  <script>
+    document.querySelector(".generate").addEventListener("click", () => {
+      alert("✅ Botão Baixar Laudo clicado com sucesso!");
+    });
+  </script>
+</body>
+</html>
 </body>
 </html>
