@@ -26,6 +26,25 @@
       max-width: 900px;
       margin: 0 auto;
     }
+    .info-box {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .info-box label {
+      font-weight: bold;
+      display: block;
+      margin-top: 5px;
+    }
+    .info-box input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
     .item {
       background-color: #cfcfcf;
       border-radius: 10px;
@@ -127,46 +146,120 @@
       border-radius: 8px;
       cursor: pointer;
     }
+    @media (max-width: 600px) {
+      .container {
+        padding: 10px;
+      }
+      .item {
+        padding: 10px;
+      }
+      .info-box {
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <header>🔥 Laudo de Sistema de Incêndio - Brivax</header>
+
+  <!-- Informações iniciais -->
+  <div class="container">
+    <div class="info-box">
+      <label>Data do Laudo:</label>
+      <input type="date" id="dataLaudo">
+      <label>Nome da Loja:</label>
+      <input type="text" id="nomeLoja" placeholder="Digite o nome da loja">
+      <label>Local da Instalação:</label>
+      <input type="text" id="localInstalacao" placeholder="Ex: Shopping X - Piso L2">
+      <label>Nome do Técnico Responsável:</label>
+      <input type="text" id="tecnicoResponsavel" placeholder="Nome do técnico">
+      <label>Nome do Ajudante Responsável:</label>
+      <input type="text" id="ajudanteResponsavel" placeholder="Nome do ajudante">
+      <label>Data da Entrega:</label>
+      <input type="date" id="dataEntrega">
+    </div>
+  </div>
+
+  <!-- Checklist -->
   <div class="container" id="checklist">
     <div class="item"><h3>0. Foto da Fachada da Loja</h3><input type="file" multiple /></div>
     <div class="item"><h3>1. Foto geral da cozinha</h3><input type="file" multiple /></div>
     <div class="item"><h3>2. Foto da coifa</h3><input type="file" multiple /></div>
-    <div class="item"><h3>3. Foto dos termostatos instalados na coifa</h3><input type="file" multiple /></div>
+
+    <div class="item">
+      <h3>3. Foto dos termostatos instalados na coifa</h3><input type="file" multiple />
+      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
+      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
+    </div>
+
     <div class="item"><h3>4. Foto dos bicos difusores instalados na coifa</h3><input type="file" multiple /></div>
     <div class="item"><h3>5. Foto dos cilindros de saponificante</h3><input type="file" multiple /></div>
     <div class="item"><h3>6. Foto do manômetro do saponificante</h3><input type="file" multiple /></div>
-    <div class="item"><h3>7. Foto da solenoide conectada ao saponificante</h3><input type="file" multiple /></div>
+
+    <div class="item">
+      <h3>7. Foto da solenoide conectada ao saponificante</h3><input type="file" multiple />
+      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
+      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
+    </div>
+
     <div class="item"><h3>8. Foto do Dumper corta-fogo</h3><input type="file" multiple /></div>
-    <div class="item"><h3>9. Foto dos termostatos reguláveis</h3><input type="file" multiple /></div>
+
+    <div class="item">
+      <h3>9. Foto dos termostatos reguláveis</h3><input type="file" multiple />
+      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
+      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
+    </div>
+
     <div class="item"><h3>10. Foto do cilindro de CO₂</h3><input type="file" multiple /></div>
-    <div class="item"><h3>11. Foto da solenoide de CO₂ conectada</h3><input type="file" multiple /></div>
-    <div class="item"><h3>12. Tipo de gás da loja</h3><div class="options"><button>GLP</button><button>NATURAL</button></div></div>
-    <div class="item"><h3>13. Foto dos detectores de gás</h3><input type="file" multiple /></div>
-    <div class="item"><h3>14. Foto da solenoide do gás conectada</h3><input type="file" multiple /></div>
+
+    <div class="item">
+      <h3>11. Foto da solenoide de CO₂ conectada</h3><input type="file" multiple />
+      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
+      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
+    </div>
+
+    <div class="item">
+      <h3>12. Tipo de gás da loja</h3>
+      <div class="options"><button>GLP</button><button>NATURAL</button></div>
+    </div>
+
+    <div class="item">
+      <h3>13. Foto dos detectores de gás</h3><input type="file" multiple />
+      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
+      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
+    </div>
+
+    <div class="item">
+      <h3>14. Foto da solenoide do gás conectada</h3><input type="file" multiple />
+      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
+      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
+    </div>
+
     <div class="item"><h3>15. Foto da comunicação da central do shopping</h3><input type="file" multiple /></div>
     <div class="item"><h3>16. Foto do quadro elétrico com disjuntor disponível</h3><input type="file" multiple /></div>
     <div class="item"><h3>17. Foto do quadro de exaustão com contato seco N/F</h3><input type="file" multiple /></div>
     <div class="item"><h3>18. Foto da central aberta com conexões feitas</h3><input type="file" multiple /></div>
     <div class="item"><h3>19. Foto da central fechada e lacrada</h3><input type="file" multiple /></div>
-    <div class="item"><h3>20. Treinamento realizado?</h3><div class="options"><button>Sim</button><button>Não</button></div>
+
+    <div class="item">
+      <h3>20. Treinamento realizado?</h3>
+      <div class="options"><button>Sim</button><button>Não</button></div>
       <textarea placeholder="Nome do funcionário, função e observações ou justificativa se não houver."></textarea>
       <button class="signature-btn" onclick="openSignature('treinamento')">Assinar Treinamento</button>
     </div>
-    <div class="item"><h3>21. Pendências</h3>
+
+    <div class="item">
+      <h3>21. Pendências</h3>
       <div class="options"><button>Brivax</button><button>Cliente</button></div>
-      <textarea placeholder="Descreva as pendências"></textarea><input type="file" multiple />
+      <textarea placeholder="Descreva as pendências"></textarea>
+      <input type="file" multiple />
     </div>
+
     <div class="item"><h3>22. Observações do Técnico</h3><textarea placeholder="Observações gerais do técnico"></textarea></div>
   </div>
 
+  <!-- Rodapé -->
   <div class="footer">
-    <input type="text" placeholder="Nome do Técnico Responsável" id="tecnicoResponsavel" />
-    <input type="text" placeholder="Nome do Ajudante Responsável" id="ajudanteResponsavel" />
-    <input type="date" placeholder="Data de Entrega" id="dataEntrega" />
     <input type="text" placeholder="E-mail do cliente" id="emailCliente" />
     <input type="text" placeholder="Telefone do cliente" id="telefoneCliente" />
     <button class="signature-btn" onclick="openSignature('tecnico')">Assinatura do Técnico</button>
@@ -186,12 +279,78 @@
     </div>
   </div>
 
-  <!-- === 🔧 SCRIPTS FINAIS REVISADOS === -->
+  <!-- Scripts -->
   <script src="../js/pdf-template.js"></script>
   <script src="../js/SystemFireReport.js"></script>
-
   <script>
-    // (mesmo script de assinaturas e previews que te enviei acima)
+    // === Botões Sim / Não ===
+    document.querySelectorAll('.options button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.parentNode.querySelectorAll('button');
+        group.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
+
+    // === Preview e Remoção de Fotos ===
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+      input.addEventListener('change', () => {
+        const previewBox = document.createElement('div');
+        previewBox.style.display = 'flex';
+        previewBox.style.flexWrap = 'wrap';
+        previewBox.style.gap = '8px';
+        input.parentNode.appendChild(previewBox);
+        previewBox.innerHTML = '';
+        Array.from(input.files).forEach(file => {
+          const reader = new FileReader();
+          reader.onload = e => {
+            const imgBox = document.createElement('div');
+            imgBox.style.position = 'relative';
+            imgBox.style.width = '120px';
+            imgBox.style.height = '120px';
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '6px';
+            imgBox.appendChild(img);
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = '×';
+            removeBtn.style.position = 'absolute';
+            removeBtn.style.top = '2px';
+            removeBtn.style.right = '5px';
+            removeBtn.style.background = 'rgba(0,0,0,0.6)';
+            removeBtn.style.color = 'white';
+            removeBtn.style.border = 'none';
+            removeBtn.style.borderRadius = '50%';
+            removeBtn.style.width = '20px';
+            removeBtn.style.height = '20px';
+            removeBtn.style.cursor = 'pointer';
+            removeBtn.addEventListener('click', () => imgBox.remove());
+            imgBox.appendChild(removeBtn);
+            previewBox.appendChild(imgBox);
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+    });
+
+    // === Assinaturas individuais ===
+    const modal = document.getElementById('signatureModal');
+    const canvas = document.getElementById('signaturePad');
+    const ctx = canvas.getContext('2d');
+    let drawing = false, activeField = '';
+
+    canvas.addEventListener('mousedown', e => { drawing = true; ctx.moveTo(e.offsetX, e.offsetY); });
+    canvas.addEventListener('mousemove', e => { if (!drawing) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
+    canvas.addEventListener('mouseup', () => drawing = false);
+
+    function openSignature(field){ activeField = field; modal.style.display='flex'; ctx.clearRect(0,0,canvas.width,canvas.height);}
+    function clearSignature(){ ctx.clearRect(0,0,canvas.width,canvas.height);}
+    function saveSignature(){ localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL("image/png")); modal.style.display='none'; alert(`✅ Assinatura de ${activeField} salva!`);}
+    function closeSignature(){ modal.style.display='none'; }
+    function capturarAssinaturas(){ return { tecnico: localStorage.getItem("assinatura_tecnico")||null, cliente: localStorage.getItem("assinatura_cliente")||null, treinamento: localStorage.getItem("assinatura_treinamento")||null }; }
   </script>
 </body>
 </html>
