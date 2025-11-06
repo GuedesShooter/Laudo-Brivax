@@ -379,5 +379,8 @@
     function saveSignature(){ const data = canvas.toDataURL("image/png"); localStorage.setItem(`assinatura_${activeField}`, data); modal.style.display='none'; enableScroll(); alert(`✅ Assinatura de ${activeField} salva!`);}
     function closeSignature(){ modal.style.display='none'; enableScroll(); }
   </script>
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="../js/pdf-template.js"></script>
+<script src="../js/SystemSmokeReport.js"></script>
 </body>
 </html>
