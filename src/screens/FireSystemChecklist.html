@@ -257,7 +257,7 @@
     canvas.addEventListener("touchend", () => { drawing = false; enableScroll(); });
 
       <!-- 📜 Script de assinatura -->
-  <script>
+   <script>
     function openSignature(field) {
       activeField = field;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -273,14 +273,24 @@
     }
   </script>
 
-  <!-- 🧾 Biblioteca PDF + Template Brivax -->
+  <!-- 🧾 Biblioteca PDF + Template -->
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
   <script src="../js/pdf-template.js"></script>
 
-  <!-- 🔧 Teste temporário para ver se o botão está ativo -->
+  <!-- 🚀 Botão de geração de PDF -->
   <script>
-    document.querySelector(".generate").addEventListener("click", () => {
-      alert("✅ Botão Baixar Laudo clicado com sucesso!");
+    document.querySelector(".generate").addEventListener("click", async () => {
+      try {
+        alert("⏳ Gerando PDF, aguarde...");
+
+        // Chama a função que cria o PDF
+        await gerarPDFFire();
+
+        alert("✅ PDF gerado com sucesso!");
+      } catch (e) {
+        console.error("Erro ao gerar PDF:", e);
+        alert("❌ Ocorreu um erro ao gerar o PDF.");
+      }
     });
   </script>
 </body>
