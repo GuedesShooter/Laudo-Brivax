@@ -255,5 +255,60 @@
   </script>
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 <script src="../js/pdf-template.js"></script>
+  <script>
+document.querySelectorAll('input[type="file"]').forEach(input => {
+  input.addEventListener('change', () => {
+    let previewBox = input.parentNode.querySelector('.preview');
+    if (!previewBox) {
+      previewBox = document.createElement('div');
+      previewBox.className = 'preview';
+      previewBox.style.display = 'flex';
+      previewBox.style.flexWrap = 'wrap';
+      previewBox.style.gap = '8px';
+      previewBox.style.marginTop = '10px';
+      input.parentNode.appendChild(previewBox);
+    }
+    previewBox.innerHTML = '';
+    Array.from(input.files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const box = document.createElement('div');
+        box.style.position = 'relative';
+        box.style.width = '130px';
+        box.style.height = '130px';
+        box.style.borderRadius = '6px';
+        box.style.overflow = 'hidden';
+        box.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
+        
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        
+        const btn = document.createElement('button');
+        btn.textContent = '×';
+        btn.style.position = 'absolute';
+        btn.style.top = '4px';
+        btn.style.right = '4px';
+        btn.style.width = '22px';
+        btn.style.height = '22px';
+        btn.style.border = 'none';
+        btn.style.borderRadius = '50%';
+        btn.style.background = 'rgba(0,0,0,0.6)';
+        btn.style.color = '#fff';
+        btn.style.cursor = 'pointer';
+        btn.onclick = () => box.remove();
+        
+        box.appendChild(img);
+        box.appendChild(btn);
+        previewBox.appendChild(box);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+});
+</script>
+
 </body>
 </html>
