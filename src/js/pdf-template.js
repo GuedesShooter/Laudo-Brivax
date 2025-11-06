@@ -10,7 +10,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
   const { PDFDocument, StandardFonts, rgb } = PDFLib;
 
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([595, 842]); // A4
+  let page = pdfDoc.addPage([595, 842]);
   const { width, height } = page.getSize();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
@@ -88,9 +88,12 @@ async function gerarPDFBase(tipoSistema, prefix) {
     // Imagens (miniaturas)
     for (let img of imagens) {
       if (y < 150) {
-        page = pdfDoc.addPage([595, 842]);
-        y = height - 60;
-      }
+  page = pdfDoc.addPage([595, 842]);
+  const { width: w2, height: h2 } = page.getSize();
+  width = w2;
+  height = h2;
+  y = height - 60;
+}
       const imgBytes = await fetch(img.src).then(res => res.arrayBuffer());
       const imgEmbed = await pdfDoc.embedJpg(imgBytes);
       const scaled = imgEmbed.scale(150 / imgEmbed.height);
