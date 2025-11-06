@@ -1,6 +1,6 @@
-// ===============================
-// 📄 BRIVAX - PDF TEMPLATE FINAL
-// ===============================
+// =====================================
+// 🧯 BRIVAX - PDF TEMPLATE (iPhone Safe)
+// =====================================
 
 async function gerarPDFFire() {
   try {
@@ -24,13 +24,12 @@ async function gerarPDFBase(tipoSistema, prefix) {
   try {
     const { PDFDocument, StandardFonts, rgb } = PDFLib;
     const pdfDoc = await PDFDocument.create();
-    let page = pdfDoc.addPage([595, 842]); // A4
+    let page = pdfDoc.addPage([595, 842]);
     let { width, height } = page.getSize();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
     let y = height - 60;
 
-    // 🧯 Cabeçalho
+    // Cabeçalho
     page.drawRectangle({ x: 0, y: y - 25, width, height: 40, color: rgb(1, 0.48, 0) });
     page.drawText(`BRIVAX - Laudo de ${tipoSistema}`, {
       x: 40,
@@ -44,7 +43,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
     page.setFont(font);
     page.setFontSize(11);
 
-    // 🧾 Informações gerais
+    // Informações gerais
     const dataEntrega = document.getElementById("dataEntrega")?.value || "—";
     const dataLaudo = document.getElementById("dataLaudo")?.value || "—";
     const nomeLoja = document.getElementById("nomeLoja")?.value || "—";
@@ -70,7 +69,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
     page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.6, 0.6, 0.6) });
     y -= 20;
 
-    // 🧩 Itens do checklist
+    // Itens
     const itens = document.querySelectorAll(".item");
     for (let i = 0; i < itens.length; i++) {
       const item = itens[i];
@@ -83,7 +82,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
       y -= 15;
 
       botoesSelecionados.forEach(btn => {
-        page.drawText(`${btn.textContent}`, { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
+        page.drawText(`${btn.textContent}`, { x: 50, y, size: 10, font });
         y -= 12;
       });
 
@@ -91,7 +90,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
         const texto = `Obs: ${observacoes}`;
         const linhas = quebraTexto(texto, 80);
         linhas.forEach(l => {
-          page.drawText(l, { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
+          page.drawText(l, { x: 50, y, size: 10, font });
           y -= 12;
         });
       }
@@ -121,7 +120,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
       }
     }
 
-    // ✍️ Assinaturas
+    // Assinaturas
     y -= 30;
     page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.6, 0.6, 0.6) });
     y -= 40;
@@ -151,6 +150,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
       page.drawImage(imgEmbed, { x: 400, y, width: 120, height: 60 });
     }
 
+    // Rodapé
     y -= 100;
     page.drawText("Enviado automaticamente pelo sistema Brivax Laudos Técnicos", {
       x: width / 2 - 150,
@@ -163,16 +163,12 @@ async function gerarPDFBase(tipoSistema, prefix) {
     const nomeArquivo = `${prefix}_Laudo_${nomeLoja.replace(/\s+/g, "_") || "SemNome"}.pdf`;
     const pdfBytes = await pdfDoc.save();
 
-    // 📥 Download automático
+    // 📱 iPhone-safe: abre PDF no navegador
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = nomeArquivo;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const pdfURL = URL.createObjectURL(blob);
+    window.open(pdfURL, "_blank");
 
-    alert("✅ PDF gerado e pronto para download!");
+    alert("✅ PDF gerado e aberto no navegador!");
   } catch (error) {
     console.error("Erro ao criar PDF:", error);
     alert("❌ Ocorreu um erro ao criar o PDF. Verifique o console.");
