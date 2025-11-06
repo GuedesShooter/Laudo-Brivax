@@ -1,138 +1,200 @@
-// === pdf-template.js ===
-// Template visual do PDF Brivax Laudos (incêndio / fumaça)
-// Requer: PDF-LIB (https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js)  [oai_citation:0‡GitHub](https://github.com/Hopding/pdf-lib?utm_source=chatgpt.com)
+// === 📄 pdf-template.js ===
+// Gera PDF profissional e envia por e-mail e WhatsApp
 
-async function gerarPDFBrivax(dados) {
-  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+async function gerarEEnviarLaudo(dados) {
+  const { PDFDocument, rgb } = PDFLib;
 
   const doc = await PDFDocument.create();
-  const page = doc.addPage([595, 842]); // A4 tamanho
+  const page = doc.addPage([595, 842]); // A4
   const { width, height } = page.getSize();
 
-  // Fonte
-  const font = await doc.embedFont(StandardFonts.Helvetica);
+  // === 🎨 Layout básico ===
+  const margem = 40;
+  let y = height - 60;
 
-  // Logo
-  const logoUrl = "./assets/brivax-logo.png"; // caminho relativo ao html
-  const logoBytes = await fetch(logoUrl).then(r => r.arrayBuffer());
-  const logoImage = await doc.embedPng(logoBytes);
+  // Cor e fontes
+  const corPrincipal = rgb(0.3, 0.3, 0.3);
+  const fontSizeNormal = 11;
 
-  // === Cabeçalho ===
-  const headerColor = rgb(0.85, 0.85, 0.85);
-  page.drawRectangle({ x: 0, y: height - 80, width, height: 80, color: headerColor });
-  page.drawImage(logoImage, { x: 30, y: height - 70, width: 60, height: 60 });
-  page.drawText("Brivax Sistemas de Combate a Incêndio", {
-    x: 110,
-    y: height - 50,
+  // === 🧱 Cabeçalho ===
+  const logoUrl = "../assets/brivax-logo.png";
+  try {
+    const logoBytes = await fetch(logoUrl).then(res => res.arrayBuffer());
+    const logoImg = await doc.embedPng(logoBytes);
+    const logoWidth = 100;
+    const logoHeight = 40;
+    page.drawImage(logoImg, {
+      x: margem,
+      y: y - logoHeight,
+      width: logoWidth,
+      height: logoHeight
+    });
+  } catch (err) {
+    console.warn("Logo não encontrada:", err);
+  }
+
+  page.drawText("BRIVAX SISTEMAS DE COMBATE A INCÊNDIO", {
+    x: margem + 120,
+    y: y - 10,
     size: 14,
-    font,
-    color: rgb(0,0,0)
-  });
-  page.drawText(dados.titulo, {
-    x: 110,
-    y: height - 65,
-    size: 10,
-    font,
-    color: rgb(0.2,0.2,0.2)
+    color: corPrincipal,
   });
 
-  // === Identificação inicial ===
-  let y = height - 110;
-  page.drawText(`Laudo Nº: ${dados.numero}`, { x: 40, y, size: 10, font });
+  y -= 60;
+  page.drawLine({
+    start: { x: margem, y },
+    end: { x: width - margem, y },
+    thickness: 1,
+    color: rgb(0.5, 0.5, 0.5),
+  });
   y -= 20;
-  page.drawText(`Loja: ${dados.loja}`, { x: 40, y, size: 10, font });
-  y -= 20;
-  page.drawText(`Local da Instalação: ${dados.local}`, { x: 40, y, size: 10, font });
-  y -= 20;
-  page.drawText(`Data do Laudo: ${dados.dataLaudo}`, { x: 40, y, size: 10, font });
-  y -= 20;
-  page.drawText(`Data de Entrega: ${dados.dataEntrega}`, { x: 40, y, size: 10, font });
-  y -= 20;
-  page.drawText(`Técnico: ${dados.tecnicoResponsavel}`, { x: 40, y, size: 10, font });
-  y -= 20;
-  page.drawText(`Ajudante: ${dados.ajudanteResponsavel}`, { x: 40, y, size: 10, font });
-  y -= 30;
 
-  page.drawText("Checklist e Fotos:", { x: 40, y, size: 12, font, color: rgb(1,0.45,0) });
-  y -= 15;
+  // === 🧾 Informações gerais ===
+  const info = [
+    `Laudo Nº: ${dados.numero || "N/D"}`,
+    `Tipo: ${dados.titulo || "N/D"}`,
+    `Loja: ${dados.loja || "N/D"}`,
+    `Local: ${dados.local || "N/D"}`,
+    `Data Laudo: ${dados.dataLaudo || "N/D"}`,
+    `Data Entrega: ${dados.dataEntrega || "N/D"}`,
+    `Técnico: ${dados.tecnicoResponsavel || "N/D"}`,
+    `Ajudante: ${dados.ajudanteResponsavel || "N/D"}`,
+    `Telefone: ${dados.telefoneCliente || "N/D"}`,
+    `E-mail: ${dados.emailCliente || "N/D"}`
+  ];
 
-  // === Itens com fotos e observações ===
+  info.forEach((line, i) => {
+    page.drawText(line, {
+      x: margem,
+      y: y - i * 14,
+      size: fontSizeNormal,
+      color: corPrincipal,
+    });
+  });
+
+  y -= info.length * 14 + 10;
+  page.drawLine({
+    start: { x: margem, y },
+    end: { x: width - margem, y },
+    thickness: 1,
+    color: rgb(0.6, 0.6, 0.6),
+  });
+  y -= 25;
+
+  // === 🧰 Itens do Laudo ===
   for (const item of dados.itens) {
-    if (y < 150) {
-      // nova página
-      const newPage = doc.addPage([595, 842]);
-      y = height - 80;
-    }
-
-    page.drawText(`${item.nome}`, { x: 40, y, size: 10, font, color: rgb(0,0,0) });
+    const nome = item.nome || "Item";
+    const obs = item.observacao || "";
+    page.drawText(nome, { x: margem, y, size: 12, color: rgb(0, 0, 0) });
     y -= 14;
 
-    if (item.observacao) {
-      page.drawText(`Obs: ${item.observacao}`, { x: 50, y, size: 9, font, color: rgb(0.3,0.3,0.3) });
-      y -= 12;
+    if (obs) {
+      page.drawText("Observação: " + obs, { x: margem + 10, y, size: fontSizeNormal });
+      y -= 16;
     }
 
     if (item.fotos && item.fotos.length > 0) {
-      let x = 40;
-      for (let i = 0; i < item.fotos.length; i++) {
-        const fotoUrl = item.fotos[i];
-        const imgBytes = await fetch(fotoUrl).then(r => r.arrayBuffer());
-        const img = await doc.embedJpg(imgBytes);
-
-        page.drawImage(img, {
-          x: x,
-          y: y - 150,
-          width: 150,   // largura ~150px conforme você pediu
-          height: 150
-        });
-
-        x += 160; // espaçamento entre colunas
-        if ((i+1) % 2 === 0) {
-          y -= 160;
-          x = 40;
+      for (const foto of item.fotos) {
+        try {
+          const imgBytes = await fetch(foto).then(r => r.arrayBuffer());
+          const img = await doc.embedPng(imgBytes);
+          const iw = 150;
+          const ih = 100;
+          if (y - ih < 100) {
+            page = doc.addPage([595, 842]);
+            y = height - 60;
+          }
+          page.drawImage(img, {
+            x: margem + 10,
+            y: y - ih,
+            width: iw,
+            height: ih
+          });
+          y -= ih + 10;
+        } catch (e) {
+          console.warn("Erro ao inserir imagem:", e);
         }
       }
-      y -= 170;
     }
 
     y -= 10;
+    if (y < 100) {
+      page = doc.addPage([595, 842]);
+      y = height - 60;
+    }
   }
 
-  // === Rodapé ===
-  page.drawLine({ start: { x: 40, y: 60 }, end: { x: width - 40, y: 60 }, thickness: 0.5 });
-  page.drawText("Assinatura Técnico", { x: 80, y: 45, size: 10, font });
-  page.drawText("Assinatura Cliente", { x: 380, y: 45, size: 10, font });
+  // === ✍️ Assinaturas ===
+  y -= 20;
+  page.drawLine({
+    start: { x: margem, y },
+    end: { x: width - margem, y },
+    thickness: 1,
+    color: rgb(0.6, 0.6, 0.6),
+  });
+  y -= 40;
 
-  page.drawText("Brivax Sistemas de Combate a Incêndio – Todos os direitos reservados", {
-    x: 80, y: 25, size: 8, font, color: rgb(0.4,0.4,0.4)
+  if (dados.assinaturas?.tecnico) {
+    const imgBytes = await fetch(dados.assinaturas.tecnico).then(r => r.arrayBuffer());
+    const img = await doc.embedPng(imgBytes);
+    page.drawImage(img, { x: margem, y: y - 40, width: 120, height: 40 });
+  }
+  if (dados.assinaturas?.cliente) {
+    const imgBytes = await fetch(dados.assinaturas.cliente).then(r => r.arrayBuffer());
+    const img = await doc.embedPng(imgBytes);
+    page.drawImage(img, { x: 220, y: y - 40, width: 120, height: 40 });
+  }
+  if (dados.assinaturas?.treinamento) {
+    const imgBytes = await fetch(dados.assinaturas.treinamento).then(r => r.arrayBuffer());
+    const img = await doc.embedPng(imgBytes);
+    page.drawImage(img, { x: 400, y: y - 40, width: 120, height: 40 });
+  }
+
+  page.drawText("Técnico", { x: margem + 40, y: y - 50, size: 10 });
+  page.drawText("Cliente", { x: 260, y: y - 50, size: 10 });
+  page.drawText("Treinamento", { x: 440, y: y - 50, size: 10 });
+
+  // === Rodapé ===
+  page.drawLine({
+    start: { x: margem, y: 60 },
+    end: { x: width - margem, y: 60 },
+    thickness: 1,
+    color: rgb(0.6, 0.6, 0.6),
+  });
+  page.drawText("Gerado automaticamente pelo sistema Brivax Laudos Técnicos", {
+    x: margem,
+    y: 45,
+    size: 9,
+    color: rgb(0.5, 0.5, 0.5),
   });
 
+  // === 💾 Exportar PDF ===
   const pdfBytes = await doc.save();
-  return pdfBytes;
-}
-
-// Função auxiliar para download + envio
-async function gerarEEnviarLaudo(dados) {
-  const pdfBytes = await gerarPDFBrivax(dados);
   const blob = new Blob([pdfBytes], { type: "application/pdf" });
-  const fileName = `Laudo_${dados.numero}_${dados.loja.replace(/\s+/g, "_")}.pdf`;
-  const url = URL.createObjectURL(blob);
+  const nomeArquivo = `Laudo_${dados.tipo.replace(/\s/g, "_")}_${dados.loja || "Loja"}.pdf`;
 
-  // download automático
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  a.click();
+  // Download automático
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = nomeArquivo;
+  link.click();
 
-  // preparo do e-mail
-  const assunto = `Laudo Loja ${dados.loja} - ${dados.dataLaudo}`;
-  const corpo = `Olá,\n\nSegue abaixo o PDF do laudo de entrega de serviço.\nQualquer dúvida estamos à disposição.\nA equipe Brivax agradece!`;
-  window.open(`mailto:${dados.emailCliente}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`);
+  // Envio de e-mail
+  const assunto = `Laudo Loja ${dados.loja} - ${dados.dataLaudo || ""}`;
+  const corpoEmail =
+    `Olá,\n\nSegue em anexo o laudo de entrega de serviço.\n\n` +
+    `Loja: ${dados.loja}\nSistema: ${dados.tipo}\nData: ${dados.dataLaudo}\n\n` +
+    `Qualquer dúvida, estamos à disposição.\n\nEquipe Brivax.`;
 
-  // WhatsApp
-  const telefone = dados.telefoneCliente.replace(/\D/g, "");
-  if (telefone) {
-    const msg = `Olá! Aqui é da Brivax. Seu laudo técnico está pronto ✅\nEnviamos o PDF do laudo de entrega do serviço para conferência.`;
-    window.open(`https://wa.me/55${telefone}?text=${encodeURIComponent(msg)}`, "_blank");
+  const mailto = `mailto:${dados.emailCliente}?cc=brivax.adm@gmail.com&subject=${encodeURIComponent(
+    assunto
+  )}&body=${encodeURIComponent(corpoEmail)}`;
+  window.open(mailto);
+
+  // Envio via WhatsApp (se informado)
+  if (dados.telefoneCliente) {
+    const msg = `Olá, aqui é a Brivax 👋\nSegue o laudo da loja *${dados.loja}* (${dados.tipo}) enviado por e-mail.\nQualquer dúvida, estamos à disposição.`;
+    const zap = `https://wa.me/${dados.telefoneCliente.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`;
+    window.open(zap);
   }
 }
