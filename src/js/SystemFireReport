@@ -1,25 +1,78 @@
-async function gerarLaudoIncendio() {
-  const dados = {
-    tipoSistema: "Fire System",
-    tecnico: document.getElementById("tecnicoResponsavel").value,
-    ajudante: document.getElementById("ajudanteResponsavel").value,
-    dataEntrega: document.getElementById("dataEntrega").value,
-    emailCliente: document.getElementById("emailCliente").value,
-    telefoneCliente: document.getElementById("telefoneCliente").value,
-  };
+// === SystemFireReport.js ===
+// Coleta todos os dados do formulário e gera PDF via pdf-template.js
 
-  // coletar imagens (pequeno exemplo, você pode expandir depois)
-  const imagens = [];
-  document.querySelectorAll("#checklist input[type='file']").forEach(input => {
-    if (input.files.length > 0) {
+async function gerarLaudoFire() {
+  const dataLaudo = document.getElementById("dataLaudo").value || "";
+  const nomeLoja = document.getElementById("nomeLoja").value || "";
+  const localInstalacao = document.getElementById("localInstalacao").value || "";
+  const tecnicoResponsavel = document.getElementById("tecnicoResponsavel").value || "";
+  const ajudanteResponsavel = document.getElementById("ajudanteResponsavel").value || "";
+  const dataEntrega = document.getElementById("dataEntrega").value || "";
+  const emailCliente = document.getElementById("emailCliente").value || "";
+  const telefoneCliente = document.getElementById("telefoneCliente").value || "";
+
+  // Cria numeração automática simples
+  const numeroLaudo = "034-" + new Date().getTime().toString().slice(-5);
+
+  // === Coleta dos itens ===
+  const itens = [];
+  const itemElements = document.querySelectorAll("#checklist .item");
+
+  for (let i = 0; i < itemElements.length; i++) {
+    const el = itemElements[i];
+    const nome = el.querySelector("h3") ? el.querySelector("h3").textContent : `Item ${i+1}`;
+    const obs = el.querySelector("textarea") ? el.querySelector("textarea").value.trim() : "";
+
+    // Coleta imagens (como DataURL para PDF)
+    const fotos = [];
+    const inputs = el.querySelectorAll("input[type='file']");
+    for (const input of inputs) {
       for (const file of input.files) {
-        imagens.push(file);
+        const reader = await fileToDataURL(file);
+        fotos.push(reader);
       }
     }
+
+    itens.push({ nome, observacao: obs, fotos });
+  }
+
+  // === Captura das assinaturas ===
+  const assinaturas = capturarAssinaturas();
+
+  // === Montagem do objeto de dados ===
+  const dados = {
+    tipo: "Fire System",
+    titulo: "Laudo Técnico - Sistema de Incêndio",
+    numero: numeroLaudo,
+    loja: nomeLoja,
+    local: localInstalacao,
+    dataLaudo,
+    dataEntrega,
+    tecnicoResponsavel,
+    ajudanteResponsavel,
+    emailCliente,
+    telefoneCliente,
+    itens,
+    assinaturas
+  };
+
+  // === Gera PDF e envia ===
+  await gerarEEnviarLaudo(dados);
+  alert("✅ Laudo de Sistema de Incêndio gerado e enviado com sucesso!");
+}
+
+// === Funções auxiliares ===
+function fileToDataURL(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.readAsDataURL(file);
   });
+}
 
-  // Gera PDF com o template base
-  await gerarPDFBrivax(dados, imagens);
-
-  alert("✅ Laudo gerado e pronto para envio!");
+function capturarAssinaturas() {
+  const canvas = document.getElementById("signaturePad");
+  if (!canvas) return { tecnico: null, cliente: null };
+  const assinatura = canvas.toDataURL("image/png");
+  return { tecnico: assinatura, cliente: assinatura }; // neste modelo simples ambas usam o mesmo canvas
 }
