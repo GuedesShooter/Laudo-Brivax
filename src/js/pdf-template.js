@@ -1,6 +1,9 @@
 // ===========================================
 // ✅ BRIVAX - PDF TEMPLATE FINAL (Download OK)
 // ===========================================
+const fontUrl = "https://fonts.gstatic.com/s/opensans/v34/mem8YaGs126MiZpBA-UFVZ0b.ttf";
+const fontBytes = await fetch(fontUrl).then(res => res.arrayBuffer());
+const font = await pdfDoc.embedFont(fontBytes);
 
 async function gerarPDFFire() {
   try {
