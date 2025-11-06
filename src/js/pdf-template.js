@@ -1,5 +1,8 @@
-// pdf-template.js
-// Gera PDF profissional para os laudos Brivax
+// === PDF Template Brivax - Sistema de Laudos ===
+// Usa PDF-LIB para gerar laudos técnicos profissionais
+// Compatível com FireSystemChecklist e SmokeSystemChecklist
+
+let numeroLaudo = 34; // começa no 034
 
 async function gerarPDFFire() {
   await gerarPDFBase("Sistema de Incêndio");
@@ -12,118 +15,141 @@ async function gerarPDFSmoke() {
 async function gerarPDFBase(tipoSistema) {
   const { PDFDocument, rgb, StandardFonts } = PDFLib;
 
-  // Cria o documento
+  // Criar documento PDF
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([595, 842]); // A4
-  const { width, height } = page.getSize();
+  const page = pdfDoc.addPage([595.28, 841.89]); // A4 vertical
+  const { height } = page.getSize();
+  const margin = 50;
+
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  // Cores
+  const orange = rgb(1, 0.48, 0);
+  const gray = rgb(0.2, 0.2, 0.2);
 
   // Cabeçalho
   page.drawRectangle({
     x: 0,
-    y: height - 60,
-    width,
-    height: 60,
-    color: rgb(1, 0.48, 0),
+    y: height - 80,
+    width: 595.28,
+    height: 80,
+    color: orange,
   });
 
-  page.drawText("BRIVAX - LAUDO TÉCNICO", {
-    x: 50,
-    y: height - 40,
-    size: 18,
-    color: rgb(1, 1, 1),
-    font,
-  });
-
-  page.drawText(tipoSistema.toUpperCase(), {
-    x: 50,
-    y: height - 60,
-    size: 12,
-    color: rgb(1, 1, 1),
-    font,
-  });
-
-  let y = height - 100;
-  const marginLeft = 50;
-
-  // Dados principais
-  const dataHoje = new Date().toLocaleDateString("pt-BR");
-  page.drawText(`Data: ${dataHoje}`, { x: marginLeft, y, size: 11, font });
-  y -= 20;
-
-  page.drawText(`Tipo de Sistema: ${tipoSistema}`, { x: marginLeft, y, size: 11, font });
-  y -= 30;
-
-  // Lista de itens com resultados
-  const itens = document.querySelectorAll("#checklist .item");
-  for (let i = 0; i < itens.length; i++) {
-    const item = itens[i];
-    const label = item.querySelector("label").innerText;
-    const selected = item.querySelector(".options .selected");
-    const result = selected ? selected.innerText : "—";
-    page.drawText(`${i + 1}. ${label} - ${result}`, {
-      x: marginLeft,
-      y,
-      size: 10,
-      font,
-    });
-    y -= 14;
-
-    if (y < 120) {
-      page.drawText("Continua...", { x: width - 100, y: 40, size: 9, font });
-      y = height - 80;
-      pdfDoc.addPage(page);
-    }
+  // Logo
+  try {
+    const logoBytes = await fetch("../assets/brivax-logo.png").then(r => r.arrayBuffer());
+    const logo = await pdfDoc.embedPng(logoBytes);
+    page.drawImage(logo, { x: 40, y: height - 70, width: 90, height: 60 });
+  } catch {
+    page.drawText("BRIVAX", { x: 40, y: height - 40, size: 28, font: bold, color: rgb(1, 1, 1) });
   }
 
-  // Espaço para assinaturas
-  y -= 40;
-  page.drawText("_________________________________", { x: marginLeft, y, size: 10, font });
-  page.drawText("Técnico Responsável", { x: marginLeft, y: y - 12, size: 10, font });
+  page.drawText(`Laudo Técnico - ${tipoSistema}`, {
+    x: 150,
+    y: height - 40,
+    size: 20,
+    font: bold,
+    color: rgb(1, 1, 1),
+  });
 
-  page.drawText("_________________________________", { x: width / 2 + 20, y, size: 10, font });
-  page.drawText("Cliente / Responsável", { x: width / 2 + 20, y: y - 12, size: 10, font });
+  // Número do laudo
+  const num = numeroLaudo.toString().padStart(3, "0");
+  page.drawText(`Nº ${num}`, { x: 500, y: height - 40, size: 14, font: bold, color: rgb(1, 1, 1) });
 
-  y -= 60;
-  page.drawText("_________________________________", { x: marginLeft, y, size: 10, font });
-  page.drawText("Treinamento", { x: marginLeft, y: y - 12, size: 10, font });
+  numeroLaudo++;
+
+  // Dados gerais
+  const nomeLoja = document.getElementById("nomeLoja")?.value || "";
+  const localInstalacao = document.getElementById("localInstalacao")?.value || "";
+  const nomeTecnico = document.getElementById("nomeTecnico")?.value || "";
+  const nomeAjudante = document.getElementById("nomeAjudante")?.value || "";
+  const dataEntrega = document.getElementById("dataEntrega")?.value || "";
+  const dataLaudo = document.getElementById("dataLaudo")?.value || "";
+
+  let cursor = height - 120;
+  const lineHeight = 18;
+
+  page.drawText("INFORMAÇÕES GERAIS", { x: margin, y: cursor, size: 13, font: bold, color: gray });
+  cursor -= 15;
+
+  const info = [
+    `Data de Entrega do Serviço: ${dataEntrega || "—"}`,
+    `Data do Laudo: ${dataLaudo || "—"}`,
+    `Nome da Loja: ${nomeLoja || "—"}`,
+    `Local da Instalação: ${localInstalacao || "—"}`,
+    `Técnico Responsável: ${nomeTecnico || "—"}`,
+    `Ajudante: ${nomeAjudante || "—"}`
+  ];
+
+  info.forEach(line => {
+    cursor -= lineHeight;
+    page.drawText(line, { x: margin, y: cursor, size: 11, font });
+  });
+
+  // Espaçamento
+  cursor -= 20;
+  page.drawLine({
+    start: { x: margin, y: cursor },
+    end: { x: 545, y: cursor },
+    thickness: 1,
+    color: gray
+  });
+
+  cursor -= 30;
+  page.drawText("RESUMO DO LAUDO", { x: margin, y: cursor, size: 13, font: bold, color: gray });
+  cursor -= 15;
+  page.drawText("O presente documento certifica a instalação, teste e entrega do sistema descrito acima, conforme normas vigentes.", {
+    x: margin,
+    y: cursor,
+    size: 11,
+    font,
+    maxWidth: 500,
+  });
 
   // Assinaturas
-  const assTec = localStorage.getItem("assinatura_tecnico");
-  const assCli = localStorage.getItem("assinatura_cliente");
-  const assTre = localStorage.getItem("assinatura_treinamento");
+  const assinaturaTecnico = localStorage.getItem("assinatura_tecnico");
+  const assinaturaCliente = localStorage.getItem("assinatura_cliente");
+  const assinaturaTreinamento = localStorage.getItem("assinatura_treinamento");
 
-  if (assTec) {
-    const imgBytes = await fetch(assTec).then(r => r.arrayBuffer());
-    const img = await pdfDoc.embedPng(imgBytes);
-    page.drawImage(img, { x: marginLeft + 20, y: y + 60, width: 120, height: 40 });
+  cursor -= 120;
+
+  if (assinaturaTecnico) {
+    const sigBytes = await fetch(assinaturaTecnico).then(r => r.arrayBuffer());
+    const sigImg = await pdfDoc.embedPng(sigBytes);
+    page.drawImage(sigImg, { x: margin, y: cursor, width: 150, height: 60 });
   }
-  if (assCli) {
-    const imgBytes = await fetch(assCli).then(r => r.arrayBuffer());
-    const img = await pdfDoc.embedPng(imgBytes);
-    page.drawImage(img, { x: width / 2 + 40, y: y + 60, width: 120, height: 40 });
+  if (assinaturaCliente) {
+    const sigBytes = await fetch(assinaturaCliente).then(r => r.arrayBuffer());
+    const sigImg = await pdfDoc.embedPng(sigBytes);
+    page.drawImage(sigImg, { x: 230, y: cursor, width: 150, height: 60 });
   }
-  if (assTre) {
-    const imgBytes = await fetch(assTre).then(r => r.arrayBuffer());
-    const img = await pdfDoc.embedPng(imgBytes);
-    page.drawImage(img, { x: marginLeft + 20, y: y + 5, width: 120, height: 40 });
+  if (assinaturaTreinamento) {
+    const sigBytes = await fetch(assinaturaTreinamento).then(r => r.arrayBuffer());
+    const sigImg = await pdfDoc.embedPng(sigBytes);
+    page.drawImage(sigImg, { x: 410, y: cursor, width: 150, height: 60 });
   }
+
+  cursor -= 20;
+  page.drawText("Técnico", { x: margin + 50, y: cursor, size: 10, font });
+  page.drawText("Cliente", { x: 280, y: cursor, size: 10, font });
+  page.drawText("Treinamento", { x: 460, y: cursor, size: 10, font });
 
   // Rodapé
-  page.drawText("Documento gerado automaticamente pelo sistema Brivax Laudos Técnicos", {
-    x: marginLeft,
+  page.drawText("Enviado automaticamente pelo sistema Brivax Laudos Técnicos", {
+    x: margin,
     y: 40,
     size: 9,
     font,
+    color: gray
   });
 
-  // Download
+  // Gerar e baixar
   const pdfBytes = await pdfDoc.save();
   const blob = new Blob([pdfBytes], { type: "application/pdf" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = `Laudo_${tipoSistema}_${dataHoje.replace(/\//g, "-")}.pdf`;
+  link.download = `Laudo_${tipoSistema.replace(/\s+/g, "_")}_${num}.pdf`;
   link.click();
-
-  alert("✅ PDF do laudo gerado com sucesso!");
 }
