@@ -271,8 +271,22 @@
     canvas.addEventListener('touchmove', e => { if (!drawing) return; e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top); ctx.stroke(); });
     canvas.addEventListener('touchend', () => drawing = false);
   </script>
-  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  <!-- Bibliotecas -->
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+<!-- Template do PDF -->
 <script src="../js/pdf-template.js"></script>
 
+<!-- Scripts do checklist (já existentes no arquivo) -->
+<script>
+  document.querySelectorAll('.options button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const group = btn.parentNode.querySelectorAll('button');
+      group.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+</script>
 </body>
 </html>
+
