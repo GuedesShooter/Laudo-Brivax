@@ -2,90 +2,93 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Painel Administrativo - Brivax</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo – Brivax</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #f4f4f4, #eaeaea);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px;
-      margin: 0;
-      color: #333;
+      background: linear-gradient(135deg,#f4f4f4,#eaeaea);
+      display:flex;flex-direction:column;align-items:center;
+      padding:20px;margin:0;
+      color:#333;
     }
     .container {
-      background: #fff;
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-      width: 95%;
-      max-width: 900px;
+      background:#fff;
+      border-radius:12px;
+      padding:20px;
+      box-shadow:0 6px 12px rgba(0,0,0,0.15);
+      width:100%;
+      max-width:900px;
     }
     h1 {
-      color: #ff6600;
-      text-align: center;
-      margin-bottom: 25px;
+      color:#ff6600;
+      text-align:center;
+      margin-bottom:20px;
     }
     .actions {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-      gap: 10px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+      margin-bottom:15px;
     }
     .actions input {
-      flex: 1;
-      min-width: 240px;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
+      flex:1;
+      min-width:200px;
+      padding:8px;
+      border-radius:6px;
+      border:1px solid #ccc;
+      font-size:14px;
     }
     .actions button {
-      background: #ff6600;
-      border: none;
-      color: white;
-      padding: 8px 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: 0.3s;
+      background:#ff6600;
+      border:none;
+      color:white;
+      padding:10px 15px;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:14px;
+      transition:0.3s;
     }
-    .actions button:hover {
-      background: #e65c00;
+    .actions button:hover { background:#e65c00; }
+    table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
     }
-    table { width: 100%; border-collapse: collapse; }
-    th, td {
-      border-bottom: 1px solid #ddd;
-      padding: 10px;
-      text-align: center;
-      font-size: 14px;
+    th,td {
+      border-bottom:1px solid #ddd;
+      padding:8px;
+      text-align:center;
     }
-    th { background-color: #ff6600; color: white; }
-    tr:hover { background-color: #f5f5f5; }
+    th { background:#ff6600; color:#fff; position:sticky; top:0; }
+    tr:hover { background:#f9f9f9; }
     button.action {
-      background: #ff6600;
-      border: none;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      margin: 2px;
+      background:#ff6600;border:none;color:#fff;
+      padding:5px 10px;border-radius:6px;
+      cursor:pointer;font-size:12px;margin:2px;
     }
-    button.action:hover { background: #e65c00; }
+    button.action:hover { background:#e65c00; }
     .logout {
-      margin-top: 25px;
-      background: #555;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s;
+      margin-top:20px;background:#555;color:white;
+      border:none;padding:10px 20px;border-radius:8px;
+      cursor:pointer;transition:0.3s;width:100%;max-width:300px;
     }
-    .logout:hover { background: #333; }
+    .logout:hover { background:#333; }
+
+    /* Modal estilo */
+    .modal {
+      display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+      background:rgba(0,0,0,0.5);align-items:center;justify-content:center;
+    }
+    .modal-content {
+      background:white;padding:20px;border-radius:10px;
+      width:90%;max-width:360px;text-align:center;
+    }
+    .modal-content input,select {
+      width:90%;padding:8px;margin:5px 0;
+      border-radius:6px;border:1px solid #ccc;font-size:14px;
+    }
   </style>
 </head>
 <body>
@@ -93,31 +96,35 @@
   <div class="container">
     <h1>🔒 Painel Administrativo</h1>
     <div class="actions">
-      <input type="text" id="search" placeholder="Buscar por nome ou usuário..." oninput="filtrarUsuarios()">
-      <button onclick="abrirModal()">➕ Adicionar Usuário</button>
-      <button onclick="baixarDoGithub()">🔽 Baixar do GitHub</button>
-      <button onclick="enviarParaGithub()">🔼 Enviar para GitHub</button>
+      <input type="text" id="search" placeholder="Buscar usuário..." oninput="filtrarUsuarios()">
+      <button onclick="abrirModal()">➕ Adicionar</button>
+      <button onclick="baixarDoGithub()">🔽 Baixar</button>
+      <button onclick="enviarParaGithub()">🔼 Enviar</button>
     </div>
 
-    <table id="usersTable">
-      <thead><tr>
-        <th>Nome</th><th>Sobrenome</th><th>Usuário</th>
-        <th>Celular</th><th>Tipo</th><th>Ações</th>
-      </tr></thead>
-      <tbody></tbody>
-    </table>
+    <div style="overflow-x:auto;">
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th>Nome</th><th>Sobrenome</th><th>Usuário</th>
+            <th>Celular</th><th>Tipo</th><th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
-    <button class="logout" onclick="logout()">Sair do Admin</button>
+    <button class="logout" onclick="logout()">Sair</button>
   </div>
 
   <div class="modal" id="userModal">
     <div class="modal-content">
       <h2 id="modalTitle">Novo Usuário</h2>
-      <input type="text" id="nome" placeholder="Nome">
-      <input type="text" id="sobrenome" placeholder="Sobrenome">
-      <input type="text" id="celular" placeholder="Celular">
-      <input type="text" id="username" placeholder="Usuário">
-      <input type="password" id="senha" placeholder="Senha">
+      <input id="nome" placeholder="Nome">
+      <input id="sobrenome" placeholder="Sobrenome">
+      <input id="celular" placeholder="Celular">
+      <input id="username" placeholder="Usuário">
+      <input id="senha" type="password" placeholder="Senha">
       <select id="tipo">
         <option value="usuario">Usuário</option>
         <option value="admin">Administrador</option>
@@ -131,134 +138,101 @@
     let editIndex = null;
 
     const GITHUB_JSON_URL = "https://raw.githubusercontent.com/GuedesShooter/Laudo-Brivax/refs/heads/main/brivaxUsers.json";
-    const GITHUB_TOKEN = "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"; // insira localmente, não envie pro GitHub
+    const GITHUB_TOKEN = "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"; // ⚠️ Mantenha local
     const REPO = "GuedesShooter/Laudo-Brivax";
     const PATH = "brivaxUsers.json";
 
-    async function baixarDoGithub(auto = false) {
-      try {
-        const resp = await fetch(GITHUB_JSON_URL + "?t=" + Date.now());
-        const data = await resp.json();
-        localStorage.setItem("brivaxUsers", JSON.stringify(data));
+    async function baixarDoGithub(auto=false){
+      try{
+        const resp=await fetch(GITHUB_JSON_URL+"?t="+Date.now());
+        const data=await resp.json();
+        localStorage.setItem("brivaxUsers",JSON.stringify(data));
         carregarUsuarios();
-        if (!auto) alert("✅ Banco atualizado com sucesso!");
-        else console.log("AutoSync: banco atualizado do GitHub");
-      } catch (err) {
-        console.error(err);
-        if (!auto) alert("❌ Erro ao baixar do GitHub.");
-      }
+        if(!auto)alert("✅ Banco atualizado!");
+        else console.log("AutoSync: banco atualizado");
+      }catch(e){console.error(e);if(!auto)alert("❌ Erro ao baixar.");}
     }
 
-    async function enviarParaGithub() {
-      const users = JSON.parse(localStorage.getItem("brivaxUsers")) || [];
-      const content = btoa(JSON.stringify(users, null, 2));
-      try {
-        const getResp = await fetch(`https://api.github.com/repos/${REPO}/contents/${PATH}`);
-        const fileData = await getResp.json();
-        const sha = fileData.sha;
-        const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${PATH}`, {
-          method: "PUT",
-          headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
-          body: JSON.stringify({ message: "Atualizando banco Brivax", content, sha })
+    async function enviarParaGithub(){
+      const users=JSON.parse(localStorage.getItem("brivaxUsers"))||[];
+      const content=btoa(JSON.stringify(users,null,2));
+      try{
+        const get=await fetch(`https://api.github.com/repos/${REPO}/contents/${PATH}`);
+        const file=await get.json();const sha=file.sha;
+        const resp=await fetch(`https://api.github.com/repos/${REPO}/contents/${PATH}`,{
+          method:"PUT",
+          headers:{"Authorization":`token ${GITHUB_TOKEN}`,"Content-Type":"application/json"},
+          body:JSON.stringify({message:"Atualizando banco Brivax",content,sha})
         });
-        if (resp.ok) alert("✅ Banco enviado para o GitHub!");
-        else alert("❌ Falha ao enviar. Verifique token e permissões.");
-      } catch (err) {
-        console.error(err);
-        alert("❌ Erro de conexão com GitHub.");
-      }
+        if(resp.ok)alert("✅ Banco enviado!");
+        else alert("❌ Falha ao enviar.");
+      }catch(e){console.error(e);alert("❌ Erro de conexão.");}
     }
 
-    // Carregamento e funções de usuário
-    function carregarUsuarios() {
-      const users = JSON.parse(localStorage.getItem('brivaxUsers')) || [];
-      const tabela = document.querySelector('#usersTable tbody');
-      tabela.innerHTML = '';
-      users.forEach((user, index) => {
-        const linha = document.createElement('tr');
-        linha.innerHTML = `
-          <td>${user.nome}</td>
-          <td>${user.sobrenome}</td>
-          <td>${user.username}</td>
-          <td>${user.celular || '-'}</td>
-          <td>${user.tipo || 'usuario'}</td>
-          <td>${user.username !== 'ADM' ? `
-            <button class="action" onclick="editarUsuario(${index})">Editar</button>
-            <button class="action" onclick="excluirUsuario(${index})">Excluir</button>` : '—'}
-          </td>`;
-        tabela.appendChild(linha);
+    function carregarUsuarios(){
+      const users=JSON.parse(localStorage.getItem("brivaxUsers"))||[];
+      const tbody=document.querySelector("#usersTable tbody");
+      tbody.innerHTML="";
+      users.forEach((u,i)=>{
+        const tr=document.createElement("tr");
+        tr.innerHTML=`
+          <td>${u.nome}</td><td>${u.sobrenome}</td>
+          <td>${u.username}</td><td>${u.celular||'-'}</td>
+          <td>${u.tipo||'usuario'}</td>
+          <td>${u.username!=='ADM'
+            ? `<button class='action' onclick='editarUsuario(${i})'>Editar</button>
+               <button class='action' onclick='excluirUsuario(${i})'>Excluir</button>`
+            : '—'}</td>`;
+        tbody.appendChild(tr);
       });
     }
 
-    function abrirModal() {
-      editIndex = null;
-      document.getElementById('modalTitle').textContent = "Novo Usuário";
-      document.querySelectorAll('.modal-content input').forEach(i => i.value = '');
-      document.getElementById('tipo').value = 'usuario';
-      document.getElementById('userModal').style.display = 'flex';
-    }
-    function fecharModal() { document.getElementById('userModal').style.display = 'none'; }
+    function abrirModal(){editIndex=null;document.getElementById('userModal').style.display='flex';}
+    function fecharModal(){document.getElementById('userModal').style.display='none';}
 
-    function salvarUsuario() {
-      const nome = nomeInput.value.trim();
-      const sobrenome = sobrenomeInput.value.trim();
-      const celular = celularInput.value.trim();
-      const username = usernameInput.value.trim().toUpperCase().replace(/\s+/g, '');
-      const senha = senhaInput.value.trim();
-      const tipo = tipoSelect.value;
-
-      if (!nome || !sobrenome || !username || !senha) { alert("Preencha todos os campos!"); return; }
-
-      let users = JSON.parse(localStorage.getItem('brivaxUsers')) || [];
-      if (editIndex === null) {
-        if (users.some(u => u.username === username)) { alert("Usuário já existe!"); return; }
-        users.push({ nome, sobrenome, celular, username, password: senha, tipo });
-      } else users[editIndex] = { nome, sobrenome, celular, username, password: senha, tipo };
-
-      localStorage.setItem('brivaxUsers', JSON.stringify(users));
-      fecharModal(); carregarUsuarios();
-      alert("✅ Usuário salvo com sucesso!");
+    function salvarUsuario(){
+      const nome=nomeInput.value.trim(),sobrenome=sobrenomeInput.value.trim(),
+            celular=celularInput.value.trim(),username=usernameInput.value.trim().toUpperCase().replace(/\s+/g,''),
+            senha=senhaInput.value.trim(),tipo=tipoSelect.value;
+      if(!nome||!sobrenome||!username||!senha){alert("Preencha todos os campos!");return;}
+      let users=JSON.parse(localStorage.getItem('brivaxUsers'))||[];
+      if(editIndex===null){
+        if(users.some(u=>u.username===username)){alert("Usuário já existe!");return;}
+        users.push({nome,sobrenome,celular,username,password:senha,tipo});
+      }else users[editIndex]={nome,sobrenome,celular,username,password:senha,tipo};
+      localStorage.setItem('brivaxUsers',JSON.stringify(users));
+      fecharModal();carregarUsuarios();alert("✅ Usuário salvo!");
     }
 
-    function editarUsuario(index) {
-      const users = JSON.parse(localStorage.getItem('brivaxUsers')) || [];
-      const u = users[index];
-      editIndex = index;
-      document.getElementById('modalTitle').textContent = "Editar Usuário";
-      nomeInput.value = u.nome; sobrenomeInput.value = u.sobrenome;
-      celularInput.value = u.celular; usernameInput.value = u.username;
-      senhaInput.value = u.password; tipoSelect.value = u.tipo || 'usuario';
-      document.getElementById('userModal').style.display = 'flex';
+    function editarUsuario(i){
+      const u=JSON.parse(localStorage.getItem('brivaxUsers'))[i];
+      editIndex=i;
+      document.getElementById('userModal').style.display='flex';
+      nomeInput.value=u.nome;sobrenomeInput.value=u.sobrenome;celularInput.value=u.celular;
+      usernameInput.value=u.username;senhaInput.value=u.password;tipoSelect.value=u.tipo||'usuario';
     }
 
-    function excluirUsuario(index) {
-      const users = JSON.parse(localStorage.getItem('brivaxUsers')) || [];
-      const u = users[index];
-      if (u.username === 'ADM') { alert('Não é permitido excluir o ADM.'); return; }
-      if (confirm(`Excluir usuário "${u.username}"?`)) {
-        users.splice(index, 1);
-        localStorage.setItem('brivaxUsers', JSON.stringify(users));
-        carregarUsuarios();
+    function excluirUsuario(i){
+      const users=JSON.parse(localStorage.getItem('brivaxUsers'))||[];
+      if(users[i].username==='ADM'){alert("Não pode excluir o ADM.");return;}
+      if(confirm(`Excluir usuário "${users[i].username}"?`)){
+        users.splice(i,1);localStorage.setItem('brivaxUsers',JSON.stringify(users));carregarUsuarios();
       }
     }
 
-    function filtrarUsuarios() {
-      const termo = document.getElementById('search').value.trim().toUpperCase();
-      const linhas = document.querySelectorAll('#usersTable tbody tr');
-      linhas.forEach(l => { const t = l.textContent.toUpperCase(); l.style.display = t.includes(termo) ? '' : 'none'; });
+    function filtrarUsuarios(){
+      const termo=document.getElementById('search').value.trim().toUpperCase();
+      document.querySelectorAll('#usersTable tbody tr').forEach(l=>{
+        l.style.display=l.textContent.toUpperCase().includes(termo)?'':'none';
+      });
     }
 
-    function logout() { localStorage.removeItem('brivaxUserLogado'); window.location.href = "LoginScreen.html"; }
+    function logout(){localStorage.removeItem('brivaxUserLogado');window.location.href="LoginScreen.html";}
 
-    window.onload = function() {
-      const userLogado = JSON.parse(localStorage.getItem('brivaxUserLogado'));
-      if (!userLogado || userLogado.username !== 'ADM') {
-        alert('Acesso restrito ao administrador.');
-        window.location.href = "LoginScreen.html";
-        return;
-      }
-      baixarDoGithub(true);
-      carregarUsuarios();
+    window.onload=function(){
+      const user=JSON.parse(localStorage.getItem('brivaxUserLogado'));
+      if(!user||user.username!=='ADM'){alert("Acesso restrito.");window.location.href="LoginScreen.html";return;}
+      baixarDoGithub(true);carregarUsuarios();
     };
   </script>
 </body>
