@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laudo de Sistema de Fumaça - Brivax</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #f4f4f4;
+      color: #333;
+      margin: 0;
+    }
+    header {
+      background-color: #ff7b00;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      font-weight: bold;
+      font-size: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .container {
+      padding: 15px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .info-box {
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .info-box label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .info-box input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .item {
+      background-color: #cfcfcf;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .item h3 {
+      margin-top: 0;
+      color: #ff7b00;
+      font-size: 17px;
+    }
+    .uploads input {
+      display: block;
+      margin: 5px 0;
+    }
+    .options {
+      display: flex;
+      gap: 10px;
+      margin: 8px 0;
+    }
+    .options button {
+      background-color: #ddd;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .options button.selected {
+      background-color: #ff7b00;
+      color: #fff;
+    }
+    textarea {
+      width: 100%;
+      border-radius: 5px;
+      border: 1px solid #aaa;
+      padding: 6px;
+      resize: none;
+      min-height: 40px;
+    }
+    .signature-btn {
+      background-color: #ff7b00;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+      border-radius: 6px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .signature-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    .signature-box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      width: 95%;
+      max-width: 400px;
+    }
+    canvas {
+      width: 100%;
+      height: 200px;
+      border: 2px solid #ff7b00;
+      border-radius: 6px;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px;
+    }
+    .footer input {
+      margin: 6px 0;
+      padding: 6px;
+      width: 90%;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .generate {
+      background-color: #ff7b00;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>💨 Laudo de Sistema de Detecção de Fumaça - Brivax</header>
+  <div class="container">
+
+    <!-- 🔶 Informações Gerais -->
+    <div class="info-box">
+      <label for="data">Data do Laudo:</label>
+      <input type="date" id="data" />
+
+      <label for="loja">Nome da Loja:</label>
+      <input type="text" id="loja" placeholder="Digite o nome da loja" />
+
+      <label for="tecnico">Nome do Técnico:</label>
+      <input type="text" id="tecnico" placeholder="Digite o nome do técnico responsável" />
+    </div>
+
+    <!-- 🔶 Itens do Laudo -->
+    <div class="item"><h3>0. Foto da Fachada da Loja</h3><input type="file" multiple /></div>
+    <div class="item"><h3>1. Foto geral do teto do ambiente</h3><input type="file" multiple /></div>
+    <div class="item">
+  <h3>2. Detectores Instalados</h3>
+  <div id="detectorContainer"></div>
+  <button onclick="addDetector()">+ Adicionar Detector</button>
+</div>
+
+<script>
+let detectorCount = 0;
+const maxDetectores = 100;
+
+function addDetector() {
+  if (detectorCount >= maxDetectores) {
+    alert("Limite máximo de 100 detectores atingido!");
+    return;
+  }
+  detectorCount++;
+
+  const container = document.getElementById("detectorContainer");
+
+  const block = document.createElement("div");
+  block.classList.add("detector-block");
+  block.style.background = "#fff";
+  block.style.padding = "12px";
+  block.style.borderRadius = "8px";
+  block.style.margin = "10px 0";
+  block.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+  block.innerHTML = `
+    <h4>Detector ${detectorCount}</h4>
+    <label>Foto 1:</label><input type="file" accept="image/*">
+    <label>Foto 2:</label><input type="file" accept="image/*">
+    <label>Foto 3:</label><input type="file" accept="image/*">
+    <div class="options">
+      <label>Teste:</label>
+      <button onclick="selectOption(this)">Sim</button>
+      <button onclick="selectOption(this)">Não</button>
+    </div>
+    <div class="options">
+      <label>Funcionando:</label>
+      <button onclick="selectOption(this)">Sim</button>
+      <button onclick="selectOption(this)">Não</button>
+    </div>
+  `;
+  container.appendChild(block);
+}
+
+function selectOption(btn) {
+  const group = btn.parentNode.querySelectorAll('button');
+  group.forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+</script>
+    <div class="item"><h3>3. Foto da central de detecção</h3><input type="file" multiple /></div>
+    <div class="item"><h3>4. Teste dos detectores</h3>
+      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
+      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
+    </div>
+    <div class="item"><h3>5. Foto da sirene de alarme</h3><input type="file" multiple /></div>
+    <div class="item"><h3>6. Foto dos módulos de entrada e saída</h3><input type="file" multiple /></div>
+    <div class="item"><h3>7. Comunicação da central com o shopping</h3>
+      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
+      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
+    </div>
+    <div class="item"><h3>8. Foto do quadro elétrico com disjuntor disponível</h3><input type="file" multiple /></div>
+    <div class="item"><h3>9. Foto da alimentação da central</h3><input type="file" multiple /></div>
+    <div class="item"><h3>10. Foto do detector manual</h3><input type="file" multiple /></div>
+    <div class="item"><h3>11. Teste geral do sistema</h3>
+      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
+      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
+    </div>
+    <div class="item"><h3>12. Treinamento realizado?</h3>
+      <div class="options"><button>Sim</button><button>Não</button></div>
+      <textarea placeholder="Nome do funcionário, função e observações ou justificativa se não houver."></textarea>
+      <button class="signature-btn" onclick="openSignature('treinamento')">Assinar Treinamento</button>
+    </div>
+    <div class="item"><h3>13. Pendências</h3>
+      <div class="options"><button>Brivax</button><button>Cliente</button></div>
+      <textarea placeholder="Descreva as pendências"></textarea>
+      <input type="file" multiple />
+    </div>
+    <div class="item"><h3>14. Observações do Técnico</h3>
+      <textarea placeholder="Observações gerais do técnico"></textarea>
+    </div>
+  </div>
+
+  <!-- 🔶 Rodapé -->
+  <div class="footer">
+    <input type="text" placeholder="E-mail do cliente" id="emailCliente" />
+    <input type="text" placeholder="Telefone do cliente" id="telefoneCliente" />
+    <button class="signature-btn" onclick="openSignature('tecnico')">Assinatura do Técnico</button>
+    <button class="signature-btn" onclick="openSignature('cliente')">Assinatura do Cliente</button>
+    <button class="generate">Gerar e Enviar Laudo</button>
+  </div>
+
+  <!-- 🔶 Modal Assinatura -->
+  <div class="signature-modal" id="signatureModal">
+    <div class="signature-box">
+      <canvas id="signaturePad"></canvas>
+      <div style="text-align:center; margin-top:8px;">
+        <button onclick="clearSignature()">Apagar</button>
+        <button onclick="saveSignature()">Salvar</button>
+        <button onclick="closeSignature()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Botões de sim/não
+    document.querySelectorAll('.options button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.parentNode.querySelectorAll('button');
+        group.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
+
+    // Assinaturas flutuantes
+    const modal = document.getElementById('signatureModal');
+    const canvas = document.getElementById('signaturePad');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let activeField = '';
+
+    canvas.addEventListener('mousedown', e => {
+      drawing = true;
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
+    canvas.addEventListener('mousemove', e => {
+      if (!drawing) return;
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
+    });
+    canvas.addEventListener('mouseup', () => drawing = false);
+
+    function openSignature(field){ activeField = field; modal.style.display='flex'; ctx.clearRect(0,0,canvas.width,canvas.height);}
+    function clearSignature(){ ctx.clearRect(0,0,canvas.width,canvas.height);}
+    function saveSignature(){ alert("Assinatura salva para "+activeField); modal.style.display='none'; }
+    function closeSignature(){ modal.style.display='none'; }
+  </script>
+</body>
+</html>

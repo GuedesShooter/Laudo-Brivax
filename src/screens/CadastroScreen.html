@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro - Brivax Laudos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 340px;
+    }
+    img { width: 100px; margin-bottom: 20px; }
+    h1 { color: #ff7b00; margin-bottom: 20px; }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 95%;
+      background-color: #ff7b00;
+      color: white;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #e96f00; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <img src="../assets/brivax-logo.png" alt="Brivax Logo">
+    <h1>Cadastro</h1>
+
+    <input type="text" id="nome" placeholder="Nome">
+    <input type="text" id="sobrenome" placeholder="Sobrenome">
+    <input type="text" id="celular" placeholder="Celular">
+    <input type="text" id="usuario" placeholder="Usuário (sem espaços, minúsculo)">
+    <input type="password" id="senha" placeholder="Senha">
+    <input type="password" id="senha2" placeholder="Confirme a senha">
+
+    <button onclick="cadastrar()">Cadastrar</button>
+  </div>
+
+  <script>
+    function cadastrar() {
+      const nome = document.getElementById('nome').value.trim();
+      const sobrenome = document.getElementById('sobrenome').value.trim();
+      const celular = document.getElementById('celular').value.trim();
+      const usuario = document.getElementById('usuario').value.trim().toLowerCase().replace(/\s+/g, '');
+      const senha = document.getElementById('senha').value.trim();
+      const senha2 = document.getElementById('senha2').value.trim();
+
+      if (!nome || !sobrenome || !celular || !usuario || !senha || !senha2) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      if (senha !== senha2) {
+        alert("As senhas não coincidem!");
+        return;
+      }
+
+      const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+      if (usuarios.find(u => u.usuario === usuario)) {
+        alert("Usuário já existe!");
+        return;
+      }
+
+      usuarios.push({ nome, sobrenome, celular, usuario, senha });
+      localStorage.setItem('usuarios', JSON.stringify(usuarios));
+      alert("Cadastro realizado com sucesso!");
+      window.location.href = "LoginScreen.html";
+    }
+  </script>
+
+</body>
+</html>

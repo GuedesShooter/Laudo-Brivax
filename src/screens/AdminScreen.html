@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Administrativo - Brivax</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f4f4f4, #eaeaea);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      margin: 0;
+      color: #333;
+    }
+    .container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      width: 95%;
+      max-width: 900px;
+    }
+    h1 {
+      color: #ff6600;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+    .actions input {
+      flex: 1;
+      min-width: 240px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .actions button {
+      background: #ff6600;
+      border: none;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .actions button:hover {
+      background: #e65c00;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+    th { background-color: #ff6600; color: white; }
+    tr:hover { background-color: #f5f5f5; }
+    button.action {
+      background: #ff6600;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      margin: 2px;
+    }
+    button.action:hover { background: #e65c00; }
+    .logout {
+      margin-top: 25px;
+      background: #555;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .logout:hover { background: #333; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🔒 Painel Administrativo</h1>
+    <div class="actions">
+      <input type="text" id="search" placeholder="Buscar por nome ou usuário..." oninput="filtrarUsuarios()">
+      <button onclick="abrirModal()">➕ Adicionar Usuário</button>
+      <button onclick="baixarDoGithub()">🔽 Baixar do GitHub</button>
+      <button onclick="enviarParaGithub()">🔼 Enviar para GitHub</button>
+    </div>
+
+    <table id="usersTable">
+      <thead><tr>
+        <th>Nome</th><th>Sobrenome</th><th>Usuário</th>
+        <th>Celular</th><th>Tipo</th><th>Ações</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <button class="logout" onclick="logout()">Sair do Admin</button>
+  </div>
+
+  <div class="modal" id="userModal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Novo Usuário</h2>
+      <input type="text" id="nome" placeholder="Nome">
+      <input type="text" id="sobrenome" placeholder="Sobrenome">
+      <input type="text" id="celular" placeholder="Celular">
+      <input type="text" id="username" placeholder="Usuário">
+      <input type="password" id="senha" placeholder="Senha">
+      <select id="tipo">
+        <option value="usuario">Usuário</option>
+        <option value="admin">Administrador</option>
+      </select>
+      <button onclick="salvarUsuario()">Salvar</button>
+      <button style="background:#777;margin-top:8px;" onclick="fecharModal()">Cancelar</button>
+    </div>
+  </div>
+
+  <script>
+    let editIndex = null;
+
+    const GITHUB_JSON_URL = "https://raw.githubusercontent.com/GuedesShooter/Laudo-Brivax/refs/heads/main/brivaxUsers.json";
+    const GITHUB_TOKEN = "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"; // insira localmente, não envie pro GitHub
+    const REPO = "GuedesShooter/Laudo-Brivax";
+    const PATH = "brivaxUsers.json";
+
+    async function baixarDoGithub(auto = false) {
+      try {
+        const resp = await fetch(GITHUB_JSON_URL + "?t=" + Date.now());
+        const data = await resp.json();
+        localStorage.setItem("brivaxUsers", JSON.stringify(data));
+        carregarUsuarios();
+        if (!auto) alert("✅ Banco atualizado com sucesso!");
+        else console.log("AutoSync: banco atualizado do GitHub");
+      } catch (err) {
+        console.error(err);
+        if (!auto) alert("❌ Erro ao baixar do GitHub.");
+      }
+    }
+
+    async function enviarParaGithub() {
+      const users = JSON.parse(localStorage.getItem("brivaxUsers")) || [];
+      const content = btoa(JSON.stringify(users, null, 2));
+      try {
+        const getResp = await fetch(`https://api.github.com/repos/${REPO}/contents/${PATH}`);
+        const fileData = await getResp.json();
+        const sha = fileData.sha;
+        const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${PATH}`, {
+          method: "PUT",
+          headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "Atualizando banco Brivax", content, sha })
+        });
+        if (resp.ok) alert("✅ Banco enviado para o GitHub!");
+        else alert("❌ Falha ao enviar. Verifique token e permissões.");
+      } catch (err) {
+        console.error(err);
+        alert("❌ Erro de conexão com GitHub.");
+      }
+    }
+
+    // Carregamento e funções de usuário
+    function carregarUsuarios() {
+      const users = JSON.parse(localStorage.getItem('brivaxUsers')) || [];
+      const tabela = document.querySelector('#usersTable tbody');
+      tabela.innerHTML = '';
+      users.forEach((user, index) => {
+        const linha = document.createElement('tr');
+        linha.innerHTML = `
+          <td>${user.nome}</td>
+          <td>${user.sobrenome}</td>
+          <td>${user.username}</td>
+          <td>${user.celular || '-'}</td>
+          <td>${user.tipo || 'usuario'}</td>
+          <td>${user.username !== 'ADM' ? `
+            <button class="action" onclick="editarUsuario(${index})">Editar</button>
+            <button class="action" onclick="excluirUsuario(${index})">Excluir</button>` : '—'}
+          </td>`;
+        tabela.appendChild(linha);
+      });
+    }
+
+    function abrirModal() {
+      editIndex = null;
+      document.getElementById('modalTitle').textContent = "Novo Usuário";
+      document.querySelectorAll('.modal-content input').forEach(i => i.value = '');
+      document.getElementById('tipo').value = 'usuario';
+      document.getElementById('userModal').style.display = 'flex';
+    }
+    function fecharModal() { document.getElementById('userModal').style.display = 'none'; }
+
+    function salvarUsuario() {
+      const nome = nomeInput.value.trim();
+      const sobrenome = sobrenomeInput.value.trim();
+      const celular = celularInput.value.trim();
+      const username = usernameInput.value.trim().toUpperCase().replace(/\s+/g, '');
+      const senha = senhaInput.value.trim();
+      const tipo = tipoSelect.value;
+
+      if (!nome || !sobrenome || !username || !senha) { alert("Preencha todos os campos!"); return; }
+
+      let users = JSON.parse(localStorage.getItem('brivaxUsers')) || [];
+      if (editIndex === null) {
+        if (users.some(u => u.username === username)) { alert("Usuário já existe!"); return; }
+        users.push({ nome, sobrenome, celular, username, password: senha, tipo });
+      } else users[editIndex] = { nome, sobrenome, celular, username, password: senha, tipo };
+
+      localStorage.setItem('brivaxUsers', JSON.stringify(users));
+      fecharModal(); carregarUsuarios();
+      alert("✅ Usuário salvo com sucesso!");
+    }
+
+    function editarUsuario(index) {
+      const users = JSON.parse(localStorage.getItem('brivaxUsers')) || [];
+      const u = users[index];
+      editIndex = index;
+      document.getElementById('modalTitle').textContent = "Editar Usuário";
+      nomeInput.value = u.nome; sobrenomeInput.value = u.sobrenome;
+      celularInput.value = u.celular; usernameInput.value = u.username;
+      senhaInput.value = u.password; tipoSelect.value = u.tipo || 'usuario';
+      document.getElementById('userModal').style.display = 'flex';
+    }
+
+    function excluirUsuario(index) {
+      const users = JSON.parse(localStorage.getItem('brivaxUsers')) || [];
+      const u = users[index];
+      if (u.username === 'ADM') { alert('Não é permitido excluir o ADM.'); return; }
+      if (confirm(`Excluir usuário "${u.username}"?`)) {
+        users.splice(index, 1);
+        localStorage.setItem('brivaxUsers', JSON.stringify(users));
+        carregarUsuarios();
+      }
+    }
+
+    function filtrarUsuarios() {
+      const termo = document.getElementById('search').value.trim().toUpperCase();
+      const linhas = document.querySelectorAll('#usersTable tbody tr');
+      linhas.forEach(l => { const t = l.textContent.toUpperCase(); l.style.display = t.includes(termo) ? '' : 'none'; });
+    }
+
+    function logout() { localStorage.removeItem('brivaxUserLogado'); window.location.href = "LoginScreen.html"; }
+
+    window.onload = function() {
+      const userLogado = JSON.parse(localStorage.getItem('brivaxUserLogado'));
+      if (!userLogado || userLogado.username !== 'ADM') {
+        alert('Acesso restrito ao administrador.');
+        window.location.href = "LoginScreen.html";
+        return;
+      }
+      baixarDoGithub(true);
+      carregarUsuarios();
+    };
+  </script>
+</body>
+</html>
