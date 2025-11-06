@@ -1,0 +1,10 @@
+[
+  {
+    "nome": "Administrador",
+    "sobrenome": "Brivax",
+    "celular": "",
+    "username": "ADM",
+    "password": "1234",
+    "tipo": "admin"
+  }
+]
