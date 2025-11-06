@@ -1,239 +1,199 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Laudo de Sistema de Fumaça - Brivax</title>
+  <meta charset="UTF-8">
+  <title>Laudo - Sistema de Fumaça | Brivax</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
       margin: 0;
       padding: 0;
+      color: #333;
     }
+
     header {
-      background-color: #ff7b00;
+      background: #ff6600;
       color: white;
       text-align: center;
-      padding: 15px 0;
-      font-weight: bold;
+      padding: 12px;
       font-size: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      font-weight: bold;
     }
+
     .container {
-      padding: 15px;
-      max-width: 900px;
-      margin: 0 auto;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      margin-top: 20px;
+      margin-bottom: 60px;
     }
-    .info-box {
-      background-color: #fff;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+
+    h2 {
+      color: #ff6600;
+      text-align: center;
+      margin-bottom: 20px;
     }
-    .info-box label {
-      font-weight: bold;
-      display: block;
-      margin-top: 5px;
-    }
-    .info-box input {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-top: 5px;
-    }
+
     .item {
-      background-color: #cfcfcf;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
     }
-    .item h3 {
-      margin-top: 0;
-      color: #ff7b00;
-      font-size: 17px;
-    }
-    .uploads input {
+
+    .item label {
       display: block;
-      margin: 5px 0;
-    }
-    label {
       font-weight: bold;
+      margin-bottom: 6px;
     }
+
     .options {
       display: flex;
       gap: 10px;
-      margin: 8px 0;
-      flex-wrap: wrap;
     }
+
     .options button {
-      background-color: #ddd;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 5px;
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #f0f0f0;
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .options button.selected {
-      background-color: #ff7b00;
-      color: #fff;
+      background: #ff6600;
+      color: white;
+      border-color: #ff6600;
     }
-    textarea {
+
+    input[type="file"] {
+      display: block;
+      margin-top: 8px;
+    }
+
+    .preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .preview div {
+      position: relative;
+      width: 130px;
+      height: 130px;
+    }
+
+    .preview img {
       width: 100%;
-      border-radius: 5px;
-      border: 1px solid #aaa;
-      padding: 6px;
-      resize: none;
-      min-height: 40px;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 6px;
     }
-    .signature-btn {
-      background-color: #ff7b00;
+
+    .preview button {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      background: rgba(0,0,0,0.6);
       color: white;
       border: none;
-      padding: 10px;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+    }
+
+    .generate {
+      display: block;
       width: 100%;
-      font-size: 16px;
+      background: #ff6600;
+      color: white;
+      border: none;
       border-radius: 6px;
+      padding: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .generate:hover {
+      background: #e65c00;
+    }
+
+    .signature-btn {
+      background: #ff6600;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      width: 100%;
       margin-top: 10px;
       cursor: pointer;
     }
+
+    .signature-btn:hover {
+      background: #e65c00;
+    }
+
+    /* Modal Assinatura */
     .signature-modal {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.7);
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
       display: none;
       justify-content: center;
       align-items: center;
+      z-index: 9999;
     }
+
     .signature-box {
-      background: white;
+      background: #fff;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.3);
       width: 95%;
       max-width: 400px;
     }
+
     canvas {
-      width: 100%;
-      height: 200px;
       border: 2px solid #ff7b00;
       border-radius: 6px;
-    }
-    .footer {
-      text-align: center;
-      padding: 20px;
-    }
-    .footer input {
-      margin: 6px 0;
-      padding: 6px;
-      width: 90%;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    .generate {
-      background-color: #ff7b00;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    @media (max-width: 600px) {
-      .container {
-        padding: 10px;
-      }
-      .item {
-        padding: 10px;
-      }
-      .info-box {
-        padding: 10px;
-      }
+      width: 100%;
+      height: 220px;
+      touch-action: none;
     }
   </style>
 </head>
 <body>
-  <header>💨 Laudo de Sistema de Detecção de Fumaça - Brivax</header>
+  <header>Sistema de Fumaça - Brivax</header>
 
   <div class="container">
-    <div class="info-box">
-      <label>Data do Laudo:</label>
-      <input type="date" id="dataLaudo">
-      <label>Nome da Loja:</label>
-      <input type="text" id="nomeLoja" placeholder="Digite o nome da loja">
-      <label>Local da Instalação:</label>
-      <input type="text" id="localInstalacao" placeholder="Ex: Shopping X - Piso L2">
-      <label>Nome do Técnico Responsável:</label>
-      <input type="text" id="tecnicoResponsavel" placeholder="Nome do técnico">
-      <label>Nome do Ajudante Responsável:</label>
-      <input type="text" id="ajudanteResponsavel" placeholder="Nome do ajudante">
-      <label>Data da Entrega:</label>
-      <input type="date" id="dataEntrega">
-    </div>
-  </div>
+    <h2>Checklist do Sistema de Detecção de Fumaça</h2>
 
-  <div class="container" id="checklist">
-    <div class="item"><h3>0. Foto da Fachada da Loja</h3><input type="file" multiple /></div>
-    <div class="item"><h3>1. Foto geral do teto do ambiente</h3><input type="file" multiple /></div>
-    <div class="item">
-      <h3>2. Detectores Instalados</h3>
-      <div id="detectorContainer"></div>
-      <button id="addDetectorBtn" style="display:none;" onclick="addDetector()">+ Adicionar Detector</button>
-    </div>
-    <div class="item"><h3>3. Foto da central de detecção</h3><input type="file" multiple /></div>
-    <div class="item"><h3>4. Teste dos detectores</h3>
-      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
-      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
-    </div>
-    <div class="item"><h3>5. Foto da sirene de alarme</h3><input type="file" multiple /></div>
-    <div class="item"><h3>6. Foto dos módulos de entrada e saída</h3><input type="file" multiple /></div>
-    <div class="item"><h3>7. Comunicação da central com o shopping</h3>
-      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
-      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
-    </div>
-    <div class="item"><h3>8. Foto do quadro elétrico com disjuntor disponível</h3><input type="file" multiple /></div>
-    <div class="item"><h3>9. Foto da alimentação da central</h3><input type="file" multiple /></div>
-    <div class="item"><h3>10. Foto do detector manual</h3><input type="file" multiple /></div>
-    <div class="item"><h3>11. Teste geral do sistema</h3>
-      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
-      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
-    </div>
-    <div class="item"><h3>12. Treinamento realizado?</h3>
-      <div class="options"><button>Sim</button><button>Não</button></div>
-      <textarea placeholder="Nome do funcionário, função e observações ou justificativa se não houver."></textarea>
-      <button class="signature-btn" onclick="openSignature('treinamento')">Assinar Treinamento</button>
-    </div>
-    <div class="item"><h3>13. Pendências</h3>
-      <div class="options"><button>Brivax</button><button>Cliente</button></div>
-      <textarea placeholder="Descreva as pendências"></textarea>
-      <input type="file" multiple />
-    </div>
-    <div class="item"><h3>14. Observações do Técnico</h3>
-      <textarea placeholder="Observações gerais do técnico"></textarea>
-    </div>
-  </div>
+    <div id="checklist"></div>
 
-  <div class="footer">
-    <input type="text" placeholder="E-mail do cliente" id="emailCliente" />
-    <input type="text" placeholder="Telefone do cliente" id="telefoneCliente" />
     <button class="signature-btn" onclick="openSignature('tecnico')">Assinatura do Técnico</button>
     <button class="signature-btn" onclick="openSignature('cliente')">Assinatura do Cliente</button>
-    <button class="generate" onclick="gerarLaudoSmoke()">Gerar e Enviar Laudo</button>
+    <button class="signature-btn" onclick="openSignature('treinamento')">Assinatura do Treinamento</button>
+
+    <button class="generate" onclick="gerarLaudoSmoke()">Baixar e Salvar Laudo</button>
   </div>
 
+  <!-- Modal Assinatura -->
   <div class="signature-modal" id="signatureModal">
     <div class="signature-box">
       <canvas id="signaturePad"></canvas>
-      <div style="text-align:center; margin-top:8px;">
+      <div style="text-align:center; margin-top:10px;">
         <button onclick="clearSignature()">Apagar</button>
-        <button onclick="saveSignature()">Salvar</button>
+        <button onclick="saveSignature()" style="background:#ff7b00;color:white;border:none;border-radius:6px;padding:6px 12px;">Salvar</button>
         <button onclick="closeSignature()">Fechar</button>
       </div>
     </div>
@@ -241,48 +201,52 @@
 
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
   <script src="../js/pdf-template.js"></script>
-  <script src="../js/SystemSmokeReport.js"></script>
 
   <script>
-    // === Adicionar Detectores ===
-    let detectorCount = 0;
-    const container = document.getElementById('detectorContainer');
-    const btnAdd = document.getElementById('addDetectorBtn');
-    function addDetector() {
-      detectorCount++;
-      const block = document.createElement('div');
-      block.classList.add('detector-block');
-      block.style.background = '#fff';
-      block.style.padding = '12px';
-      block.style.borderRadius = '8px';
-      block.style.margin = '10px 0';
-      block.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
-      block.innerHTML = `
-        <h4>Detector ${detectorCount}</h4>
-        <label>Foto 1:</label><input type="file" accept="image/*">
-        <label>Foto 2:</label><input type="file" accept="image/*">
-        <label>Foto 3:</label><input type="file" accept="image/*">
-        <div class="options">
-          <label>Teste:</label>
-          <button onclick="selectOption(this)">Sim</button>
-          <button onclick="selectOption(this)">Não</button>
-        </div>
-        <div class="options">
-          <label>Funcionando:</label>
-          <button onclick="selectOption(this)">Sim</button>
-          <button onclick="selectOption(this)">Não</button>
-        </div>
-      `;
-      container.appendChild(block);
-      btnAdd.style.display = 'block';
-    }
-    function selectOption(btn) {
-      const group = btn.parentNode.querySelectorAll('button');
-      group.forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    }
+    const checklistContainer = document.getElementById('checklist');
+    const itens = [
+      "Detectores de fumaça instalados corretamente",
+      "Central de alarme e supervisão ligada",
+      "Sirene audível em todos os ambientes",
+      "Acionadores manuais instalados",
+      "Módulos de entrada e saída funcionando",
+      "Comunicação com central do shopping ativa",
+      "Detector manual testado",
+      "Detector automático limpo e fixado",
+      "Endereçamento conforme projeto",
+      "Tubulação sem vazamentos ou obstruções",
+      "Sirene sonora e visual funcionando",
+      "Painel sem falhas de supervisão",
+      "Fonte e bateria testadas",
+      "Cabos identificados e fixados",
+      "Módulos testados individualmente",
+      "Retardo configurado conforme projeto",
+      "Teste geral do sistema realizado",
+      "Fotos dos detectores anexadas",
+      "Fotos dos módulos anexadas",
+      "Fotos do painel de alarme anexadas",
+      "Treinamento realizado e registrado",
+      "Pendências registradas",
+      "Sistema entregue e aprovado"
+    ];
 
-    // === Botões Sim / Não ===
+    itens.forEach((item, i) => {
+      const div = document.createElement('div');
+      div.classList.add('item');
+      div.innerHTML = `
+        <label>${i + 1}. ${item}</label>
+        <div class="options">
+          <button>Sim</button>
+          <button>Não</button>
+          <button>Teste</button>
+          <button>Funcionando</button>
+        </div>
+        <input type="file" accept="image/*" multiple onchange="previewImages(this)">
+        <div class="preview"></div>
+      `;
+      checklistContainer.appendChild(div);
+    });
+
     document.querySelectorAll('.options button').forEach(btn => {
       btn.addEventListener('click', () => {
         const group = btn.parentNode.querySelectorAll('button');
@@ -291,96 +255,73 @@
       });
     });
 
-    // === Preview e Remoção de Fotos ===
-    document.querySelectorAll('input[type="file"]').forEach(input => {
-      input.addEventListener('change', () => {
-        const previewBox = document.createElement('div');
-        previewBox.style.display = 'flex';
-        previewBox.style.flexWrap = 'wrap';
-        previewBox.style.gap = '8px';
-        input.parentNode.appendChild(previewBox);
-        previewBox.innerHTML = '';
-        Array.from(input.files).forEach(file => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            const imgBox = document.createElement('div');
-            imgBox.style.position = 'relative';
-            imgBox.style.width = '120px';
-            imgBox.style.height = '120px';
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = 'cover';
-            img.style.borderRadius = '6px';
-            const removeBtn = document.createElement('button');
-            removeBtn.textContent = '×';
-            removeBtn.style.position = 'absolute';
-            removeBtn.style.top = '2px';
-            removeBtn.style.right = '5px';
-            removeBtn.style.background = 'rgba(0,0,0,0.6)';
-            removeBtn.style.color = 'white';
-            removeBtn.style.border = 'none';
-            removeBtn.style.borderRadius = '50%';
-            removeBtn.style.width = '20px';
-            removeBtn.style.height = '20px';
-            removeBtn.style.cursor = 'pointer';
-            removeBtn.addEventListener('click', () => imgBox.remove());
-            imgBox.appendChild(img);
-            imgBox.appendChild(removeBtn);
-            previewBox.appendChild(imgBox);
-          };
-          reader.readAsDataURL(file);
-        });
+    function previewImages(input) {
+      const previewBox = input.parentNode.querySelector('.preview');
+      previewBox.innerHTML = '';
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const imgBox = document.createElement('div');
+          imgBox.innerHTML = `
+            <img src="${e.target.result}">
+            <button onclick="this.parentNode.remove()">×</button>
+          `;
+          previewBox.appendChild(imgBox);
+        };
+        reader.readAsDataURL(file);
       });
-    });
+    }
 
-    // === Assinatura Estável ===
+    // Assinaturas individuais
     const modal = document.getElementById('signatureModal');
     const canvas = document.getElementById('signaturePad');
     const ctx = canvas.getContext('2d');
     let drawing = false, activeField = '';
 
-    function disableScroll() {
-      document.body.style.overflow = 'hidden';
-      document.addEventListener('touchmove', preventScroll, { passive: false });
-    }
-    function enableScroll() {
-      document.body.style.overflow = '';
-      document.removeEventListener('touchmove', preventScroll);
-    }
-    function preventScroll(e) { e.preventDefault(); }
+    function disableScroll() { document.body.style.overflow = 'hidden'; }
+    function enableScroll() { document.body.style.overflow = ''; }
 
     canvas.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); disableScroll(); });
     canvas.addEventListener('mousemove', e => { if (!drawing) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
     canvas.addEventListener('mouseup', () => { drawing = false; enableScroll(); });
 
     canvas.addEventListener('touchstart', e => {
-      e.preventDefault();
+      e.preventDefault(); const rect = canvas.getBoundingClientRect();
       const touch = e.touches[0];
-      const rect = canvas.getBoundingClientRect();
-      ctx.beginPath();
-      ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
-      drawing = true;
-      disableScroll();
+      ctx.beginPath(); ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      drawing = true; disableScroll();
     });
     canvas.addEventListener('touchmove', e => {
       if (!drawing) return;
       e.preventDefault();
-      const touch = e.touches[0];
       const rect = canvas.getBoundingClientRect();
+      const touch = e.touches[0];
       ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
       ctx.stroke();
     });
     canvas.addEventListener('touchend', () => { drawing = false; enableScroll(); });
 
-    function openSignature(field){ activeField = field; modal.style.display='flex'; ctx.clearRect(0,0,canvas.width,canvas.height);}
-    function clearSignature(){ ctx.clearRect(0,0,canvas.width,canvas.height);}
-    function saveSignature(){ const data = canvas.toDataURL("image/png"); localStorage.setItem(`assinatura_${activeField}`, data); modal.style.display='none'; enableScroll(); alert(`✅ Assinatura de ${activeField} salva!`);}
-    function closeSignature(){ modal.style.display='none'; enableScroll(); }
+    function openSignature(field) {
+      activeField = field;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      modal.style.display = 'flex';
+    }
+
+    function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+    function closeSignature() { modal.style.display = 'none'; enableScroll(); }
+    function saveSignature() {
+      const data = canvas.toDataURL("image/png");
+      localStorage.setItem(`assinatura_${activeField}`, data);
+      modal.style.display = 'none';
+      enableScroll();
+      alert(`✅ Assinatura de ${activeField} salva!`);
+    }
+
+    // Botão PDF
+    function gerarLaudoSmoke() {
+      alert("✅ Gerando laudo em PDF...");
+      gerarPDFSmoke(); // Função definida no pdf-template.js
+    }
   </script>
-  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-<script src="../js/pdf-template.js"></script>
-<script src="../js/SystemSmokeReport.js"></script>
 </body>
 </html>
