@@ -1,155 +1,171 @@
-// === PDF Template Brivax - Sistema de Laudos ===
-// Usa PDF-LIB para gerar laudos técnicos profissionais
-// Compatível com FireSystemChecklist e SmokeSystemChecklist
-
-let numeroLaudo = 34; // começa no 034
-
 async function gerarPDFFire() {
-  await gerarPDFBase("Sistema de Incêndio");
+  await gerarPDFBase("Sistema de Incêndio", "Fire");
 }
 
 async function gerarPDFSmoke() {
-  await gerarPDFBase("Sistema de Fumaça");
+  await gerarPDFBase("Sistema de Fumaça", "Smoke");
 }
 
-async function gerarPDFBase(tipoSistema) {
-  const { PDFDocument, rgb, StandardFonts } = PDFLib;
+async function gerarPDFBase(tipoSistema, prefix) {
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
 
-  // Criar documento PDF
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([595.28, 841.89]); // A4 vertical
-  const { height } = page.getSize();
-  const margin = 50;
-
+  const page = pdfDoc.addPage([595, 842]); // A4
+  const { width, height } = page.getSize();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  // Cores
-  const orange = rgb(1, 0.48, 0);
-  const gray = rgb(0.2, 0.2, 0.2);
+  let y = height - 60;
 
-  // Cabeçalho
-  page.drawRectangle({
-    x: 0,
-    y: height - 80,
-    width: 595.28,
-    height: 80,
-    color: orange,
-  });
-
-  // Logo
-  try {
-    const logoBytes = await fetch("../assets/brivax-logo.png").then(r => r.arrayBuffer());
-    const logo = await pdfDoc.embedPng(logoBytes);
-    page.drawImage(logo, { x: 40, y: height - 70, width: 90, height: 60 });
-  } catch {
-    page.drawText("BRIVAX", { x: 40, y: height - 40, size: 28, font: bold, color: rgb(1, 1, 1) });
-  }
-
-  page.drawText(`Laudo Técnico - ${tipoSistema}`, {
-    x: 150,
-    y: height - 40,
-    size: 20,
-    font: bold,
+  // 🧯 Cabeçalho
+  page.drawRectangle({ x: 0, y: y - 25, width, height: 40, color: rgb(1, 0.48, 0) });
+  page.drawText(`BRIVAX - Laudo de ${tipoSistema}`, {
+    x: 40,
+    y: y - 10,
+    size: 16,
+    font,
     color: rgb(1, 1, 1),
   });
 
-  // Número do laudo
-  const num = numeroLaudo.toString().padStart(3, "0");
-  page.drawText(`Nº ${num}`, { x: 500, y: height - 40, size: 14, font: bold, color: rgb(1, 1, 1) });
+  y -= 70;
+  page.setFont(font);
+  page.setFontSize(11);
 
-  numeroLaudo++;
-
-  // Dados gerais
+  // 🧾 Informações gerais
+  const dataEntrega = document.getElementById("dataEntrega")?.value || "";
+  const dataLaudo = document.getElementById("dataLaudo")?.value || "";
   const nomeLoja = document.getElementById("nomeLoja")?.value || "";
   const localInstalacao = document.getElementById("localInstalacao")?.value || "";
   const nomeTecnico = document.getElementById("nomeTecnico")?.value || "";
   const nomeAjudante = document.getElementById("nomeAjudante")?.value || "";
-  const dataEntrega = document.getElementById("dataEntrega")?.value || "";
-  const dataLaudo = document.getElementById("dataLaudo")?.value || "";
 
-  let cursor = height - 120;
-  const lineHeight = 18;
-
-  page.drawText("INFORMAÇÕES GERAIS", { x: margin, y: cursor, size: 13, font: bold, color: gray });
-  cursor -= 15;
-
-  const info = [
-    `Data de Entrega do Serviço: ${dataEntrega || "—"}`,
-    `Data do Laudo: ${dataLaudo || "—"}`,
-    `Nome da Loja: ${nomeLoja || "—"}`,
-    `Local da Instalação: ${localInstalacao || "—"}`,
-    `Técnico Responsável: ${nomeTecnico || "—"}`,
-    `Ajudante: ${nomeAjudante || "—"}`
+  const infoLines = [
+    `Data de Entrega: ${dataEntrega}`,
+    `Data do Laudo: ${dataLaudo}`,
+    `Loja: ${nomeLoja}`,
+    `Local da Instalação: ${localInstalacao}`,
+    `Técnico Responsável: ${nomeTecnico}`,
+    `Ajudante: ${nomeAjudante}`,
   ];
 
-  info.forEach(line => {
-    cursor -= lineHeight;
-    page.drawText(line, { x: margin, y: cursor, size: 11, font });
+  infoLines.forEach(line => {
+    page.drawText(line, { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
+    y -= 16;
   });
 
-  // Espaçamento
-  cursor -= 20;
-  page.drawLine({
-    start: { x: margin, y: cursor },
-    end: { x: 545, y: cursor },
-    thickness: 1,
-    color: gray
-  });
+  y -= 10;
+  page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.6, 0.6, 0.6) });
+  y -= 20;
 
-  cursor -= 30;
-  page.drawText("RESUMO DO LAUDO", { x: margin, y: cursor, size: 13, font: bold, color: gray });
-  cursor -= 15;
-  page.drawText("O presente documento certifica a instalação, teste e entrega do sistema descrito acima, conforme normas vigentes.", {
-    x: margin,
-    y: cursor,
-    size: 11,
-    font,
-    maxWidth: 500,
-  });
+  // 🧩 Itens do checklist
+  const itens = document.querySelectorAll(".item");
+  for (let i = 0; i < itens.length; i++) {
+    const item = itens[i];
+    const titulo = item.querySelector("h3")?.textContent || `Item ${i + 1}`;
+    const botoesSelecionados = item.querySelectorAll(".options button.selected");
+    const observacoes = item.querySelector("textarea")?.value || "";
+    const imagens = item.querySelectorAll(".preview img");
 
-  // Assinaturas
+    page.drawText(titulo, { x: 40, y, size: 12, font, color: rgb(1, 0.48, 0) });
+    y -= 15;
+
+    // Botões selecionados (Sim/Não)
+    botoesSelecionados.forEach(btn => {
+      const label = btn.parentNode.querySelector("label")?.textContent || "";
+      page.drawText(`${label} ${btn.textContent}`, { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
+      y -= 12;
+    });
+
+    // Observações
+    if (observacoes.trim() !== "") {
+      const texto = `Obs: ${observacoes}`;
+      const linhas = quebraTexto(texto, 80);
+      linhas.forEach(l => {
+        page.drawText(l, { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
+        y -= 12;
+      });
+    }
+
+    // Imagens (miniaturas)
+    for (let img of imagens) {
+      if (y < 150) {
+        page = pdfDoc.addPage([595, 842]);
+        y = height - 60;
+      }
+      const imgBytes = await fetch(img.src).then(res => res.arrayBuffer());
+      const imgEmbed = await pdfDoc.embedJpg(imgBytes);
+      const scaled = imgEmbed.scale(150 / imgEmbed.height);
+      page.drawImage(imgEmbed, { x: 50, y: y - 150, width: scaled.width, height: scaled.height });
+      y -= 160;
+    }
+
+    y -= 20;
+    if (y < 100) {
+      page = pdfDoc.addPage([595, 842]);
+      y = height - 60;
+    }
+  }
+
+  // ✍️ Assinaturas
+  y -= 30;
+  page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.6, 0.6, 0.6) });
+  y -= 40;
+
   const assinaturaTecnico = localStorage.getItem("assinatura_tecnico");
   const assinaturaCliente = localStorage.getItem("assinatura_cliente");
   const assinaturaTreinamento = localStorage.getItem("assinatura_treinamento");
 
-  cursor -= 120;
-
+  page.drawText("Assinatura do Técnico:", { x: 60, y: y + 70, size: 11, font });
   if (assinaturaTecnico) {
-    const sigBytes = await fetch(assinaturaTecnico).then(r => r.arrayBuffer());
-    const sigImg = await pdfDoc.embedPng(sigBytes);
-    page.drawImage(sigImg, { x: margin, y: cursor, width: 150, height: 60 });
+    const imgBytes = await fetch(assinaturaTecnico).then(r => r.arrayBuffer());
+    const imgEmbed = await pdfDoc.embedPng(imgBytes);
+    page.drawImage(imgEmbed, { x: 60, y, width: 120, height: 60 });
   }
+
+  page.drawText("Assinatura do Cliente:", { x: 230, y: y + 70, size: 11, font });
   if (assinaturaCliente) {
-    const sigBytes = await fetch(assinaturaCliente).then(r => r.arrayBuffer());
-    const sigImg = await pdfDoc.embedPng(sigBytes);
-    page.drawImage(sigImg, { x: 230, y: cursor, width: 150, height: 60 });
+    const imgBytes = await fetch(assinaturaCliente).then(r => r.arrayBuffer());
+    const imgEmbed = await pdfDoc.embedPng(imgBytes);
+    page.drawImage(imgEmbed, { x: 230, y, width: 120, height: 60 });
   }
+
+  page.drawText("Treinamento:", { x: 400, y: y + 70, size: 11, font });
   if (assinaturaTreinamento) {
-    const sigBytes = await fetch(assinaturaTreinamento).then(r => r.arrayBuffer());
-    const sigImg = await pdfDoc.embedPng(sigBytes);
-    page.drawImage(sigImg, { x: 410, y: cursor, width: 150, height: 60 });
+    const imgBytes = await fetch(assinaturaTreinamento).then(r => r.arrayBuffer());
+    const imgEmbed = await pdfDoc.embedPng(imgBytes);
+    page.drawImage(imgEmbed, { x: 400, y, width: 120, height: 60 });
   }
 
-  cursor -= 20;
-  page.drawText("Técnico", { x: margin + 50, y: cursor, size: 10, font });
-  page.drawText("Cliente", { x: 280, y: cursor, size: 10, font });
-  page.drawText("Treinamento", { x: 460, y: cursor, size: 10, font });
-
-  // Rodapé
+  y -= 100;
   page.drawText("Enviado automaticamente pelo sistema Brivax Laudos Técnicos", {
-    x: margin,
-    y: 40,
+    x: width / 2 - 150,
+    y,
     size: 9,
     font,
-    color: gray
+    color: rgb(0.3, 0.3, 0.3),
   });
 
-  // Gerar e baixar
+  const nomeArquivo = `${prefix}_Laudo_${nomeLoja.replace(/\s+/g, "_") || "SemNome"}.pdf`;
   const pdfBytes = await pdfDoc.save();
+
+  // 📥 Download automático
   const blob = new Blob([pdfBytes], { type: "application/pdf" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = `Laudo_${tipoSistema.replace(/\s+/g, "_")}_${num}.pdf`;
+  link.download = nomeArquivo;
   link.click();
+}
+
+// 🔠 Quebra texto longo para PDF
+function quebraTexto(texto, max) {
+  const palavras = texto.split(" ");
+  const linhas = [];
+  let atual = "";
+  for (let p of palavras) {
+    if ((atual + p).length > max) {
+      linhas.push(atual);
+      atual = p + " ";
+    } else atual += p + " ";
+  }
+  if (atual) linhas.push(atual);
+  return linhas;
 }
