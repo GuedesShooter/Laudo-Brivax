@@ -1,9 +1,10 @@
-// =====================================
-// 🧯 BRIVAX - PDF TEMPLATE (iPhone Safe)
-// =====================================
+// ==========================================
+// ✅ BRIVAX - PDF TEMPLATE FINAL iPhone Safe
+// ==========================================
 
 async function gerarPDFFire() {
   try {
+    alert("⏳ Gerando PDF, aguarde...");
     await gerarPDFBase("Sistema de Incêndio", "Fire");
   } catch (err) {
     console.error("Erro ao gerar PDF Fire:", err);
@@ -13,6 +14,7 @@ async function gerarPDFFire() {
 
 async function gerarPDFSmoke() {
   try {
+    alert("⏳ Gerando PDF, aguarde...");
     await gerarPDFBase("Sistema de Fumaça", "Smoke");
   } catch (err) {
     console.error("Erro ao gerar PDF Smoke:", err);
@@ -66,10 +68,15 @@ async function gerarPDFBase(tipoSistema, prefix) {
     });
 
     y -= 10;
-    page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.6, 0.6, 0.6) });
+    page.drawLine({
+      start: { x: 40, y },
+      end: { x: width - 40, y },
+      thickness: 1,
+      color: rgb(0.6, 0.6, 0.6),
+    });
     y -= 20;
 
-    // Itens
+    // Itens checklist
     const itens = document.querySelectorAll(".item");
     for (let i = 0; i < itens.length; i++) {
       const item = itens[i];
@@ -77,6 +84,14 @@ async function gerarPDFBase(tipoSistema, prefix) {
       const botoesSelecionados = item.querySelectorAll(".options button.selected");
       const observacoes = item.querySelector("textarea")?.value || "";
       const imagens = item.querySelectorAll(".preview img");
+
+      if (y < 100) {
+        page = pdfDoc.addPage([595, 842]);
+        const size = page.getSize();
+        width = size.width;
+        height = size.height;
+        y = height - 60;
+      }
 
       page.drawText(titulo, { x: 40, y, size: 12, font, color: rgb(1, 0.48, 0) });
       y -= 15;
@@ -96,59 +111,62 @@ async function gerarPDFBase(tipoSistema, prefix) {
       }
 
       for (let img of imagens) {
-        if (y < 150) {
+        if (!img.src) continue; // evita travar
+        if (y < 200) {
           page = pdfDoc.addPage([595, 842]);
           const size = page.getSize();
           width = size.width;
           height = size.height;
           y = height - 60;
         }
-        const imgBytes = await fetch(img.src).then(res => res.arrayBuffer());
-        const imgEmbed = await pdfDoc.embedJpg(imgBytes);
-        const scaled = imgEmbed.scale(150 / imgEmbed.height);
-        page.drawImage(imgEmbed, { x: 50, y: y - 150, width: scaled.width, height: scaled.height });
-        y -= 160;
+        try {
+          const imgBytes = await fetch(img.src).then(res => res.arrayBuffer());
+          const imgEmbed = await pdfDoc.embedJpg(imgBytes);
+          const scaled = imgEmbed.scale(150 / imgEmbed.height);
+          page.drawImage(imgEmbed, {
+            x: 50,
+            y: y - 150,
+            width: scaled.width,
+            height: scaled.height,
+          });
+          y -= 160;
+        } catch (e) {
+          console.warn("⚠️ Erro ao carregar imagem:", e);
+        }
       }
 
-      y -= 20;
-      if (y < 100) {
-        page = pdfDoc.addPage([595, 842]);
-        const size = page.getSize();
-        width = size.width;
-        height = size.height;
-        y = height - 60;
-      }
+      y -= 10;
     }
 
     // Assinaturas
     y -= 30;
-    page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.6, 0.6, 0.6) });
+    page.drawLine({
+      start: { x: 40, y },
+      end: { x: width - 40, y },
+      thickness: 1,
+      color: rgb(0.6, 0.6, 0.6),
+    });
     y -= 40;
 
     const assinaturaTecnico = localStorage.getItem("assinatura_tecnico");
     const assinaturaCliente = localStorage.getItem("assinatura_cliente");
     const assinaturaTreinamento = localStorage.getItem("assinatura_treinamento");
 
-    page.drawText("Assinatura do Técnico:", { x: 60, y: y + 70, size: 11, font });
-    if (assinaturaTecnico) {
-      const imgBytes = await fetch(assinaturaTecnico).then(r => r.arrayBuffer());
-      const imgEmbed = await pdfDoc.embedPng(imgBytes);
-      page.drawImage(imgEmbed, { x: 60, y, width: 120, height: 60 });
-    }
+    const desenharAssinatura = async (imgData, x, label) => {
+      page.drawText(label, { x, y: y + 70, size: 11, font });
+      if (!imgData) return;
+      try {
+        const imgBytes = await fetch(imgData).then(r => r.arrayBuffer());
+        const imgEmbed = await pdfDoc.embedPng(imgBytes);
+        page.drawImage(imgEmbed, { x, y, width: 120, height: 60 });
+      } catch (e) {
+        console.warn("⚠️ Erro na assinatura:", e);
+      }
+    };
 
-    page.drawText("Assinatura do Cliente:", { x: 230, y: y + 70, size: 11, font });
-    if (assinaturaCliente) {
-      const imgBytes = await fetch(assinaturaCliente).then(r => r.arrayBuffer());
-      const imgEmbed = await pdfDoc.embedPng(imgBytes);
-      page.drawImage(imgEmbed, { x: 230, y, width: 120, height: 60 });
-    }
-
-    page.drawText("Treinamento:", { x: 400, y: y + 70, size: 11, font });
-    if (assinaturaTreinamento) {
-      const imgBytes = await fetch(assinaturaTreinamento).then(r => r.arrayBuffer());
-      const imgEmbed = await pdfDoc.embedPng(imgBytes);
-      page.drawImage(imgEmbed, { x: 400, y, width: 120, height: 60 });
-    }
+    await desenharAssinatura(assinaturaTecnico, 60, "Assinatura do Técnico:");
+    await desenharAssinatura(assinaturaCliente, 230, "Assinatura do Cliente:");
+    await desenharAssinatura(assinaturaTreinamento, 400, "Treinamento:");
 
     // Rodapé
     y -= 100;
@@ -163,7 +181,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
     const nomeArquivo = `${prefix}_Laudo_${nomeLoja.replace(/\s+/g, "_") || "SemNome"}.pdf`;
     const pdfBytes = await pdfDoc.save();
 
-    // 📱 iPhone-safe: abre PDF no navegador
+    // iPhone-safe: abre PDF em nova aba
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const pdfURL = URL.createObjectURL(blob);
     window.open(pdfURL, "_blank");
@@ -175,7 +193,6 @@ async function gerarPDFBase(tipoSistema, prefix) {
   }
 }
 
-// 🔠 Quebra texto longo para PDF
 function quebraTexto(texto, max) {
   const palavras = texto.split(" ");
   const linhas = [];
