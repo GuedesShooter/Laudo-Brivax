@@ -253,6 +253,15 @@
         <button onclick="saveSignature()">Salvar</button>
         <button onclick="closeSignature()">Fechar</button>
       </div>
+      <div class="footer">
+  <input type="text" placeholder="E-mail do cliente" id="emailCliente" />
+  <input type="text" placeholder="Telefone do cliente" id="telefoneCliente" />
+  <button class="signature-btn" onclick="openSignature('tecnico')">Assinatura do Técnico</button>
+  <button class="signature-btn" onclick="openSignature('cliente')">Assinatura do Cliente</button>
+  
+  <!-- ✅ Adicione esta linha abaixo -->
+  <button class="generate" onclick="gerarLaudoFire()">Gerar e Enviar Laudo</button>
+</div>
     </div>
   </div>
 
