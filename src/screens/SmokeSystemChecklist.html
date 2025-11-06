@@ -253,5 +253,7 @@
     function closeSignature() { modal.style.display = "none"; enableScroll(); }
     function saveSignature() { localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL("image/png")); modal.style.display = "none"; enableScroll(); alert(`✅ Assinatura de ${activeField} salva!`); }
   </script>
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="../js/pdf-template.js"></script>
 </body>
 </html>
