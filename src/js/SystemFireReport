@@ -1,78 +1,134 @@
 // === SystemFireReport.js ===
-// Coleta todos os dados do formulário e gera PDF via pdf-template.js
+// Geração e envio do laudo de Sistema de Incêndio – Brivax
 
 async function gerarLaudoFire() {
-  const dataLaudo = document.getElementById("dataLaudo").value || "";
-  const nomeLoja = document.getElementById("nomeLoja").value || "";
-  const localInstalacao = document.getElementById("localInstalacao").value || "";
-  const tecnicoResponsavel = document.getElementById("tecnicoResponsavel").value || "";
-  const ajudanteResponsavel = document.getElementById("ajudanteResponsavel").value || "";
-  const dataEntrega = document.getElementById("dataEntrega").value || "";
-  const emailCliente = document.getElementById("emailCliente").value || "";
-  const telefoneCliente = document.getElementById("telefoneCliente").value || "";
+  try {
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
 
-  // Cria numeração automática simples
-  const numeroLaudo = "034-" + new Date().getTime().toString().slice(-5);
+    // === Dados principais ===
+    const nomeLoja = document.getElementById("nomeLoja").value || "Não informado";
+    const localInstalacao = document.getElementById("localInstalacao").value || "Não informado";
+    const dataLaudo = document.getElementById("dataLaudo").value || "Não informada";
+    const tecnico = document.getElementById("tecnicoResponsavel").value || "Não informado";
+    const ajudante = document.getElementById("ajudanteResponsavel").value || "Não informado";
+    const dataEntrega = document.getElementById("dataEntrega").value || "Não informada";
+    const emailCliente = document.getElementById("emailCliente").value || "";
+    const telefoneCliente = document.getElementById("telefoneCliente").value || "";
 
-  // === Coleta dos itens ===
-  const itens = [];
-  const itemElements = document.querySelectorAll("#checklist .item");
+    // === Criação do PDF ===
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([595, 842]);
+    const { width } = page.getSize();
 
-  for (let i = 0; i < itemElements.length; i++) {
-    const el = itemElements[i];
-    const nome = el.querySelector("h3") ? el.querySelector("h3").textContent : `Item ${i+1}`;
-    const obs = el.querySelector("textarea") ? el.querySelector("textarea").value.trim() : "";
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    let y = 800;
 
-    // Coleta imagens (como DataURL para PDF)
-    const fotos = [];
-    const inputs = el.querySelectorAll("input[type='file']");
-    for (const input of inputs) {
-      for (const file of input.files) {
-        const reader = await fileToDataURL(file);
-        fotos.push(reader);
+    // Cabeçalho
+    page.drawText("BRIVAX SISTEMAS DE COMBATE A INCÊNDIO", {
+      x: 50, y, size: 14, font: fontBold, color: rgb(0.1, 0.1, 0.1),
+    });
+    y -= 25;
+    page.drawText("Laudo Técnico – Sistema de Combate a Incêndio", {
+      x: 50, y, size: 12, font: fontBold, color: rgb(0.2, 0.2, 0.2),
+    });
+    y -= 30;
+
+    // Dados da loja
+    const dados = [
+      `Data do Laudo: ${dataLaudo}`,
+      `Nome da Loja: ${nomeLoja}`,
+      `Local da Instalação: ${localInstalacao}`,
+      `Técnico Responsável: ${tecnico}`,
+      `Ajudante Responsável: ${ajudante}`,
+      `Data da Entrega: ${dataEntrega}`,
+    ];
+    dados.forEach(d => {
+      page.drawText(d, { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
+      y -= 15;
+    });
+
+    y -= 15;
+    page.drawLine({ start: { x: 50, y }, end: { x: width - 50, y }, color: rgb(0, 0, 0) });
+    y -= 25;
+
+    // Itens verificados
+    page.drawText("Itens Verificados:", { x: 50, y, size: 11, font: fontBold });
+    y -= 15;
+
+    const itens = document.querySelectorAll("#checklist .item h3");
+    itens.forEach((item, i) => {
+      if (y < 100) {
+        const newPage = pdfDoc.addPage([595, 842]);
+        y = 760;
       }
+      page.drawText(`${i}. ${item.textContent}`, {
+        x: 60,
+        y,
+        size: 9,
+        font,
+        color: rgb(0, 0, 0),
+      });
+      y -= 13;
+    });
+
+    // Assinaturas
+    const assinaturas = capturarAssinaturas();
+    async function addAssinatura(imgData, label, yPos) {
+      if (!imgData) return;
+      const img = await pdfDoc.embedPng(imgData);
+      const imgWidth = 150, imgHeight = 50;
+      page.drawText(label, { x: 60, y: yPos + 55, size: 10, font: fontBold });
+      page.drawImage(img, { x: 60, y: yPos, width: imgWidth, height: imgHeight });
     }
 
-    itens.push({ nome, observacao: obs, fotos });
+    y -= 50;
+    await addAssinatura(assinaturas.tecnico, "Assinatura do Técnico:", y - 60);
+    await addAssinatura(assinaturas.cliente, "Assinatura do Cliente:", y - 140);
+    await addAssinatura(assinaturas.treinamento, "Assinatura do Treinamento:", y - 220);
+
+    // Rodapé
+    page.drawText("Enviado automaticamente pelo sistema Brivax Laudos Técnicos", {
+      x: 50,
+      y: 40,
+      size: 8,
+      font,
+      color: rgb(0.4, 0.4, 0.4),
+    });
+
+    // === Geração do PDF ===
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const nomeArquivo = `Laudo_Incendio_${nomeLoja.replace(/\s+/g, "_")}.pdf`;
+
+    // Download automático
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = nomeArquivo;
+    a.click();
+
+    // === E-mail ===
+    const assunto = `Laudo ${nomeLoja} – ${dataLaudo}`;
+    const corpo = `
+Olá, segue abaixo o PDF do laudo de entrega de serviço.<br><br>
+Qualquer dúvida estamos à disposição.<br><br>
+Atenciosamente,<br>
+Equipe <b>Brivax</b> 🔥
+`;
+    const mailto = `mailto:${emailCliente}?cc=brivax.adm@gmail.com&subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+    window.open(mailto, "_blank");
+
+    // === WhatsApp ===
+    if (telefoneCliente) {
+      const msg = `Olá, segue o laudo técnico da loja ${nomeLoja} (${dataLaudo}).`;
+      const linkWhats = `https://wa.me/55${telefoneCliente.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`;
+      window.open(linkWhats, "_blank");
+    }
+
+    alert("✅ Laudo gerado e enviado com sucesso!");
+  } catch (err) {
+    console.error(err);
+    alert("❌ Erro ao gerar o laudo. Verifique os dados e tente novamente.");
   }
-
-  // === Captura das assinaturas ===
-  const assinaturas = capturarAssinaturas();
-
-  // === Montagem do objeto de dados ===
-  const dados = {
-    tipo: "Fire System",
-    titulo: "Laudo Técnico - Sistema de Incêndio",
-    numero: numeroLaudo,
-    loja: nomeLoja,
-    local: localInstalacao,
-    dataLaudo,
-    dataEntrega,
-    tecnicoResponsavel,
-    ajudanteResponsavel,
-    emailCliente,
-    telefoneCliente,
-    itens,
-    assinaturas
-  };
-
-  // === Gera PDF e envia ===
-  await gerarEEnviarLaudo(dados);
-  alert("✅ Laudo de Sistema de Incêndio gerado e enviado com sucesso!");
-}
-
-// === Funções auxiliares ===
-function fileToDataURL(file) {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (e) => resolve(e.target.result);
-    reader.readAsDataURL(file);
-  });
-}
-
-function capturarAssinaturas() {
-  const canvas = document.getElementById("signaturePad");
-  if (!canvas) return { tecnico: null, cliente: null };
-  const assinatura = canvas.toDataURL("image/png");
-  return { tecnico: assinatura, cliente: assinatura }; // neste modelo simples ambas usam o mesmo canvas
 }
