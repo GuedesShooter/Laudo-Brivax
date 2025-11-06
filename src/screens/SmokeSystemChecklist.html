@@ -147,16 +147,21 @@
       cursor: pointer;
     }
     @media (max-width: 600px) {
-      .container { padding: 10px; }
-      .item { padding: 10px; }
-      .info-box { padding: 10px; }
+      .container {
+        padding: 10px;
+      }
+      .item {
+        padding: 10px;
+      }
+      .info-box {
+        padding: 10px;
+      }
     }
   </style>
 </head>
 <body>
   <header>💨 Laudo de Sistema de Detecção de Fumaça - Brivax</header>
 
-  <!-- Informações Iniciais -->
   <div class="container">
     <div class="info-box">
       <label>Data do Laudo:</label>
@@ -174,62 +179,47 @@
     </div>
   </div>
 
-  <!-- Checklist -->
   <div class="container" id="checklist">
     <div class="item"><h3>0. Foto da Fachada da Loja</h3><input type="file" multiple /></div>
     <div class="item"><h3>1. Foto geral do teto do ambiente</h3><input type="file" multiple /></div>
-
     <div class="item">
       <h3>2. Detectores Instalados</h3>
       <div id="detectorContainer"></div>
-      <button id="addDetectorBtn" onclick="addDetector()" style="display:none;">+ Adicionar Detector</button>
+      <button id="addDetectorBtn" style="display:none;" onclick="addDetector()">+ Adicionar Detector</button>
     </div>
-
     <div class="item"><h3>3. Foto da central de detecção</h3><input type="file" multiple /></div>
-
-    <div class="item">
-      <h3>4. Teste dos detectores</h3>
+    <div class="item"><h3>4. Teste dos detectores</h3>
       <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
       <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
     </div>
-
     <div class="item"><h3>5. Foto da sirene de alarme</h3><input type="file" multiple /></div>
     <div class="item"><h3>6. Foto dos módulos de entrada e saída</h3><input type="file" multiple /></div>
-
-    <div class="item">
-      <h3>7. Comunicação da central com o shopping</h3>
+    <div class="item"><h3>7. Comunicação da central com o shopping</h3>
       <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
       <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
     </div>
-
     <div class="item"><h3>8. Foto do quadro elétrico com disjuntor disponível</h3><input type="file" multiple /></div>
     <div class="item"><h3>9. Foto da alimentação da central</h3><input type="file" multiple /></div>
     <div class="item"><h3>10. Foto do detector manual</h3><input type="file" multiple /></div>
-
-    <div class="item">
-      <h3>11. Teste geral do sistema</h3>
+    <div class="item"><h3>11. Teste geral do sistema</h3>
       <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
       <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
     </div>
-
-    <div class="item">
-      <h3>12. Treinamento realizado?</h3>
+    <div class="item"><h3>12. Treinamento realizado?</h3>
       <div class="options"><button>Sim</button><button>Não</button></div>
       <textarea placeholder="Nome do funcionário, função e observações ou justificativa se não houver."></textarea>
       <button class="signature-btn" onclick="openSignature('treinamento')">Assinar Treinamento</button>
     </div>
-
-    <div class="item">
-      <h3>13. Pendências</h3>
+    <div class="item"><h3>13. Pendências</h3>
       <div class="options"><button>Brivax</button><button>Cliente</button></div>
       <textarea placeholder="Descreva as pendências"></textarea>
       <input type="file" multiple />
     </div>
-
-    <div class="item"><h3>14. Observações do Técnico</h3><textarea placeholder="Observações gerais do técnico"></textarea></div>
+    <div class="item"><h3>14. Observações do Técnico</h3>
+      <textarea placeholder="Observações gerais do técnico"></textarea>
+    </div>
   </div>
 
-  <!-- Rodapé -->
   <div class="footer">
     <input type="text" placeholder="E-mail do cliente" id="emailCliente" />
     <input type="text" placeholder="Telefone do cliente" id="telefoneCliente" />
@@ -238,7 +228,6 @@
     <button class="generate" onclick="gerarLaudoSmoke()">Gerar e Enviar Laudo</button>
   </div>
 
-  <!-- Modal Assinatura -->
   <div class="signature-modal" id="signatureModal">
     <div class="signature-box">
       <canvas id="signaturePad"></canvas>
@@ -250,11 +239,50 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
   <script src="../js/pdf-template.js"></script>
   <script src="../js/SystemSmokeReport.js"></script>
+
   <script>
-    // === Controle dos botões Sim/Não ===
+    // === Adicionar Detectores ===
+    let detectorCount = 0;
+    const container = document.getElementById('detectorContainer');
+    const btnAdd = document.getElementById('addDetectorBtn');
+    function addDetector() {
+      detectorCount++;
+      const block = document.createElement('div');
+      block.classList.add('detector-block');
+      block.style.background = '#fff';
+      block.style.padding = '12px';
+      block.style.borderRadius = '8px';
+      block.style.margin = '10px 0';
+      block.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
+      block.innerHTML = `
+        <h4>Detector ${detectorCount}</h4>
+        <label>Foto 1:</label><input type="file" accept="image/*">
+        <label>Foto 2:</label><input type="file" accept="image/*">
+        <label>Foto 3:</label><input type="file" accept="image/*">
+        <div class="options">
+          <label>Teste:</label>
+          <button onclick="selectOption(this)">Sim</button>
+          <button onclick="selectOption(this)">Não</button>
+        </div>
+        <div class="options">
+          <label>Funcionando:</label>
+          <button onclick="selectOption(this)">Sim</button>
+          <button onclick="selectOption(this)">Não</button>
+        </div>
+      `;
+      container.appendChild(block);
+      btnAdd.style.display = 'block';
+    }
+    function selectOption(btn) {
+      const group = btn.parentNode.querySelectorAll('button');
+      group.forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+
+    // === Botões Sim / Não ===
     document.querySelectorAll('.options button').forEach(btn => {
       btn.addEventListener('click', () => {
         const group = btn.parentNode.querySelectorAll('button');
@@ -263,39 +291,9 @@
       });
     });
 
-    // === Adicionar detectores dinamicamente ===
-    let detectorCount = 0;
-    const maxDetectores = 100;
-    function addDetector() {
-      if (detectorCount >= maxDetectores) {
-        alert("Limite máximo de detectores atingido!");
-        return;
-      }
-      detectorCount++;
-      document.getElementById("addDetectorBtn").style.display = "block";
-      const container = document.getElementById("detectorContainer");
-      const block = document.createElement("div");
-      block.classList.add("detector-block");
-      block.style.background = "#fff";
-      block.style.padding = "12px";
-      block.style.borderRadius = "8px";
-      block.style.margin = "10px 0";
-      block.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
-      block.innerHTML = `
-        <h4>Detector ${detectorCount}</h4>
-        <label>Foto 1:</label><input type="file" accept="image/*" multiple>
-        <label>Foto 2:</label><input type="file" accept="image/*" multiple>
-        <label>Foto 3:</label><input type="file" accept="image/*" multiple>
-        <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
-        <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>`;
-      container.appendChild(block);
-      if (detectorCount === 1) document.getElementById("addDetectorBtn").style.display = "inline-block";
-    }
-
     // === Preview e Remoção de Fotos ===
-    document.addEventListener('change', e => {
-      if (e.target.type === 'file') {
-        const input = e.target;
+    document.querySelectorAll('input[type="file"]').forEach(input => {
+      input.addEventListener('change', () => {
         const previewBox = document.createElement('div');
         previewBox.style.display = 'flex';
         previewBox.style.flexWrap = 'wrap';
@@ -304,13 +302,13 @@
         previewBox.innerHTML = '';
         Array.from(input.files).forEach(file => {
           const reader = new FileReader();
-          reader.onload = ev => {
+          reader.onload = e => {
             const imgBox = document.createElement('div');
             imgBox.style.position = 'relative';
             imgBox.style.width = '120px';
             imgBox.style.height = '120px';
             const img = document.createElement('img');
-            img.src = ev.target.result;
+            img.src = e.target.result;
             img.style.width = '100%';
             img.style.height = '100%';
             img.style.objectFit = 'cover';
@@ -334,24 +332,52 @@
           };
           reader.readAsDataURL(file);
         });
-      }
+      });
     });
 
-    // === Assinaturas individuais ===
+    // === Assinatura Estável ===
     const modal = document.getElementById('signatureModal');
     const canvas = document.getElementById('signaturePad');
     const ctx = canvas.getContext('2d');
     let drawing = false, activeField = '';
 
-    canvas.addEventListener('mousedown', e => { drawing = true; ctx.moveTo(e.offsetX, e.offsetY); });
+    function disableScroll() {
+      document.body.style.overflow = 'hidden';
+      document.addEventListener('touchmove', preventScroll, { passive: false });
+    }
+    function enableScroll() {
+      document.body.style.overflow = '';
+      document.removeEventListener('touchmove', preventScroll);
+    }
+    function preventScroll(e) { e.preventDefault(); }
+
+    canvas.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); disableScroll(); });
     canvas.addEventListener('mousemove', e => { if (!drawing) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
-    canvas.addEventListener('mouseup', () => drawing = false);
+    canvas.addEventListener('mouseup', () => { drawing = false; enableScroll(); });
+
+    canvas.addEventListener('touchstart', e => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      ctx.beginPath();
+      ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      drawing = true;
+      disableScroll();
+    });
+    canvas.addEventListener('touchmove', e => {
+      if (!drawing) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      ctx.stroke();
+    });
+    canvas.addEventListener('touchend', () => { drawing = false; enableScroll(); });
 
     function openSignature(field){ activeField = field; modal.style.display='flex'; ctx.clearRect(0,0,canvas.width,canvas.height);}
     function clearSignature(){ ctx.clearRect(0,0,canvas.width,canvas.height);}
-    function saveSignature(){ localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL("image/png")); modal.style.display='none'; alert(`✅ Assinatura de ${activeField} salva!`);}
-    function closeSignature(){ modal.style.display='none'; }
-    function capturarAssinaturas(){ return { tecnico: localStorage.getItem("assinatura_tecnico")||null, cliente: localStorage.getItem("assinatura_cliente")||null, treinamento: localStorage.getItem("assinatura_treinamento")||null }; }
+    function saveSignature(){ const data = canvas.toDataURL("image/png"); localStorage.setItem(`assinatura_${activeField}`, data); modal.style.display='none'; enableScroll(); alert(`✅ Assinatura de ${activeField} salva!`);}
+    function closeSignature(){ modal.style.display='none'; enableScroll(); }
   </script>
 </body>
 </html>
