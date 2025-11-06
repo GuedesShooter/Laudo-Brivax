@@ -33,9 +33,12 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       margin-bottom: 20px;
     }
+    .form-header label {
+      font-weight: bold;
+    }
     .form-header input {
       width: 100%;
-      margin: 5px 0;
+      margin: 5px 0 10px;
       padding: 8px;
       border-radius: 6px;
       border: 1px solid #ccc;
@@ -163,12 +166,18 @@
 
   <div class="container">
     <div class="form-header">
+      <label>Data de Entrega do Serviço:</label>
+      <input type="date" id="dataEntrega">
+      <label>Data do Laudo:</label>
+      <input type="date" id="dataLaudo">
+      <label>Nome da Loja:</label>
+      <input type="text" id="nomeLoja" placeholder="Ex: Restaurante Dona Maria">
+      <label>Local da Instalação:</label>
+      <input type="text" id="localInstalacao" placeholder="Ex: Shopping Plaza - Cozinha 42">
       <label>Nome do Técnico Responsável:</label>
       <input type="text" id="nomeTecnico" placeholder="Ex: João Silva">
       <label>Nome do Ajudante:</label>
       <input type="text" id="nomeAjudante" placeholder="Ex: Pedro Santos">
-      <label>Data da Instalação:</label>
-      <input type="date" id="dataInstalacao">
     </div>
 
     <div id="checklist">
@@ -233,7 +242,6 @@
       });
     }
 
-    // Assinatura fixa
     const modal = document.getElementById("signatureModal");
     const canvas = document.getElementById("signaturePad");
     const ctx = canvas.getContext("2d");
