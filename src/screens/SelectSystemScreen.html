@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brivax Laudos – Seleção de Sistema</title>
+  <title>Selecionar Sistema - Brivax Laudos</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -14,66 +14,67 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
-      padding: 20px;
+      color: #333;
     }
     .container {
       background: #fff;
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-      width: 100%;
-      max-width: 360px;
       text-align: center;
+      width: 90%;
+      max-width: 360px;
     }
     img {
-      width: 110px;
+      width: 100px;
       margin-bottom: 15px;
     }
     h1 {
       color: #ff6600;
-      margin-bottom: 25px;
-      font-size: 20px;
+      font-size: 22px;
+      margin-bottom: 20px;
     }
     button {
       background: #ff6600;
       border: none;
       color: #fff;
-      padding: 12px;
-      width: 100%;
+      padding: 12px 20px;
       border-radius: 8px;
       cursor: pointer;
-      margin: 8px 0;
+      margin-top: 10px;
+      width: 100%;
       font-size: 16px;
-      transition: 0.3s;
+      transition: background 0.3s;
     }
-    button:hover { background: #e65c00; }
-    .logout {
+    button:hover {
+      background: #e65c00;
+    }
+    .back {
+      background: #777;
+    }
+    .back:hover {
       background: #555;
-      margin-top: 15px;
     }
-    .logout:hover { background: #333; }
   </style>
 </head>
 <body>
+
   <div class="container">
-    <img src="https://GuedesShooter.github.io/Laudo-Brivax/assets/brivax-logo.png" alt="Brivax Logo">
+    <img src="../assets/brivax-logo.png" alt="Brivax Logo">
     <h1>Selecione o Sistema</h1>
 
-    <button onclick="abrirSistema('incendio')">🔥 Sistema Contra Incêndio</button>
-    <button onclick="abrirSistema('fumaca')">💨 Sistema de Fumaça</button>
-    <button class="logout" onclick="window.location.href='LoginScreen.html'">Sair</button>
+    <button onclick="window.location.href='../screens/FireSystemChecklist.html'">
+      🔥 Sistema Contra Incêndio
+    </button>
+
+    <button onclick="window.location.href='../screens/SmokeSystemChecklist.html'">
+      💨 Sistema de Fumaça
+    </button>
+
+    <button class="back" onclick="window.location.href='LoginScreen.html'">
+      ⬅️ Voltar ao Início
+    </button>
   </div>
 
-  <script>
-    function abrirSistema(tipo) {
-      if (tipo === 'incendio') {
-        alert('Abrindo o Sistema Contra Incêndio...');
-        // Aqui futuramente: window.location.href = 'IncendioScreen.html';
-      } else if (tipo === 'fumaca') {
-        alert('Abrindo o Sistema de Fumaça...');
-        // Aqui futuramente: window.location.href = 'FumacaScreen.html';
-      }
-    }
-  </script>
 </body>
 </html>
