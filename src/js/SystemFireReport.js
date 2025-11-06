@@ -56,6 +56,7 @@ async function gerarLaudoFire() {
   posY -= 100;
   const assinaturaTec = localStorage.getItem("assinatura_tecnico");
   const assinaturaCli = localStorage.getItem("assinatura_cliente");
+  const assinaturaTre = localStorage.getItem("assinatura_treinamento");
 
   if (assinaturaTec) {
     const imgTec = await pdfDoc.embedPng(assinaturaTec);
@@ -66,6 +67,13 @@ async function gerarLaudoFire() {
     const imgCli = await pdfDoc.embedPng(assinaturaCli);
     page.drawImage(imgCli, { x: 350, y: posY, width: 150, height: 60 });
     page.drawText("Assinatura do Cliente", { x: 380, y: posY - 15, size: 10, font });
+  }
+
+  if (assinaturaTre) {
+    posY -= 100;
+    const imgTre = await pdfDoc.embedPng(assinaturaTre);
+    page.drawImage(imgTre, { x: 200, y: posY, width: 150, height: 60 });
+    page.drawText("Assinatura do Treinamento", { x: 215, y: posY - 15, size: 10, font });
   }
 
   // Rodapé
