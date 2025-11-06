@@ -2,61 +2,38 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Seleção de Sistema - Brivax</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brivax Laudos – Seleção</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f7f7f7;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      color: #333;
+      background: linear-gradient(135deg,#f4f4f4,#eaeaea);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      height:100vh;margin:0;padding:20px;
     }
     .container {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      text-align: center;
-      width: 320px;
+      background:#fff;padding:30px;border-radius:12px;
+      box-shadow:0 6px 12px rgba(0,0,0,0.15);
+      width:100%;max-width:360px;text-align:center;
     }
-    h1 {
-      color: #ff6600;
-      margin-bottom: 20px;
-    }
+    img{width:110px;margin-bottom:10px;}
+    h1{color:#ff6600;margin-bottom:20px;}
     button {
-      background: #ff6600;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      margin: 8px;
-      width: 90%;
-      cursor: pointer;
+      background:#ff6600;border:none;color:#fff;
+      padding:12px;width:100%;border-radius:8px;
+      cursor:pointer;margin:8px 0;font-size:16px;transition:0.3s;
     }
-    button:hover {
-      background: #e65c00;
-    }
+    button:hover{background:#e65c00;}
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Bem-vindo à Brivax!</h1>
-    <p>Escolha o sistema que deseja acessar:</p>
-    <button>📋 Laudos</button>
-    <button>🔥 Sistema de Incêndio</button>
-    <button>🚪 Portas Corta-fogo</button>
-    <br>
-    <button style="background:#777;" onclick="logout()">Sair</button>
-  </div>
+    <img src="/Laudo-Brivax/assets/brivax-logo.png" alt="Brivax Logo">
+    <h1>Selecione o Sistema</h1>
 
-  <script>
-    function logout() {
-      localStorage.removeItem("brivaxUserLogado");
-      window.location.href = "LoginScreen.html";
-    }
-  </script>
+    <button onclick="alert('Abrir sistema de laudos')">🧾 Laudos</button>
+    <button onclick="alert('Abrir sistema de instalações')">🛠️ Instalações</button>
+    <button onclick="window.location.href='LoginScreen.html'">Sair</button>
+  </div>
 </body>
 </html>
