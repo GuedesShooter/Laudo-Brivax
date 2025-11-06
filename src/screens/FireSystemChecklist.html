@@ -26,6 +26,20 @@
       max-width: 900px;
       margin: 0 auto;
     }
+    .form-header {
+      background: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    .form-header input {
+      width: 100%;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
     .item {
       background-color: #cfcfcf;
       border-radius: 10px;
@@ -37,13 +51,6 @@
       margin-top: 0;
       color: #ff7b00;
       font-size: 17px;
-    }
-    .uploads input {
-      display: block;
-      margin: 5px 0;
-    }
-    label {
-      font-weight: bold;
     }
     .options {
       display: flex;
@@ -111,13 +118,6 @@
       text-align: center;
       padding: 20px;
     }
-    .footer input {
-      margin: 6px 0;
-      padding: 6px;
-      width: 90%;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
     .generate {
       background-color: #ff7b00;
       color: white;
@@ -161,37 +161,48 @@
 <body>
   <header>🔥 Laudo de Sistema de Incêndio - Brivax</header>
 
-  <div class="container" id="checklist">
-    <div class="item"><h3>0. Foto da Fachada da Loja</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>1. Foto geral da cozinha</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>2. Foto da coifa</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>3. Foto dos termostatos instalados na coifa</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>4. Foto dos bicos difusores instalados na coifa</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>5. Foto dos cilindros de saponificante</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>6. Foto do manômetro do saponificante</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>7. Foto da solenoide conectada ao saponificante</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>8. Foto do Dumper corta-fogo</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>9. Foto dos termostatos reguláveis</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>10. Foto do cilindro de CO₂</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>11. Foto da solenoide de CO₂ conectada</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>12. Tipo de gás da loja</h3><div class="options"><button>GLP</button><button>NATURAL</button></div></div>
-    <div class="item"><h3>13. Foto dos detectores de gás</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>14. Foto da solenoide do gás conectada</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>15. Foto da comunicação da central do shopping</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>16. Foto do quadro elétrico com disjuntor disponível</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>17. Foto do quadro de exaustão com contato seco N/F</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>18. Foto da central aberta com conexões feitas</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>19. Foto da central fechada e lacrada</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>20. Treinamento realizado?</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-    <div class="item"><h3>21. Pendências</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-    <div class="item"><h3>22. Observações do Técnico</h3><textarea placeholder="Observações gerais do técnico"></textarea></div>
-  </div>
+  <div class="container">
+    <div class="form-header">
+      <label>Nome do Técnico Responsável:</label>
+      <input type="text" id="nomeTecnico" placeholder="Ex: João Silva">
+      <label>Nome do Ajudante:</label>
+      <input type="text" id="nomeAjudante" placeholder="Ex: Pedro Santos">
+      <label>Data da Instalação:</label>
+      <input type="date" id="dataInstalacao">
+    </div>
 
-  <div class="footer">
-    <button class="signature-btn" onclick="openSignature('tecnico')">Assinatura do Técnico</button>
-    <button class="signature-btn" onclick="openSignature('cliente')">Assinatura do Cliente</button>
-    <button class="signature-btn" onclick="openSignature('treinamento')">Assinatura do Treinamento</button>
-    <button class="generate" onclick="gerarPDFFire()">Baixar Laudo</button>
+    <div id="checklist">
+      <div class="item"><h3>0. Foto da Fachada da Loja</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>1. Foto geral da cozinha</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>2. Foto da coifa</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>3. Foto dos termostatos instalados na coifa</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>4. Foto dos bicos difusores instalados na coifa</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>5. Foto dos cilindros de saponificante</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>6. Foto do manômetro do saponificante</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>7. Foto da solenoide conectada ao saponificante</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>8. Foto do Dumper corta-fogo</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>9. Foto dos termostatos reguláveis</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>10. Foto do cilindro de CO₂</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>11. Foto da solenoide de CO₂ conectada</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>12. Tipo de gás da loja</h3><div class="options"><button>GLP</button><button>NATURAL</button></div></div>
+      <div class="item"><h3>13. Foto dos detectores de gás</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>14. Foto da solenoide do gás conectada</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>15. Foto da comunicação da central do shopping</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>16. Foto do quadro elétrico com disjuntor disponível</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>17. Foto do quadro de exaustão com contato seco N/F</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>18. Foto da central aberta com conexões feitas</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>19. Foto da central fechada e lacrada</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>20. Treinamento realizado?</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
+      <div class="item"><h3>21. Pendências</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>22. Observações do Técnico</h3><textarea placeholder="Observações gerais do técnico"></textarea></div>
+    </div>
+
+    <div class="footer">
+      <button class="signature-btn" onclick="openSignature('tecnico')">Assinatura do Técnico</button>
+      <button class="signature-btn" onclick="openSignature('cliente')">Assinatura do Cliente</button>
+      <button class="signature-btn" onclick="openSignature('treinamento')">Assinatura do Treinamento</button>
+      <button class="generate" onclick="gerarPDFFire()">Baixar Laudo</button>
+    </div>
   </div>
 
   <div class="signature-modal" id="signatureModal">
