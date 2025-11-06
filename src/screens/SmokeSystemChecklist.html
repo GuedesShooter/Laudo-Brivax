@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Laudo de Sistema de Fumaça - Brivax</title>
   <style>
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, #f4f4f4, #eaeaea);
+      background-color: #f4f4f4;
       color: #333;
       margin: 0;
       padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
+
     header {
       background-color: #ff7b00;
       color: white;
@@ -23,13 +21,14 @@
       font-weight: bold;
       font-size: 20px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      width: 100%;
     }
+
     .container {
       padding: 15px;
-      width: 100%;
-      max-width: 480px;
+      max-width: 900px;
+      margin: 0 auto;
     }
+
     .info-box {
       background-color: #fff;
       border-radius: 10px;
@@ -37,46 +36,77 @@
       margin-bottom: 15px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
+
     .info-box label {
       display: block;
       font-weight: bold;
       margin-bottom: 4px;
     }
+
     .info-box input {
       width: 100%;
       padding: 8px;
       margin-bottom: 8px;
       border: 1px solid #ccc;
       border-radius: 5px;
-      box-sizing: border-box;
     }
+
     .item {
-      background-color: #fff;
+      background-color: #cfcfcf;
       border-radius: 10px;
       padding: 15px;
       margin-bottom: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
+
     .item h3 {
       margin-top: 0;
       color: #ff7b00;
-      font-size: 16px;
+      font-size: 17px;
     }
-    input[type="file"] {
-      width: 100%;
+
+    .preview-area {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
     }
-    .uploads input {
-      display: block;
-      margin: 5px 0;
-      width: 100%;
+
+    .preview-area .img-wrapper {
+      position: relative;
+      display: inline-block;
     }
+
+    .preview-area img {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.3);
+    }
+
+    .preview-area button.remove-img {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ff3b3b;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      font-size: 14px;
+      cursor: pointer;
+      line-height: 20px;
+    }
+
     .options {
       display: flex;
-      justify-content: space-around;
+      gap: 10px;
       margin: 8px 0;
       flex-wrap: wrap;
-      gap: 6px;
     }
+
     .options button {
       background-color: #ddd;
       border: none;
@@ -84,13 +114,13 @@
       border-radius: 5px;
       cursor: pointer;
       transition: all 0.2s;
-      flex: 1;
-      min-width: 70px;
     }
+
     .options button.selected {
       background-color: #ff7b00;
       color: #fff;
     }
+
     textarea {
       width: 100%;
       border-radius: 5px;
@@ -99,130 +129,119 @@
       resize: none;
       min-height: 40px;
     }
-    .signature-btn, .generate {
+
+    .signature-btn {
       background-color: #ff7b00;
       color: white;
       border: none;
-      padding: 12px;
+      padding: 10px;
       width: 100%;
       font-size: 16px;
       border-radius: 6px;
       margin-top: 10px;
       cursor: pointer;
-      transition: background 0.3s;
     }
-    .signature-btn:hover, .generate:hover {
-      background-color: #e96f00;
-    }
+
     .signature-modal {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: rgba(0,0,0,0.7);
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 999;
     }
+
     .signature-box {
       background: white;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-      width: 90%;
-      max-width: 360px;
+      width: 95%;
+      max-width: 400px;
     }
+
     canvas {
       width: 100%;
       height: 200px;
       border: 2px solid #ff7b00;
       border-radius: 6px;
     }
+
     .footer {
       text-align: center;
       padding: 20px;
-      width: 100%;
-      max-width: 480px;
     }
+
     .footer input {
       margin: 6px 0;
-      padding: 8px;
-      width: 100%;
+      padding: 6px;
+      width: 90%;
       border-radius: 5px;
       border: 1px solid #ccc;
-      box-sizing: border-box;
+    }
+
+    .generate {
+      background-color: #ff7b00;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .item h3 { font-size: 16px; }
+      .preview-area img { width: 100px; height: 100px; }
     }
   </style>
 </head>
 <body>
-  <header>💨 Laudo de Sistema de Detecção de Fumaça - Brivax</header>
+  <header>💨 Laudo de Sistema de Fumaça - Brivax</header>
 
   <div class="container">
-    <!-- 🔶 Informações Gerais -->
     <div class="info-box">
-      <label for="data">Data do Laudo:</label>
-      <input type="date" id="data" />
-
-      <label for="loja">Nome da Loja:</label>
-      <input type="text" id="loja" placeholder="Digite o nome da loja" />
-
-      <label for="tecnico">Nome do Técnico:</label>
-      <input type="text" id="tecnico" placeholder="Digite o nome do técnico responsável" />
+      <label>Data do Laudo:</label><input type="date" id="dataLaudo">
+      <label>Nome da Loja:</label><input type="text" id="nomeLoja" placeholder="Ex: Loja ABC">
+      <label>Local da Instalação:</label><input type="text" id="localInstalacao" placeholder="Ex: Shopping XYZ - Piso L2">
+      <label>Técnico Responsável:</label><input type="text" id="tecnicoResponsavel">
+      <label>Ajudante:</label><input type="text" id="ajudanteResponsavel">
+      <label>Data de Entrega da Instalação:</label><input type="date" id="dataEntrega">
     </div>
 
-    <!-- 🔶 Itens do Laudo -->
-    <div class="item"><h3>0. Foto da Fachada da Loja</h3><input type="file" multiple /></div>
-    <div class="item"><h3>1. Foto geral do teto do ambiente</h3><input type="file" multiple /></div>
-
-    <div class="item">
-      <h3>2. Detectores Instalados</h3>
-      <div id="detectorContainer"></div>
-      <button class="signature-btn" style="background:#ddd;color:#000" onclick="addDetector()">+ Adicionar Detector</button>
+    <div id="checklist">
+      <div class="item"><h3>0. Foto da Fachada da Loja</h3><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div></div>
+      <div class="item"><h3>1. Foto geral do teto do ambiente</h3><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div></div>
+      <div class="item"><h3>2. Detectores Instalados</h3><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div></div>
+      <div class="item"><h3>3. Foto da central de detecção</h3><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div></div>
+      <div class="item"><h3>4. Teste dos detectores</h3><div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div><div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div></div>
+      <div class="item"><h3>5. Foto da sirene de alarme</h3><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div></div>
+      <div class="item"><h3>6. Foto dos módulos de entrada e saída</h3><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div></div>
+      <div class="item"><h3>7. Comunicação da central com o shopping</h3><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div><div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div><div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div></div>
+      <div class="item"><h3>8. Foto do quadro elétrico com disjuntor disponível</h3><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div></div>
+      <div class="item"><h3>9. Foto da alimentação da central</h3><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div></div>
+      <div class="item"><h3>10. Foto do detector manual</h3><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div></div>
+      <div class="item"><h3>11. Teste geral do sistema</h3><div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div><div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div></div>
+      <div class="item"><h3>12. Treinamento realizado?</h3><div class="options"><button>Sim</button><button>Não</button></div><textarea placeholder="Nome do funcionário, função e observações ou justificativa se não houver."></textarea><button class="signature-btn" onclick="openSignature('treinamento')">Assinar Treinamento</button></div>
+      <div class="item"><h3>13. Pendências</h3><div class="options"><button>Brivax</button><button>Cliente</button></div><textarea placeholder="Descreva as pendências"></textarea><input type="file" accept="image/*" multiple onchange="previewImages(this)"><div class="preview-area"></div></div>
+      <div class="item"><h3>14. Observações do Técnico</h3><textarea placeholder="Observações gerais do técnico"></textarea></div>
     </div>
 
-    <div class="item"><h3>3. Foto da central de detecção</h3><input type="file" multiple /></div>
-    <div class="item"><h3>4. Teste dos detectores</h3>
-      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
-      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
-    </div>
-    <div class="item"><h3>5. Foto da sirene de alarme</h3><input type="file" multiple /></div>
-    <div class="item"><h3>6. Foto dos módulos de entrada e saída</h3><input type="file" multiple /></div>
-    <div class="item"><h3>7. Comunicação da central com o shopping</h3>
-      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
-      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
-    </div>
-    <div class="item"><h3>8. Foto do quadro elétrico com disjuntor disponível</h3><input type="file" multiple /></div>
-    <div class="item"><h3>9. Foto da alimentação da central</h3><input type="file" multiple /></div>
-    <div class="item"><h3>10. Foto do detector manual</h3><input type="file" multiple /></div>
-    <div class="item"><h3>11. Teste geral do sistema</h3>
-      <div class="options"><label>Teste:</label><button>Sim</button><button>Não</button></div>
-      <div class="options"><label>Funcionando:</label><button>Sim</button><button>Não</button></div>
-    </div>
-    <div class="item"><h3>12. Treinamento realizado?</h3>
-      <div class="options"><button>Sim</button><button>Não</button></div>
-      <textarea placeholder="Nome do funcionário, função e observações ou justificativa se não houver."></textarea>
-      <button class="signature-btn" onclick="openSignature('treinamento')">Assinar Treinamento</button>
-    </div>
-    <div class="item"><h3>13. Pendências</h3>
-      <div class="options"><button>Brivax</button><button>Cliente</button></div>
-      <textarea placeholder="Descreva as pendências"></textarea>
-      <input type="file" multiple />
-    </div>
-    <div class="item"><h3>14. Observações do Técnico</h3>
-      <textarea placeholder="Observações gerais do técnico"></textarea>
+    <div class="footer">
+      <input type="text" placeholder="E-mail do cliente" id="emailCliente" />
+      <input type="text" placeholder="Telefone do cliente" id="telefoneCliente" />
+      <button class="signature-btn" onclick="openSignature('tecnico')">Assinatura do Técnico</button>
+      <button class="signature-btn" onclick="openSignature('cliente')">Assinatura do Cliente</button>
+      <button class="generate" onclick="gerarLaudoSmoke()">Gerar e Enviar Laudo</button>
     </div>
   </div>
 
-  <!-- 🔶 Rodapé -->
-  <div class="footer">
-    <input type="text" placeholder="E-mail do cliente" id="emailCliente" />
-    <input type="text" placeholder="Telefone do cliente" id="telefoneCliente" />
-    <button class="signature-btn" onclick="openSignature('tecnico')">Assinatura do Técnico</button>
-    <button class="signature-btn" onclick="openSignature('cliente')">Assinatura do Cliente</button>
-    <button class="generate">Gerar e Enviar Laudo</button>
-  </div>
-
-  <!-- 🔶 Modal Assinatura -->
   <div class="signature-modal" id="signatureModal">
     <div class="signature-box">
       <canvas id="signaturePad"></canvas>
@@ -235,8 +254,35 @@
   </div>
 
   <script>
-    // ✅ Responsividade e seleção de opções
-    document.querySelectorAll('.options button').forEach(btn => {
+    function previewImages(input) {
+      const previewArea = input.parentNode.querySelector('.preview-area');
+      previewArea.innerHTML = '';
+      Array.from(input.files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const wrapper = document.createElement('div');
+          wrapper.classList.add('img-wrapper');
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          const removeBtn = document.createElement('button');
+          removeBtn.classList.add('remove-img');
+          removeBtn.innerHTML = '×';
+          removeBtn.onclick = () => {
+            wrapper.remove();
+            const dt = new DataTransfer();
+            Array.from(input.files).forEach((f, i) => { if (i !== index) dt.items.add(f); });
+            input.files = dt.files;
+          };
+          wrapper.appendChild(img);
+          wrapper.appendChild(removeBtn);
+          previewArea.appendChild(wrapper);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const buttons = document.querySelectorAll('.options button');
+    buttons.forEach(btn => {
       btn.addEventListener('click', () => {
         const group = btn.parentNode.querySelectorAll('button');
         group.forEach(b => b.classList.remove('selected'));
@@ -244,124 +290,41 @@
       });
     });
 
-    // ✅ Função para adicionar detectores dinamicamente
-    let detectorCount = 0;
-    const maxDetectores = 100;
-    function addDetector() {
-      if (detectorCount >= maxDetectores) {
-        alert("Limite máximo de 100 detectores atingido!");
-        return;
-      }
-      detectorCount++;
-      const container = document.getElementById("detectorContainer");
-      const block = document.createElement("div");
-      block.classList.add("detector-block");
-      block.style.background = "#fff";
-      block.style.padding = "12px";
-      block.style.borderRadius = "8px";
-      block.style.margin = "10px 0";
-      block.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
-      block.innerHTML = `
-        <h4>Detector ${detectorCount}</h4>
-        <label>Foto 1:</label><input type="file" accept="image/*">
-        <label>Foto 2:</label><input type="file" accept="image/*">
-        <label>Foto 3:</label><input type="file" accept="image/*">
-        <div class="options">
-          <label>Teste:</label>
-          <button onclick="selectOption(this)">Sim</button>
-          <button onclick="selectOption(this)">Não</button>
-        </div>
-        <div class="options">
-          <label>Funcionando:</label>
-          <button onclick="selectOption(this)">Sim</button>
-          <button onclick="selectOption(this)">Não</button>
-        </div>`;
-      container.appendChild(block);
-    }
+    const modal = document.getElementById('signatureModal');
+    const canvas = document.getElementById('signaturePad');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let activeField = '';
 
-    function selectOption(btn) {
-      const group = btn.parentNode.querySelectorAll('button');
-      group.forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    }
-    
-  const modal = document.getElementById('signatureModal');
-  const canvas = document.getElementById('signaturePad');
-  const ctx = canvas.getContext('2d');
-  let drawing = false;
-  let activeField = '';
+    canvas.addEventListener('touchstart', startDraw, false);
+    canvas.addEventListener('touchmove', drawTouch, false);
+    canvas.addEventListener('touchend', () => drawing = false, false);
+    canvas.addEventListener('mousedown', e => { drawing = true; ctx.moveTo(e.offsetX, e.offsetY); });
+    canvas.addEventListener('mousemove', e => { if (!drawing) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
+    canvas.addEventListener('mouseup', () => drawing = false);
 
-  // 📱 Detecta se é toque (mobile)
-  function getPosition(e) {
-    if (e.touches && e.touches[0]) {
+    function startDraw(e) {
+      e.preventDefault();
+      drawing = true;
       const rect = canvas.getBoundingClientRect();
-      return {
-        x: e.touches[0].clientX - rect.left,
-        y: e.touches[0].clientY - rect.top
-      };
-    } else {
-      return { x: e.offsetX, y: e.offsetY };
+      ctx.moveTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
     }
-  }
+    function drawTouch(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
+      ctx.stroke();
+    }
 
-  function startDrawing(e) {
-    e.preventDefault(); // 🧱 bloqueia o scroll da página
-    drawing = true;
-    const pos = getPosition(e);
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
-  }
+    function openSignature(field) { activeField = field; modal.style.display='flex'; ctx.clearRect(0,0,canvas.width,canvas.height); }
+    function clearSignature() { ctx.clearRect(0,0,canvas.width,canvas.height); }
+    function saveSignature() { alert("Assinatura salva para " + activeField); modal.style.display='none'; }
+    function closeSignature() { modal.style.display='none'; }
 
-  function draw(e) {
-    if (!drawing) return;
-    e.preventDefault();
-    const pos = getPosition(e);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 2;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.stroke();
-  }
-
-  function stopDrawing() {
-    drawing = false;
-    ctx.closePath();
-  }
-
-  // 🖋️ Eventos de mouse e toque
-  canvas.addEventListener('mousedown', startDrawing);
-  canvas.addEventListener('mousemove', draw);
-  canvas.addEventListener('mouseup', stopDrawing);
-  canvas.addEventListener('mouseleave', stopDrawing);
-
-  canvas.addEventListener('touchstart', startDrawing, { passive: false });
-  canvas.addEventListener('touchmove', draw, { passive: false });
-  canvas.addEventListener('touchend', stopDrawing);
-
-  // 🪄 Controle do modal
-  function openSignature(field) {
-    activeField = field;
-    modal.style.display = 'flex';
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-  function clearSignature() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-  function saveSignature() {
-    alert("Assinatura salva para " + activeField);
-    modal.style.display = 'none';
-  }
-  function closeSignature() {
-    modal.style.display = 'none';
-  }
-</script>
-  <!-- Biblioteca PDF-LIB -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-
-<!-- Scripts Brivax -->
-<script src="../js/pdf-template.js"></script>
-<script src="../js/SmokeSystemReport.js"></script>
+    function gerarLaudoSmoke() {
+      window.location.href = "../js/SystemSmokeReport.js";
+    }
+  </script>
 </body>
 </html>
-
