@@ -3,37 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brivax Laudos – Seleção</title>
+  <title>Brivax Laudos – Seleção de Sistema</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg,#f4f4f4,#eaeaea);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      height:100vh;margin:0;padding:20px;
+      background: linear-gradient(135deg, #f4f4f4, #eaeaea);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
     }
     .container {
-      background:#fff;padding:30px;border-radius:12px;
-      box-shadow:0 6px 12px rgba(0,0,0,0.15);
-      width:100%;max-width:360px;text-align:center;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
     }
-    img{width:110px;margin-bottom:10px;}
-    h1{color:#ff6600;margin-bottom:20px;}
+    img {
+      width: 110px;
+      margin-bottom: 15px;
+    }
+    h1 {
+      color: #ff6600;
+      margin-bottom: 25px;
+      font-size: 20px;
+    }
     button {
-      background:#ff6600;border:none;color:#fff;
-      padding:12px;width:100%;border-radius:8px;
-      cursor:pointer;margin:8px 0;font-size:16px;transition:0.3s;
+      background: #ff6600;
+      border: none;
+      color: #fff;
+      padding: 12px;
+      width: 100%;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 8px 0;
+      font-size: 16px;
+      transition: 0.3s;
     }
-    button:hover{background:#e65c00;}
+    button:hover { background: #e65c00; }
+    .logout {
+      background: #555;
+      margin-top: 15px;
+    }
+    .logout:hover { background: #333; }
   </style>
 </head>
 <body>
   <div class="container">
-    <img src="/Laudo-Brivax/assets/brivax-logo.png" alt="Brivax Logo">
+    <img src="https://GuedesShooter.github.io/Laudo-Brivax/assets/brivax-logo.png" alt="Brivax Logo">
     <h1>Selecione o Sistema</h1>
 
-    <button onclick="alert('Abrir sistema de laudos')">🧾 Laudos</button>
-    <button onclick="alert('Abrir sistema de instalações')">🛠️ Instalações</button>
-    <button onclick="window.location.href='LoginScreen.html'">Sair</button>
+    <button onclick="abrirSistema('incendio')">🔥 Sistema Contra Incêndio</button>
+    <button onclick="abrirSistema('fumaca')">💨 Sistema de Fumaça</button>
+    <button class="logout" onclick="window.location.href='LoginScreen.html'">Sair</button>
   </div>
+
+  <script>
+    function abrirSistema(tipo) {
+      if (tipo === 'incendio') {
+        alert('Abrindo o Sistema Contra Incêndio...');
+        // Aqui futuramente: window.location.href = 'IncendioScreen.html';
+      } else if (tipo === 'fumaca') {
+        alert('Abrindo o Sistema de Fumaça...');
+        // Aqui futuramente: window.location.href = 'FumacaScreen.html';
+      }
+    }
+  </script>
 </body>
 </html>
