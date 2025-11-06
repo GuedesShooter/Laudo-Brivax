@@ -1,36 +1,31 @@
 // === 📄 pdf-template.js ===
 // Gera PDF profissional e envia por e-mail e WhatsApp
+// Agora com numeração sequencial automática (inicia em 034)
 
 async function gerarEEnviarLaudo(dados) {
   const { PDFDocument, rgb } = PDFLib;
 
+  // === 🔢 Controle de numeração sequencial ===
+  let numeroAtual = parseInt(localStorage.getItem("brivaxNumeroLaudo")) || 34;
+  dados.numero = numeroAtual.toString().padStart(3, "0");
+  localStorage.setItem("brivaxNumeroLaudo", numeroAtual + 1);
+
   const doc = await PDFDocument.create();
-  const page = doc.addPage([595, 842]); // A4
+  let page = doc.addPage([595, 842]);
   const { width, height } = page.getSize();
 
-  // === 🎨 Layout básico ===
   const margem = 40;
   let y = height - 60;
-
-  // Cor e fontes
   const corPrincipal = rgb(0.3, 0.3, 0.3);
   const fontSizeNormal = 11;
 
   // === 🧱 Cabeçalho ===
-  const logoUrl = "../assets/brivax-logo.png";
   try {
-    const logoBytes = await fetch(logoUrl).then(res => res.arrayBuffer());
+    const logoBytes = await fetch("../assets/brivax-logo.png").then(res => res.arrayBuffer());
     const logoImg = await doc.embedPng(logoBytes);
-    const logoWidth = 100;
-    const logoHeight = 40;
-    page.drawImage(logoImg, {
-      x: margem,
-      y: y - logoHeight,
-      width: logoWidth,
-      height: logoHeight
-    });
-  } catch (err) {
-    console.warn("Logo não encontrada:", err);
+    page.drawImage(logoImg, { x: margem, y: y - 40, width: 100, height: 40 });
+  } catch {
+    console.warn("Logo não encontrada");
   }
 
   page.drawText("BRIVAX SISTEMAS DE COMBATE A INCÊNDIO", {
@@ -51,8 +46,8 @@ async function gerarEEnviarLaudo(dados) {
 
   // === 🧾 Informações gerais ===
   const info = [
-    `Laudo Nº: ${dados.numero || "N/D"}`,
-    `Tipo: ${dados.titulo || "N/D"}`,
+    `Laudo Nº: ${dados.numero}`,
+    `Tipo: ${dados.titulo}`,
     `Loja: ${dados.loja || "N/D"}`,
     `Local: ${dados.local || "N/D"}`,
     `Data Laudo: ${dados.dataLaudo || "N/D"}`,
@@ -64,12 +59,7 @@ async function gerarEEnviarLaudo(dados) {
   ];
 
   info.forEach((line, i) => {
-    page.drawText(line, {
-      x: margem,
-      y: y - i * 14,
-      size: fontSizeNormal,
-      color: corPrincipal,
-    });
+    page.drawText(line, { x: margem, y: y - i * 14, size: fontSizeNormal, color: corPrincipal });
   });
 
   y -= info.length * 14 + 10;
@@ -93,23 +83,20 @@ async function gerarEEnviarLaudo(dados) {
       y -= 16;
     }
 
-    if (item.fotos && item.fotos.length > 0) {
+    if (item.fotos?.length) {
       for (const foto of item.fotos) {
         try {
           const imgBytes = await fetch(foto).then(r => r.arrayBuffer());
           const img = await doc.embedPng(imgBytes);
           const iw = 150;
           const ih = 100;
+
           if (y - ih < 100) {
             page = doc.addPage([595, 842]);
             y = height - 60;
           }
-          page.drawImage(img, {
-            x: margem + 10,
-            y: y - ih,
-            width: iw,
-            height: ih
-          });
+
+          page.drawImage(img, { x: margem + 10, y: y - ih, width: iw, height: ih });
           y -= ih + 10;
         } catch (e) {
           console.warn("Erro ao inserir imagem:", e);
@@ -134,25 +121,27 @@ async function gerarEEnviarLaudo(dados) {
   });
   y -= 40;
 
+  const assinaturaY = y - 40;
+
   if (dados.assinaturas?.tecnico) {
-    const imgBytes = await fetch(dados.assinaturas.tecnico).then(r => r.arrayBuffer());
-    const img = await doc.embedPng(imgBytes);
-    page.drawImage(img, { x: margem, y: y - 40, width: 120, height: 40 });
+    const bytes = await fetch(dados.assinaturas.tecnico).then(r => r.arrayBuffer());
+    const img = await doc.embedPng(bytes);
+    page.drawImage(img, { x: margem, y: assinaturaY, width: 120, height: 40 });
   }
   if (dados.assinaturas?.cliente) {
-    const imgBytes = await fetch(dados.assinaturas.cliente).then(r => r.arrayBuffer());
-    const img = await doc.embedPng(imgBytes);
-    page.drawImage(img, { x: 220, y: y - 40, width: 120, height: 40 });
+    const bytes = await fetch(dados.assinaturas.cliente).then(r => r.arrayBuffer());
+    const img = await doc.embedPng(bytes);
+    page.drawImage(img, { x: 220, y: assinaturaY, width: 120, height: 40 });
   }
   if (dados.assinaturas?.treinamento) {
-    const imgBytes = await fetch(dados.assinaturas.treinamento).then(r => r.arrayBuffer());
-    const img = await doc.embedPng(imgBytes);
-    page.drawImage(img, { x: 400, y: y - 40, width: 120, height: 40 });
+    const bytes = await fetch(dados.assinaturas.treinamento).then(r => r.arrayBuffer());
+    const img = await doc.embedPng(bytes);
+    page.drawImage(img, { x: 400, y: assinaturaY, width: 120, height: 40 });
   }
 
-  page.drawText("Técnico", { x: margem + 40, y: y - 50, size: 10 });
-  page.drawText("Cliente", { x: 260, y: y - 50, size: 10 });
-  page.drawText("Treinamento", { x: 440, y: y - 50, size: 10 });
+  page.drawText("Técnico", { x: margem + 40, y: assinaturaY - 12, size: 10 });
+  page.drawText("Cliente", { x: 260, y: assinaturaY - 12, size: 10 });
+  page.drawText("Treinamento", { x: 440, y: assinaturaY - 12, size: 10 });
 
   // === Rodapé ===
   page.drawLine({
@@ -171,7 +160,7 @@ async function gerarEEnviarLaudo(dados) {
   // === 💾 Exportar PDF ===
   const pdfBytes = await doc.save();
   const blob = new Blob([pdfBytes], { type: "application/pdf" });
-  const nomeArquivo = `Laudo_${dados.tipo.replace(/\s/g, "_")}_${dados.loja || "Loja"}.pdf`;
+  const nomeArquivo = `Laudo_${dados.numero}_${dados.tipo.replace(/\s/g, "_")}_${dados.loja || "Loja"}.pdf`;
 
   // Download automático
   const link = document.createElement("a");
@@ -179,11 +168,11 @@ async function gerarEEnviarLaudo(dados) {
   link.download = nomeArquivo;
   link.click();
 
-  // Envio de e-mail
-  const assunto = `Laudo Loja ${dados.loja} - ${dados.dataLaudo || ""}`;
+  // === ✉️ Envio de e-mail ===
+  const assunto = `Laudo Loja ${dados.loja} - Nº ${dados.numero}`;
   const corpoEmail =
     `Olá,\n\nSegue em anexo o laudo de entrega de serviço.\n\n` +
-    `Loja: ${dados.loja}\nSistema: ${dados.tipo}\nData: ${dados.dataLaudo}\n\n` +
+    `Loja: ${dados.loja}\nSistema: ${dados.tipo}\nNúmero: ${dados.numero}\nData: ${dados.dataLaudo}\n\n` +
     `Qualquer dúvida, estamos à disposição.\n\nEquipe Brivax.`;
 
   const mailto = `mailto:${dados.emailCliente}?cc=brivax.adm@gmail.com&subject=${encodeURIComponent(
@@ -191,9 +180,9 @@ async function gerarEEnviarLaudo(dados) {
   )}&body=${encodeURIComponent(corpoEmail)}`;
   window.open(mailto);
 
-  // Envio via WhatsApp (se informado)
+  // === 💬 Envio via WhatsApp ===
   if (dados.telefoneCliente) {
-    const msg = `Olá, aqui é a Brivax 👋\nSegue o laudo da loja *${dados.loja}* (${dados.tipo}) enviado por e-mail.\nQualquer dúvida, estamos à disposição.`;
+    const msg = `Olá, aqui é a Brivax 👋\nSegue o laudo *${dados.numero}* da loja *${dados.loja}* (${dados.tipo}) enviado por e-mail.\nQualquer dúvida, estamos à disposição.`;
     const zap = `https://wa.me/${dados.telefoneCliente.replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`;
     window.open(zap);
   }
