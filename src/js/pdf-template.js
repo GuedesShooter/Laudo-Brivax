@@ -1,6 +1,6 @@
-// ==========================================
-// ✅ BRIVAX - PDF TEMPLATE FINAL iPhone Safe
-// ==========================================
+// ===========================================
+// ✅ BRIVAX - PDF TEMPLATE FINAL (Download OK)
+// ===========================================
 
 async function gerarPDFFire() {
   try {
@@ -22,6 +22,7 @@ async function gerarPDFSmoke() {
   }
 }
 
+// 🔤 Remove caracteres incompatíveis com Helvetica
 function limparTextoPDF(txt) {
   if (!txt) return "";
   return txt
@@ -35,7 +36,7 @@ function limparTextoPDF(txt) {
     .replace(/₇/g, "7")
     .replace(/₈/g, "8")
     .replace(/₉/g, "9")
-    .replace(/[^\x00-\x7F]/g, ""); // remove outros caracteres unicode
+    .replace(/[^\x00-\x7F]/g, ""); // remove símbolos e acentos estranhos
 }
 
 async function gerarPDFBase(tipoSistema, prefix) {
@@ -92,7 +93,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
     });
     y -= 20;
 
-    // Itens checklist
+    // Itens do checklist
     const itens = document.querySelectorAll(".item");
     for (let i = 0; i < itens.length; i++) {
       const item = itens[i];
@@ -194,15 +195,16 @@ async function gerarPDFBase(tipoSistema, prefix) {
       color: rgb(0.3, 0.3, 0.3),
     });
 
+    // Geração e download do PDF
     const nomeArquivo = `${prefix}_Laudo_${limparTextoPDF(nomeLoja.replace(/\s+/g, "_")) || "SemNome"}.pdf`;
     const pdfBytes = await pdfDoc.save();
-
-    // iPhone-safe: abre PDF em nova aba
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
-    const pdfURL = URL.createObjectURL(blob);
-    window.open(pdfURL, "_blank");
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = nomeArquivo;
+    link.click();
 
-    alert("✅ PDF gerado e aberto no navegador!");
+    alert("✅ PDF gerado e baixado com sucesso!");
   } catch (error) {
     console.error("Erro ao criar PDF:", error);
     alert("❌ Ocorreu um erro ao criar o PDF. Verifique o console.");
