@@ -13,10 +13,9 @@ async function gerarPDFBase(tipoSistema, prefix) {
     const { PDFDocument, rgb } = PDFLib;
     const pdfDoc = await PDFDocument.create();
 
-    // Fonte com acentuação (Open Sans)
-    const fontUrl = "https://fonts.gstatic.com/s/opensans/v34/mem8YaGs126MiZpBA-UFVZ0b.ttf";
-    const fontBytes = await fetch(fontUrl).then(res => res.arrayBuffer());
-    const font = await pdfDoc.embedFont(fontBytes);
+   // Usa fonte nativa Helvetica (evita precisar do fontkit)
+const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
 
     // Nova página A4
     let page = pdfDoc.addPage([595, 842]);
