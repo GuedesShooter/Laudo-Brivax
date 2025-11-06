@@ -22,6 +22,22 @@ async function gerarPDFSmoke() {
   }
 }
 
+function limparTextoPDF(txt) {
+  if (!txt) return "";
+  return txt
+    .replace(/₀/g, "0")
+    .replace(/₁/g, "1")
+    .replace(/₂/g, "2")
+    .replace(/₃/g, "3")
+    .replace(/₄/g, "4")
+    .replace(/₅/g, "5")
+    .replace(/₆/g, "6")
+    .replace(/₇/g, "7")
+    .replace(/₈/g, "8")
+    .replace(/₉/g, "9")
+    .replace(/[^\x00-\x7F]/g, ""); // remove outros caracteres unicode
+}
+
 async function gerarPDFBase(tipoSistema, prefix) {
   try {
     const { PDFDocument, StandardFonts, rgb } = PDFLib;
@@ -33,7 +49,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
 
     // Cabeçalho
     page.drawRectangle({ x: 0, y: y - 25, width, height: 40, color: rgb(1, 0.48, 0) });
-    page.drawText(`BRIVAX - Laudo de ${tipoSistema}`, {
+    page.drawText(limparTextoPDF(`BRIVAX - Laudo de ${tipoSistema}`), {
       x: 40,
       y: y - 10,
       size: 16,
@@ -63,7 +79,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
     ];
 
     infoLines.forEach(line => {
-      page.drawText(line, { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
+      page.drawText(limparTextoPDF(line), { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
       y -= 16;
     });
 
@@ -93,16 +109,16 @@ async function gerarPDFBase(tipoSistema, prefix) {
         y = height - 60;
       }
 
-      page.drawText(titulo, { x: 40, y, size: 12, font, color: rgb(1, 0.48, 0) });
+      page.drawText(limparTextoPDF(titulo), { x: 40, y, size: 12, font, color: rgb(1, 0.48, 0) });
       y -= 15;
 
       botoesSelecionados.forEach(btn => {
-        page.drawText(`${btn.textContent}`, { x: 50, y, size: 10, font });
+        page.drawText(limparTextoPDF(btn.textContent), { x: 50, y, size: 10, font });
         y -= 12;
       });
 
       if (observacoes.trim() !== "") {
-        const texto = `Obs: ${observacoes}`;
+        const texto = limparTextoPDF(`Obs: ${observacoes}`);
         const linhas = quebraTexto(texto, 80);
         linhas.forEach(l => {
           page.drawText(l, { x: 50, y, size: 10, font });
@@ -111,7 +127,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
       }
 
       for (let img of imagens) {
-        if (!img.src) continue; // evita travar
+        if (!img.src) continue;
         if (y < 200) {
           page = pdfDoc.addPage([595, 842]);
           const size = page.getSize();
@@ -153,7 +169,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
     const assinaturaTreinamento = localStorage.getItem("assinatura_treinamento");
 
     const desenharAssinatura = async (imgData, x, label) => {
-      page.drawText(label, { x, y: y + 70, size: 11, font });
+      page.drawText(limparTextoPDF(label), { x, y: y + 70, size: 11, font });
       if (!imgData) return;
       try {
         const imgBytes = await fetch(imgData).then(r => r.arrayBuffer());
@@ -170,7 +186,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
 
     // Rodapé
     y -= 100;
-    page.drawText("Enviado automaticamente pelo sistema Brivax Laudos Técnicos", {
+    page.drawText(limparTextoPDF("Enviado automaticamente pelo sistema Brivax Laudos Técnicos"), {
       x: width / 2 - 150,
       y,
       size: 9,
@@ -178,7 +194,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
       color: rgb(0.3, 0.3, 0.3),
     });
 
-    const nomeArquivo = `${prefix}_Laudo_${nomeLoja.replace(/\s+/g, "_") || "SemNome"}.pdf`;
+    const nomeArquivo = `${prefix}_Laudo_${limparTextoPDF(nomeLoja.replace(/\s+/g, "_")) || "SemNome"}.pdf`;
     const pdfBytes = await pdfDoc.save();
 
     // iPhone-safe: abre PDF em nova aba
