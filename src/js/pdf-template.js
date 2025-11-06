@@ -1,77 +1,46 @@
-// ===========================================
-// ✅ BRIVAX - PDF TEMPLATE FINAL (Download OK)
-// ===========================================
-const fontUrl = "https://fonts.gstatic.com/s/opensans/v34/mem8YaGs126MiZpBA-UFVZ0b.ttf";
-const fontBytes = await fetch(fontUrl).then(res => res.arrayBuffer());
-const font = await pdfDoc.embedFont(fontBytes);
-
+// === GERAÇÃO DOS PDFS PRINCIPAIS ===
 async function gerarPDFFire() {
-  try {
-    alert("⏳ Gerando PDF, aguarde...");
-    await gerarPDFBase("Sistema de Incêndio", "Fire");
-  } catch (err) {
-    console.error("Erro ao gerar PDF Fire:", err);
-    alert("❌ Erro ao gerar PDF de incêndio.");
-  }
+  await gerarPDFBase("Sistema de Incêndio", "Fire");
 }
 
 async function gerarPDFSmoke() {
-  try {
-    alert("⏳ Gerando PDF, aguarde...");
-    await gerarPDFBase("Sistema de Fumaça", "Smoke");
-  } catch (err) {
-    console.error("Erro ao gerar PDF Smoke:", err);
-    alert("❌ Erro ao gerar PDF de fumaça.");
-  }
+  await gerarPDFBase("Sistema de Fumaça", "Smoke");
 }
 
-// 🔤 Remove caracteres incompatíveis com Helvetica
-function limparTextoPDF(txt) {
-  if (!txt) return "";
-  return txt
-    .replace(/₀/g, "0")
-    .replace(/₁/g, "1")
-    .replace(/₂/g, "2")
-    .replace(/₃/g, "3")
-    .replace(/₄/g, "4")
-    .replace(/₅/g, "5")
-    .replace(/₆/g, "6")
-    .replace(/₇/g, "7")
-    .replace(/₈/g, "8")
-    .replace(/₉/g, "9")
-    .replace(/[^\x00-\x7F]/g, ""); // remove símbolos e acentos estranhos
-}
-
+// === FUNÇÃO PRINCIPAL DE GERAÇÃO DE LAUDO ===
 async function gerarPDFBase(tipoSistema, prefix) {
   try {
-    const { PDFDocument, StandardFonts, rgb } = PDFLib;
+    const { PDFDocument, rgb } = PDFLib;
     const pdfDoc = await PDFDocument.create();
+
+    // Fonte com acentuação (Open Sans)
+    const fontUrl = "https://fonts.gstatic.com/s/opensans/v34/mem8YaGs126MiZpBA-UFVZ0b.ttf";
+    const fontBytes = await fetch(fontUrl).then(res => res.arrayBuffer());
+    const font = await pdfDoc.embedFont(fontBytes);
+
+    // Nova página A4
     let page = pdfDoc.addPage([595, 842]);
-    let { width, height } = page.getSize();
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const { width, height } = page.getSize();
     let y = height - 60;
 
-    // Cabeçalho
-    page.drawRectangle({ x: 0, y: y - 25, width, height: 40, color: rgb(1, 0.48, 0) });
-    page.drawText(limparTextoPDF(`BRIVAX - Laudo de ${tipoSistema}`), {
-      x: 40,
-      y: y - 10,
-      size: 16,
-      font,
-      color: rgb(1, 1, 1),
+    // === 🧯 Cabeçalho ===
+    page.drawRectangle({ x: 0, y: y - 25, width, height: 60, color: rgb(1, 0.48, 0) });
+    page.drawText(`BRIVAX SISTEMAS DE COMBATE A INCÊNDIO`, {
+      x: 40, y: y + 10, size: 14, font, color: rgb(1, 1, 1)
+    });
+    page.drawText(`Laudo Técnico - ${tipoSistema}`, {
+      x: 40, y: y - 10, size: 11, font, color: rgb(1, 1, 1)
     });
 
-    y -= 70;
-    page.setFont(font);
-    page.setFontSize(11);
+    y -= 90;
 
-    // Informações gerais
-    const dataEntrega = document.getElementById("dataEntrega")?.value || "—";
-    const dataLaudo = document.getElementById("dataLaudo")?.value || "—";
-    const nomeLoja = document.getElementById("nomeLoja")?.value || "—";
-    const localInstalacao = document.getElementById("localInstalacao")?.value || "—";
-    const nomeTecnico = document.getElementById("nomeTecnico")?.value || "—";
-    const nomeAjudante = document.getElementById("nomeAjudante")?.value || "—";
+    // === 📋 Informações Gerais ===
+    const dataEntrega = document.getElementById("dataEntrega")?.value || "";
+    const dataLaudo = document.getElementById("dataLaudo")?.value || "";
+    const nomeLoja = document.getElementById("nomeLoja")?.value || "";
+    const localInstalacao = document.getElementById("localInstalacao")?.value || "";
+    const nomeTecnico = document.getElementById("nomeTecnico")?.value || "";
+    const nomeAjudante = document.getElementById("nomeAjudante")?.value || "";
 
     const infoLines = [
       `Data de Entrega: ${dataEntrega}`,
@@ -82,22 +51,21 @@ async function gerarPDFBase(tipoSistema, prefix) {
       `Ajudante: ${nomeAjudante}`,
     ];
 
+    page.drawText("📄 Informações Gerais", { x: 40, y, size: 13, font, color: rgb(1, 0.48, 0) });
+    y -= 20;
+
     infoLines.forEach(line => {
-      page.drawText(limparTextoPDF(line), { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
-      y -= 16;
+      page.drawText(line, { x: 50, y, size: 11, font, color: rgb(0, 0, 0) });
+      y -= 15;
     });
 
     y -= 10;
-    page.drawLine({
-      start: { x: 40, y },
-      end: { x: width - 40, y },
-      thickness: 1,
-      color: rgb(0.6, 0.6, 0.6),
-    });
-    y -= 20;
+    drawLine(page, width, y);
+    y -= 25;
 
-    // Itens do checklist
+    // === 🧩 Itens do checklist ===
     const itens = document.querySelectorAll(".item");
+
     for (let i = 0; i < itens.length; i++) {
       const item = itens[i];
       const titulo = item.querySelector("h3")?.textContent || `Item ${i + 1}`;
@@ -105,115 +73,130 @@ async function gerarPDFBase(tipoSistema, prefix) {
       const observacoes = item.querySelector("textarea")?.value || "";
       const imagens = item.querySelectorAll(".preview img");
 
-      if (y < 100) {
+      // Quebra de página se faltar espaço
+      if (y < 200) {
         page = pdfDoc.addPage([595, 842]);
-        const size = page.getSize();
-        width = size.width;
-        height = size.height;
         y = height - 60;
       }
 
-      page.drawText(limparTextoPDF(titulo), { x: 40, y, size: 12, font, color: rgb(1, 0.48, 0) });
-      y -= 15;
+      page.drawText(titulo, { x: 40, y, size: 12, font, color: rgb(1, 0.48, 0) });
+      y -= 16;
 
+      // Botões selecionados
       botoesSelecionados.forEach(btn => {
-        page.drawText(limparTextoPDF(btn.textContent), { x: 50, y, size: 10, font });
+        const label = btn.parentNode.querySelector("label")?.textContent || "";
+        page.drawText(`${label} ${btn.textContent}`, { x: 50, y, size: 10.5, font });
         y -= 12;
       });
 
+      // Observações
       if (observacoes.trim() !== "") {
-        const texto = limparTextoPDF(`Obs: ${observacoes}`);
-        const linhas = quebraTexto(texto, 80);
+        const texto = `Obs: ${observacoes}`;
+        const linhas = quebraTexto(texto, 85);
         linhas.forEach(l => {
-          page.drawText(l, { x: 50, y, size: 10, font });
+          page.drawText(l, { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
           y -= 12;
         });
       }
 
+      // Imagens (miniaturas)
       for (let img of imagens) {
-        if (!img.src) continue;
-        if (y < 200) {
+        if (y < 160) {
           page = pdfDoc.addPage([595, 842]);
-          const size = page.getSize();
-          width = size.width;
-          height = size.height;
           y = height - 60;
         }
-        try {
-          const imgBytes = await fetch(img.src).then(res => res.arrayBuffer());
-          const imgEmbed = await pdfDoc.embedJpg(imgBytes);
-          const scaled = imgEmbed.scale(150 / imgEmbed.height);
-          page.drawImage(imgEmbed, {
-            x: 50,
-            y: y - 150,
-            width: scaled.width,
-            height: scaled.height,
-          });
-          y -= 160;
-        } catch (e) {
-          console.warn("⚠️ Erro ao carregar imagem:", e);
-        }
+        const imgBytes = await fetch(img.src).then(res => res.arrayBuffer());
+        let imgEmbed;
+        try { imgEmbed = await pdfDoc.embedJpg(imgBytes); }
+        catch { imgEmbed = await pdfDoc.embedPng(imgBytes); }
+
+        const scaled = imgEmbed.scale(150 / imgEmbed.height);
+        page.drawImage(imgEmbed, {
+          x: 50,
+          y: y - 150,
+          width: scaled.width,
+          height: scaled.height
+        });
+        y -= 160;
       }
 
       y -= 10;
+      drawLine(page, width, y);
+      y -= 25;
     }
 
-    // Assinaturas
-    y -= 30;
-    page.drawLine({
-      start: { x: 40, y },
-      end: { x: width - 40, y },
-      thickness: 1,
-      color: rgb(0.6, 0.6, 0.6),
-    });
-    y -= 40;
+    // === ✍️ Assinaturas ===
+    y -= 10;
+    page.drawText("Assinaturas", { x: 40, y, size: 13, font, color: rgb(1, 0.48, 0) });
+    y -= 15;
 
     const assinaturaTecnico = localStorage.getItem("assinatura_tecnico");
     const assinaturaCliente = localStorage.getItem("assinatura_cliente");
     const assinaturaTreinamento = localStorage.getItem("assinatura_treinamento");
 
-    const desenharAssinatura = async (imgData, x, label) => {
-      page.drawText(limparTextoPDF(label), { x, y: y + 70, size: 11, font });
-      if (!imgData) return;
-      try {
-        const imgBytes = await fetch(imgData).then(r => r.arrayBuffer());
-        const imgEmbed = await pdfDoc.embedPng(imgBytes);
-        page.drawImage(imgEmbed, { x, y, width: 120, height: 60 });
-      } catch (e) {
-        console.warn("⚠️ Erro na assinatura:", e);
-      }
-    };
+    const assY = y - 100;
 
-    await desenharAssinatura(assinaturaTecnico, 60, "Assinatura do Técnico:");
-    await desenharAssinatura(assinaturaCliente, 230, "Assinatura do Cliente:");
-    await desenharAssinatura(assinaturaTreinamento, 400, "Treinamento:");
+    // Técnico
+    page.drawText("Técnico:", { x: 60, y: y + 60, size: 11, font });
+    if (assinaturaTecnico) {
+      const imgBytes = await fetch(assinaturaTecnico).then(r => r.arrayBuffer());
+      const imgEmbed = await pdfDoc.embedPng(imgBytes);
+      page.drawImage(imgEmbed, { x: 60, y, width: 120, height: 60 });
+    }
 
-    // Rodapé
-    y -= 100;
-    page.drawText(limparTextoPDF("Enviado automaticamente pelo sistema Brivax Laudos Técnicos"), {
+    // Cliente
+    page.drawText("Cliente:", { x: 240, y: y + 60, size: 11, font });
+    if (assinaturaCliente) {
+      const imgBytes = await fetch(assinaturaCliente).then(r => r.arrayBuffer());
+      const imgEmbed = await pdfDoc.embedPng(imgBytes);
+      page.drawImage(imgEmbed, { x: 240, y, width: 120, height: 60 });
+    }
+
+    // Treinamento
+    page.drawText("Treinamento:", { x: 420, y: y + 60, size: 11, font });
+    if (assinaturaTreinamento) {
+      const imgBytes = await fetch(assinaturaTreinamento).then(r => r.arrayBuffer());
+      const imgEmbed = await pdfDoc.embedPng(imgBytes);
+      page.drawImage(imgEmbed, { x: 420, y, width: 120, height: 60 });
+    }
+
+    y = 100;
+    page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.7, 0.7, 0.7) });
+    page.drawText("Enviado automaticamente pelo sistema Brivax Laudos Técnicos", {
       x: width / 2 - 150,
-      y,
+      y: y - 15,
       size: 9,
       font,
-      color: rgb(0.3, 0.3, 0.3),
+      color: rgb(0.4, 0.4, 0.4),
     });
 
-    // Geração e download do PDF
-    const nomeArquivo = `${prefix}_Laudo_${limparTextoPDF(nomeLoja.replace(/\s+/g, "_")) || "SemNome"}.pdf`;
+    // === Gera o PDF ===
+    const nomeArquivo = `${prefix}_Laudo_${nomeLoja.replace(/\s+/g, "_") || "SemNome"}.pdf`;
     const pdfBytes = await pdfDoc.save();
+
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = nomeArquivo;
     link.click();
 
-    alert("✅ PDF gerado e baixado com sucesso!");
-  } catch (error) {
-    console.error("Erro ao criar PDF:", error);
-    alert("❌ Ocorreu um erro ao criar o PDF. Verifique o console.");
+  } catch (err) {
+    console.error("Erro ao criar PDF:", err);
+    alert("❌ Erro ao gerar PDF. Verifique as imagens ou tente novamente.");
   }
 }
 
+// === LINHA DIVISÓRIA ===
+function drawLine(page, width, y) {
+  page.drawLine({
+    start: { x: 40, y },
+    end: { x: width - 40, y },
+    thickness: 0.8,
+    color: rgb(0.8, 0.8, 0.8)
+  });
+}
+
+// === QUEBRA DE TEXTO ===
 function quebraTexto(texto, max) {
   const palavras = texto.split(" ");
   const linhas = [];
