@@ -3,10 +3,6 @@ async function gerarPDFFire() {
   await gerarPDFBase("Sistema de Incêndio", "Fire");
 }
 
-async function gerarPDFSmoke() {
-  await gerarPDFBase("Sistema de Fumaça", "Smoke");
-}
-
 async function gerarPDFBase(tipoSistema, prefix) {
   try {
     const { PDFDocument, rgb, StandardFonts } = PDFLib;
