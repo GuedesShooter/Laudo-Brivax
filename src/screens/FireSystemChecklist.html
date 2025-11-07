@@ -360,5 +360,7 @@
     canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const rect = canvas.getBoundingClientRect(); const t = e.touches[0]; ctx.lineTo(t.clientX - rect.left, t.clientY - rect.top); ctx.stroke(); });
     canvas.addEventListener('touchend', () => { drawing = false; });
   </script>
+    <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+  <script src="../js/pdf-template.js?v=11"></script>
 </body>
 </html>
