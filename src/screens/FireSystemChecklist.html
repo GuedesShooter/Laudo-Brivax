@@ -172,21 +172,22 @@
 <body>
   <header>🔥 Laudo de Sistema de Incêndio - Brivax</header>
 
-  <div class="container">
-    <div class="form-header">
-      <label>Data de Entrega do Serviço:</label>
-      <input type="date" id="dataEntrega">
-      <label>Data do Laudo:</label>
-      <input type="date" id="dataLaudo">
-      <label>Nome da Loja:</label>
-      <input type="text" id="nomeLoja" placeholder="Ex: Loja XPTO">
-      <label>Local da Instalação:</label>
-      <input type="text" id="localInstalacao" placeholder="Ex: Shopping Central - Piso 2">
-      <label>Nome do Técnico Responsável:</label>
-      <input type="text" id="nomeTecnico" placeholder="Ex: João Silva">
-      <label>Nome do Ajudante:</label>
-      <input type="text" id="nomeAjudante" placeholder="Ex: Pedro Santos">
-    </div>
+  <!-- 🧾 🔹 Campos de dados do cliente -->
+  <div class="form-header">
+    <h3 style="color:#ff7b00;">📋 Dados do Cliente</h3>
+    <label>Cliente / Contrato:</label>
+    <input type="text" id="nomeCliente" placeholder="Nome ou contrato do cliente">
+    <label>Responsável no Local:</label>
+    <input type="text" id="responsavelEntrega" placeholder="Nome de quem acompanhou o serviço">
+    <label>CNPJ:</label>
+    <input type="text" id="cnpjCliente" placeholder="00.000.000/0000-00">
+    <label>Telefone:</label>
+    <input type="text" id="telefoneCliente" placeholder="(00) 00000-0000">
+    <label>Endereço da Instalação:</label>
+    <input type="text" id="enderecoInstalacao" placeholder="Rua, número, bairro">
+    <label>Cidade:</label>
+    <input type="text" id="cidadeInstalacao" placeholder="Cidade / UF">
+  </div>
 
     <div id="checklist">
       <!-- Itens do Laudo -->
