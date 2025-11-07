@@ -116,14 +116,25 @@ async function gerarPDFBase(tipoSistema, prefix) {
       page.drawText(sanitizeText(titulo), { x: 40, y, size: 12, font: fontBold, color: rgb(0, 0, 0) });
       y -= 16;
 
-      // Teste e funcionamento
-      if (botoes.length > 0) {
-        botoes.forEach((btn) => {
-          const label = btn.closest(".options").previousElementSibling?.textContent?.trim() || "";
-          page.drawText(sanitizeText(`- ${btn.textContent}`), { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
-          y -= 12;
-        });
-      }
+     // Teste e funcionamento (texto profissional)
+if (botoes.length > 0) {
+  let mensagem = "";
+  const respostas = Array.from(botoes).map(btn => btn.textContent.trim().toLowerCase());
+
+  // Se o técnico marcou "Sim"
+  if (respostas.includes("sim")) {
+    mensagem = "Sistema testado e funcionando.";
+  }
+  // Se marcou "Não"
+  else if (respostas.includes("não") || respostas.includes("nao")) {
+    mensagem = "Sistema testado e apresenta falha.";
+  }
+
+  if (mensagem) {
+    page.drawText(sanitizeText(mensagem), { x: 50, y, size: 10, font, color: rgb(0.1, 0.1, 0.1) });
+    y -= 14;
+  }
+}
 
       // Observações
       if (observacoes.trim() !== "") {
