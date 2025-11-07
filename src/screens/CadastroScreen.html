@@ -45,21 +45,49 @@
   </div>
 
   <script>
-    function cadastrar(){
-      const nome=nome.value.trim(),sobrenome=sobrenome.value.trim(),
-            celular=celular.value.trim(),usuario=usuario.value.trim().toUpperCase().replace(/\s+/g,''),
-            senha=senha.value.trim(),senha2=senha2.value.trim();
-      if(!nome||!sobrenome||!celular||!usuario||!senha||!senha2){alert('Preencha todos os campos!');return;}
-      if(senha!==senha2){alert('As senhas não coincidem!');return;}
+  function cadastrar() {
+    // Captura os campos do formulário
+    const nome = document.getElementById('nome').value.trim();
+    const sobrenome = document.getElementById('sobrenome').value.trim();
+    const celular = document.getElementById('celular').value.trim();
+    const usuario = document.getElementById('usuario').value.trim().toUpperCase().replace(/\s+/g, '');
+    const senha = document.getElementById('senha').value.trim();
+    const senha2 = document.getElementById('senha2').value.trim();
 
-      const usuarios=JSON.parse(localStorage.getItem('brivaxUsers'))||[];
-      if(usuarios.find(u=>u.username===usuario)){alert('Usuário já existe!');return;}
-
-      usuarios.push({nome,sobrenome,celular,username:usuario,password:senha});
-      localStorage.setItem('brivaxUsers',JSON.stringify(usuarios));
-      alert('Cadastro realizado com sucesso!');
-      window.location.href='LoginScreen.html';
+    // Validação básica
+    if (!nome || !sobrenome || !celular || !usuario || !senha || !senha2) {
+      alert('⚠️ Preencha todos os campos!');
+      return;
     }
-  </script>
+
+    if (senha !== senha2) {
+      alert('❌ As senhas não coincidem!');
+      return;
+    }
+
+    // Salva no LocalStorage
+    const usuarios = JSON.parse(localStorage.getItem('brivaxUsers')) || [];
+
+    if (usuarios.find(u => u.username === usuario)) {
+      alert('⚠️ Usuário já existe!');
+      return;
+    }
+
+    usuarios.push({
+      nome,
+      sobrenome,
+      celular,
+      username: usuario,
+      password: senha
+    });
+
+    localStorage.setItem('brivaxUsers', JSON.stringify(usuarios));
+
+    alert('✅ Cadastro realizado com sucesso!');
+    window.location.href = 'LoginScreen.html';
+  }
+</script>
+
 </body>
 </html>
+
