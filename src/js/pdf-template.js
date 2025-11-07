@@ -46,38 +46,71 @@ async function gerarPDFBase(tipoSistema, prefix) {
     });
     y -= 30;
 
-    // === Informações gerais ===
-    const info = {
-      dataEntrega: getValue("dataEntrega", "entrega"),
-      dataLaudo: getValue("dataLaudo", "laudo"),
-      nomeLoja: getValue("nomeLoja", "lojaNome", "loja"),
-      localInstalacao: getValue("localInstalacao", "enderecoInstalacao", "local"),
-      nomeTecnico: getValue("nomeTecnico", "tecnicoResponsavel", "tecnico"),
-      nomeAjudante: getValue("nomeAjudante", "ajudanteNome", "ajudante"),
-    };
+// 🔹 Captura automática de todos os inputs e textareas
+const allFields = {};
+document.querySelectorAll("input, textarea, select").forEach(el => {
+  const id = el.id?.toLowerCase();
+  if (id) allFields[id] = el.value?.trim() || "";
+});
 
-    const infoLines = [
-      `Data de Entrega: ${info.dataEntrega}`,
-      `Data do Laudo: ${info.dataLaudo}`,
-      `Loja: ${info.nomeLoja}`,
-      `Local da Instalação: ${info.localInstalacao}`,
-      `Técnico Responsável: ${info.nomeTecnico}`,
-      `Ajudante: ${info.nomeAjudante}`,
-    ];
+// 🔹 Dados do cliente e técnico
+const info = {
+  nomeCliente: allFields["nomecliente"] || "Não informado",
+  responsavelEntrega: allFields["responsavelentrega"] || "Não informado",
+  cnpjCliente: allFields["cnpjcliente"] || "Não informado",
+  telefoneCliente: allFields["telefonecliente"] || "Não informado",
+  enderecoInstalacao: allFields["enderecoinstalacao"] || "Não informado",
+  cidadeInstalacao: allFields["cidadeinstalacao"] || "Não informado",
+  dataEntrega: allFields["dataentrega"] || "Não informado",
+  dataLaudo: allFields["datalaudo"] || "Não informado",
+  nomeLoja: allFields["nomeloja"] || "Não informado",
+  nomeTecnico: allFields["nometecnico"] || "Não informado",
+  nomeAjudante: allFields["nomeajudante"] || "Não informado",
+};
 
-    infoLines.forEach((line) => {
-      page.drawText(sanitizeText(line), { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
-      y -= 15;
-    });
+// === Cabeçalho no PDF ===
+page.drawText(sanitizeText(`BRIVAX - Laudo de ${tipoSistema}`), {
+  x: 40,
+  y,
+  size: 18,
+  font: fontBold,
+  color: rgb(0, 0, 0),
+});
+y -= 35;
 
-    y -= 10;
-    page.drawLine({
-      start: { x: 40, y },
-      end: { x: width - 40, y },
-      thickness: 1,
-      color: rgb(0.6, 0.6, 0.6),
-    });
-    y -= 20;
+// === Bloco do Cliente ===
+const clienteLines = [
+  `Cliente / Contrato: ${info.nomeCliente}`,
+  `Responsável no Local: ${info.responsavelEntrega}`,
+  `CNPJ: ${info.cnpjCliente}`,
+  `Telefone: ${info.telefoneCliente}`,
+  `Endereço: ${info.enderecoInstalacao}`,
+  `Cidade: ${info.cidadeInstalacao}`,
+];
+clienteLines.forEach(line => {
+  page.drawText(sanitizeText(line), { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
+  y -= 15;
+});
+
+y -= 10;
+page.drawLine({
+  start: { x: 40, y },
+  end: { x: width - 40, y },
+  thickness: 1,
+  color: rgb(0.6, 0.6, 0.6),
+});
+y -= 20;
+
+// === Dados Brivax ===
+page.drawText("Empresa: BRIVAX Sistemas de Combate a Incêndio", { x: 40, y, size: 10, font, color: rgb(0, 0, 0) });
+y -= 12;
+page.drawText("CNPJ: 34.810.076/0001-02", { x: 40, y, size: 10, font, color: rgb(0, 0, 0) });
+y -= 12;
+page.drawText("E-mail: brivax.adm@gmail.com", { x: 40, y, size: 10, font, color: rgb(0, 0, 0) });
+y -= 12;
+page.drawText("Telefone: (83) 98827-7180", { x: 40, y, size: 10, font, color: rgb(0, 0, 0) });
+y -= 20;
+
 
     // === Checklists ===
     const itens = document.querySelectorAll(".item");
