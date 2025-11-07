@@ -177,28 +177,29 @@
       <input type="text" id="nomeAjudante" placeholder="Ex: Pedro Santos">
     </div>
 
+    <!-- 🔥 CHECKLIST COMPLETO -->
     <div id="checklist">
-      <div class="item"><h3>1. Foto da Fachada da Loja</h3><input type="file" multiple><div class="preview"></div></div>
-      <div class="item"><h3>2. Foto do Sistema Instalado (Visão Geral)</h3><input type="file" multiple><div class="preview"></div></div>
-      <div class="item"><h3>3. Foto do Quadro de Comando do Sistema</h3><input type="file" multiple><div class="preview"></div></div>
-      <div class="item"><h3>4. Foto dos Cilindros Instalados</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>1. Foto da Fachada da Loja</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>2. Foto do Sistema Instalado (Visão Geral)</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>3. Foto do Quadro de Comando do Sistema</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>4. Foto dos Cilindros Instalados</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
       <div class="item"><h3>5. Tipo de Agente Extintor</h3><div class="options"><button>CO2</button><button>Saponificante</button></div></div>
-      <div class="item"><h3>6. Foto das Linhas de Distribuição</h3><input type="file" multiple><div class="preview"></div></div>
-      <div class="item"><h3>7. Foto dos Bicos Difusores</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>6. Foto das Linhas de Distribuição</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>7. Foto dos Bicos Difusores</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
       <div class="item"><h3>8. Teste do Acionamento Manual</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
       <div class="item"><h3>9. Teste do Acionamento Automático</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>10. Foto do Painel de Alarme</h3><input type="file" multiple><div class="preview"></div></div>
-      <div class="item"><h3>11. Foto dos Detectores</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>10. Foto do Painel de Alarme</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>11. Foto dos Detectores</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
       <div class="item"><h3>12. Teste de Comunicação entre Central e Detectores</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
       <div class="item"><h3>13. Teste de Acionamento dos Cilindros</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>14. Foto dos Módulos de Liberação</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>14. Foto dos Módulos de Liberação</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
       <div class="item"><h3>15. Teste de Funcionamento Geral</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>16. Foto da Central e suas Conexões</h3><input type="file" multiple><div class="preview"></div></div>
-      <div class="item"><h3>17. Foto do Quadro Elétrico com Disjuntor Exclusivo</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>16. Foto da Central e suas Conexões</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>17. Foto do Quadro Elétrico com Disjuntor Exclusivo</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
       <div class="item"><h3>18. Teste do Sistema de Alarme Sonoro</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
       <div class="item"><h3>19. Treinamento Realizado com o Cliente?</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>20. Foto dos Cilindros Lacrados</h3><input type="file" multiple><div class="preview"></div></div>
-      <div class="item"><h3>21. Pendências Encontradas</h3><input type="file" multiple><div class="preview"></div></div>
+      <div class="item"><h3>20. Foto dos Cilindros Lacrados</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>21. Pendências Encontradas</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
       <div class="item"><h3>22. Observações do Técnico</h3><textarea placeholder="Observações gerais do técnico"></textarea></div>
     </div>
 
@@ -210,12 +211,11 @@
     </div>
   </div>
 
-  <!-- Modal de assinatura -->
+  <!-- 🖊️ Modal de Assinatura -->
   <div class="signature-modal" id="signatureModal">
     <div class="signature-box">
-      <h3>Assinatura</h3>
       <canvas id="signaturePad"></canvas>
-      <div style="margin-top:8px;">
+      <div style="margin-top:10px;">
         <button onclick="clearSignature()">Apagar</button>
         <button onclick="saveSignature()">Salvar</button>
         <button onclick="closeSignature()">Fechar</button>
@@ -225,8 +225,9 @@
 
   <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
   <script src="../js/pdf-template.js"></script>
+
   <script>
-    // === Botões Laranja ===
+    // 🧡 Botões de seleção exclusivos
     document.querySelectorAll('.options button').forEach(btn => {
       btn.addEventListener('click', () => {
         const group = btn.parentNode.querySelectorAll('button');
@@ -235,83 +236,46 @@
       });
     });
 
-    // === Pré-visualização de imagens ===
-    document.querySelectorAll('input[type="file"]').forEach(input => {
-      input.addEventListener('change', () => {
-        const preview = input.parentNode.querySelector('.preview');
-        preview.innerHTML = '';
-        Array.from(input.files).forEach(file => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            const div = document.createElement('div');
-            div.innerHTML = `<img src="${e.target.result}"><button onclick="this.parentNode.remove()">×</button>`;
-            preview.appendChild(div);
-          };
-          reader.readAsDataURL(file);
-        });
+    // 📸 Preview das imagens
+    function previewImages(input) {
+      const preview = input.parentNode.querySelector(".preview");
+      preview.innerHTML = "";
+      Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const div = document.createElement("div");
+          div.innerHTML = `<img src="${e.target.result}"><button onclick="this.parentNode.remove()">×</button>`;
+          preview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
       });
-    });
+    }
 
-    // === Assinatura ===
-    const modal = document.getElementById('signatureModal');
-    const canvas = document.getElementById('signaturePad');
-    const ctx = canvas.getContext('2d');
-    let drawing = false, activeField = '';
+    // ✍️ Assinaturas individuais
+    const modal = document.getElementById("signatureModal");
+    const canvas = document.getElementById("signaturePad");
+    const ctx = canvas.getContext("2d");
+    let drawing = false, activeField = "";
 
     function openSignature(field) {
       activeField = field;
-      modal.style.display = 'flex';
+      modal.style.display = "flex";
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
     function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
-    function closeSignature() { modal.style.display = 'none'; }
+    function closeSignature() { modal.style.display = "none"; }
     function saveSignature() {
-      localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL('image/png'));
+      localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL("image/png"));
       alert(`✅ Assinatura de ${activeField} salva!`);
       closeSignature();
     }
 
-    canvas.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
-    canvas.addEventListener('mousemove', e => { if (drawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); }});
-    canvas.addEventListener('mouseup', () => { drawing = false; });
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.beginPath(); ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top); drawing = true; });
-    canvas.addEventListener('touchmove', e => { if (!drawing) return; e.preventDefault(); const rect = canvas.getBoundingClientRect(); const touch = e.touches[0]; ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top); ctx.stroke(); });
-    canvas.addEventListener('touchend', () => drawing = false);
- <!-- Biblioteca principal do PDF -->
-<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
-
-<!-- Template do PDF (ajustado) -->
-<script>
-(async function loadPDFScript() {
-  try {
-    const script = document.createElement("script");
-    <script src="../src/js/pdf-template.js"></script>
-    document.body.appendChild(script);
-    script.onload = () => console.log("✅ pdf-template.js carregado com sucesso!");
-    script.onerror = () => alert("❌ Erro: o arquivo pdf-template.js não foi encontrado.");
-  } catch (err) {
-    console.error("Erro ao carregar o script PDF:", err);
-  }
-})();
-</script>
-
-<script>
-  // Verifica se o botão funciona
-  document.querySelector(".generate").addEventListener("click", async () => {
-    try {
-      console.log("🔹 Botão Baixar Laudo clicado");
-      if (typeof gerarPDFFire !== "function") {
-        alert("❌ A função gerarPDFFire() não foi carregada. Verifique o caminho do pdf-template.js");
-        return;
-      }
-      alert("⏳ Gerando PDF, aguarde...");
-      await gerarPDFFire();
-      alert("✅ PDF gerado com sucesso!");
-    } catch (e) {
-      console.error("Erro ao gerar PDF:", e);
-      alert("❌ Ocorreu um erro ao gerar o PDF.");
-    }
-  });
-</script>
+    canvas.addEventListener("mousedown", e => { drawing = true; ctx.moveTo(e.offsetX, e.offsetY); });
+    canvas.addEventListener("mousemove", e => { if (drawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); }});
+    canvas.addEventListener("mouseup", () => drawing = false);
+    canvas.addEventListener("touchstart", e => { e.preventDefault(); drawing = true; const rect = canvas.getBoundingClientRect(); ctx.moveTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top); });
+    canvas.addEventListener("touchmove", e => { if (!drawing) return; e.preventDefault(); const rect = canvas.getBoundingClientRect(); ctx.lineTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top); ctx.stroke(); });
+    canvas.addEventListener("touchend", () => drawing = false);
+  </script>
 </body>
 </html>
