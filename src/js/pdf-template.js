@@ -191,6 +191,6 @@ async function gerarPDFBase(tipoSistema, prefix) {
 
   } catch (e) {
     console.error("Erro ao criar PDF:", e);
-    alert("❌ Erro ao gerar o PDF. Verifique as imagens e tente novamente.");
+    alert("Erro ao gerar o PDF. Verifique as imagens e tente novamente.");
   }
 }
