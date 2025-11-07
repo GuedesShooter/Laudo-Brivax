@@ -278,7 +278,7 @@
 (async function loadPDFScript() {
   try {
     const script = document.createElement("script");
-    script.src = "../js/pdf-template.js"; // 👈 AJUSTE ESTE CAMINHO se necessário
+    <script src="../src/js/pdf-template.js"></script>
     document.body.appendChild(script);
     script.onload = () => console.log("✅ pdf-template.js carregado com sucesso!");
     script.onerror = () => alert("❌ Erro: o arquivo pdf-template.js não foi encontrado.");
