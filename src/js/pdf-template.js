@@ -1,4 +1,4 @@
-// === GERAÇÃO DE LAUDOS BRIVAX ===
+// === GERAÇÃO DE LAUDO BRIVAX ===
 async function gerarPDFFire() {
   await gerarPDFBase("Sistema de Incêndio", "Fire");
 }
@@ -14,182 +14,148 @@ async function gerarPDFBase(tipoSistema, prefix) {
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-    // 🧹 Limpa caracteres não suportados
+    let page = pdfDoc.addPage([595, 842]); // A4
+    const { width, height } = page.getSize();
+    let y = height - 50;
+
+    // === Função de sanitização ===
     const sanitizeText = (texto) =>
       (texto || "")
         .replace(/₂/g, "2")
         .replace(/₃/g, "3")
         .replace(/₄/g, "4")
-        .replace(/[^\x00-\x7FÀ-ÿ\s.,:;!?()ºª°-]/g, "");
+        .replace(/[^\x00-\x7FÀ-ÿ\s.,:;!?()/ºª°-]/g, "");
 
-    // 🧾 Função que lê múltiplos possíveis IDs
-    function getValue(...ids) {
-      for (const id of ids) {
-        const el = document.querySelector(`#${id}`);
-        if (el && el.value.trim()) return el.value.trim();
-      }
-      return "Não informado";
-    }
-
-    // === Cria página ===
-    let page = pdfDoc.addPage([595, 842]);
-    const { width, height } = page.getSize();
-    let y = height - 60;
+    // === Captura automática de campos ===
+    const allFields = {};
+    document.querySelectorAll("input, textarea, select").forEach((el) => {
+      const id = el.id?.toLowerCase();
+      if (id) allFields[id] = el.value?.trim() || "";
+    });
 
     // === Cabeçalho ===
-    page.drawText(sanitizeText(`BRIVAX - Laudo de ${tipoSistema}`), {
+    page.drawRectangle({ x: 0, y: y - 25, width, height: 40, color: rgb(0, 0, 0) });
+    page.drawText(`BRIVAX - Laudo de ${tipoSistema}`, {
       x: 40,
-      y,
-      size: 18,
+      y: y - 10,
+      size: 16,
       font: fontBold,
-      color: rgb(0, 0, 0),
+      color: rgb(1, 1, 1),
     });
-    y -= 30;
+    y -= 70;
 
-// 🔹 Captura automática de todos os inputs e textareas
-const allFields = {};
-document.querySelectorAll("input, textarea, select").forEach(el => {
-  const id = el.id?.toLowerCase();
-  if (id) allFields[id] = el.value?.trim() || "";
-});
+    // === Bloco do Cliente ===
+    const info = {
+      nomeCliente: allFields["nomecliente"] || "Não informado",
+      responsavelEntrega: allFields["responsavelentrega"] || "Não informado",
+      cnpjCliente: allFields["cnpjcliente"] || "Não informado",
+      telefoneCliente: allFields["telefonecliente"] || "Não informado",
+      enderecoInstalacao: allFields["enderecoinstalacao"] || "Não informado",
+      cidadeInstalacao: allFields["cidadeinstalacao"] || "Não informado",
+      dataEntrega: allFields["dataentrega"] || "Não informado",
+      dataLaudo: allFields["datalaudo"] || "Não informado",
+      nomeLoja: allFields["nomeloja"] || "Não informado",
+      nomeTecnico: allFields["nometecnico"] || "Não informado",
+      nomeAjudante: allFields["nomeajudante"] || "Não informado",
+    };
 
-// 🔹 Dados do cliente e técnico
-const info = {
-  nomeCliente: allFields["nomecliente"] || "Não informado",
-  responsavelEntrega: allFields["responsavelentrega"] || "Não informado",
-  cnpjCliente: allFields["cnpjcliente"] || "Não informado",
-  telefoneCliente: allFields["telefonecliente"] || "Não informado",
-  enderecoInstalacao: allFields["enderecoinstalacao"] || "Não informado",
-  cidadeInstalacao: allFields["cidadeinstalacao"] || "Não informado",
-  dataEntrega: allFields["dataentrega"] || "Não informado",
-  dataLaudo: allFields["datalaudo"] || "Não informado",
-  nomeLoja: allFields["nomeloja"] || "Não informado",
-  nomeTecnico: allFields["nometecnico"] || "Não informado",
-  nomeAjudante: allFields["nomeajudante"] || "Não informado",
-};
+    page.drawText("DADOS DO CLIENTE", { x: 40, y, size: 13, font: fontBold });
+    y -= 18;
 
-// === Cabeçalho no PDF ===
-page.drawText(sanitizeText(`BRIVAX - Laudo de ${tipoSistema}`), {
-  x: 40,
-  y,
-  size: 18,
-  font: fontBold,
-  color: rgb(0, 0, 0),
-});
-y -= 35;
+    const clienteLines = [
+      `Cliente / Contrato: ${info.nomeCliente}`,
+      `Responsável no Local: ${info.responsavelEntrega}`,
+      `CNPJ: ${info.cnpjCliente}`,
+      `Telefone: ${info.telefoneCliente}`,
+      `Endereço: ${info.enderecoInstalacao}`,
+      `Cidade: ${info.cidadeInstalacao}`,
+    ];
+    clienteLines.forEach((line) => {
+      page.drawText(sanitizeText(line), { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
+      y -= 14;
+    });
 
-// === Bloco do Cliente ===
-const clienteLines = [
-  `Cliente / Contrato: ${info.nomeCliente}`,
-  `Responsável no Local: ${info.responsavelEntrega}`,
-  `CNPJ: ${info.cnpjCliente}`,
-  `Telefone: ${info.telefoneCliente}`,
-  `Endereço: ${info.enderecoInstalacao}`,
-  `Cidade: ${info.cidadeInstalacao}`,
-];
-clienteLines.forEach(line => {
-  page.drawText(sanitizeText(line), { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
-  y -= 15;
-});
+    y -= 10;
+    page.drawLine({
+      start: { x: 40, y },
+      end: { x: width - 40, y },
+      thickness: 1,
+      color: rgb(0.6, 0.6, 0.6),
+    });
+    y -= 20;
 
-y -= 10;
-page.drawLine({
-  start: { x: 40, y },
-  end: { x: width - 40, y },
-  thickness: 1,
-  color: rgb(0.6, 0.6, 0.6),
-});
-y -= 20;
+    // === Dados da Empresa Brivax ===
+    page.drawText("EMPRESA RESPONSÁVEL", { x: 40, y, size: 13, font: fontBold });
+    y -= 18;
+    const empresaLines = [
+      "Brivax Sistemas de Combate a Incêndio",
+      "CNPJ: 34.810.076/0001-02",
+      "E-mail: brivax.adm@gmail.com",
+      "Telefone: (83) 98827-7180",
+    ];
+    empresaLines.forEach((line) => {
+      page.drawText(line, { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
+      y -= 14;
+    });
 
-// === Dados Brivax ===
-page.drawText("Empresa: BRIVAX Sistemas de Combate a Incêndio", { x: 40, y, size: 10, font, color: rgb(0, 0, 0) });
-y -= 12;
-page.drawText("CNPJ: 34.810.076/0001-02", { x: 40, y, size: 10, font, color: rgb(0, 0, 0) });
-y -= 12;
-page.drawText("E-mail: brivax.adm@gmail.com", { x: 40, y, size: 10, font, color: rgb(0, 0, 0) });
-y -= 12;
-page.drawText("Telefone: (83) 98827-7180", { x: 40, y, size: 10, font, color: rgb(0, 0, 0) });
-y -= 20;
+    y -= 10;
+    page.drawLine({
+      start: { x: 40, y },
+      end: { x: width - 40, y },
+      thickness: 1,
+      color: rgb(0.6, 0.6, 0.6),
+    });
+    y -= 20;
 
-
-    // === Checklists ===
+    // === Checklist ===
     const itens = document.querySelectorAll(".item");
     for (let i = 0; i < itens.length; i++) {
       const item = itens[i];
-      const titulo = sanitizeText(item.querySelector("h3")?.textContent || `Item ${i + 1}`);
-      const observacoes = sanitizeText(item.querySelector("textarea")?.value || "");
+      const titulo = item.querySelector("h3")?.textContent || `Item ${i + 1}`;
+      const botoes = item.querySelectorAll(".options button.selected");
+      const observacoes = item.querySelector("textarea")?.value || "";
       const imagens = item.querySelectorAll(".preview img");
 
-      // Título do item
-      page.drawText(`${titulo}`, { x: 40, y, size: 12, font: fontBold, color: rgb(0, 0, 0) });
-      y -= 15;
+      // Título
+      page.drawText(sanitizeText(titulo), { x: 40, y, size: 12, font: fontBold, color: rgb(0, 0, 0) });
+      y -= 16;
 
-      // === Imagens ===
-      for (let img of imagens) {
-        if (y < 180) {
-          page = pdfDoc.addPage([595, 842]);
-          y = height - 60;
-        }
-
-        try {
-          let imgEmbed;
-          if (img.src.startsWith("data:")) {
-            const base64 = img.src.split(",")[1];
-            const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-            imgEmbed = await pdfDoc.embedJpg(bytes);
-          } else if (img.src.startsWith("blob:")) {
-            const res = await fetch(img.src);
-            const blobData = await res.blob();
-            const buf = await blobData.arrayBuffer();
-            imgEmbed = await pdfDoc.embedJpg(buf);
-          } else {
-            const imgBytes = await fetch(img.src).then((r) => r.arrayBuffer());
-            imgEmbed = await pdfDoc.embedJpg(imgBytes);
-          }
-
-          const scaled = imgEmbed.scale(140 / imgEmbed.height);
-          page.drawImage(imgEmbed, {
-            x: 60,
-            y: y - 140,
-            width: scaled.width,
-            height: scaled.height,
-          });
-          y -= 150;
-        } catch (err) {
-          console.warn("Erro ao inserir imagem:", err);
-        }
-      }
-
-      // === Respostas de Teste e Funcionamento ===
-      const grupos = item.querySelectorAll(".options");
-      let respostasTexto = "";
-      grupos.forEach((grupo) => {
-        const selecionado = grupo.querySelector(".selected");
-        if (selecionado) respostasTexto += `${selecionado.textContent.trim()} `;
-      });
-
-      if (respostasTexto.trim()) {
-        page.drawText(`Observação: Teste feito e está ${respostasTexto.includes("Não") ? "NÃO funcionando." : "funcionando."}`, {
-          x: 60,
-          y,
-          size: 10,
-          font,
-          color: rgb(0.2, 0.2, 0.2),
-        });
-        y -= 14;
-      }
-
-      // === Observações adicionais ===
-      if (observacoes.trim()) {
-        const texto = `Obs: ${observacoes}`;
-        const linhas = quebraTexto(sanitizeText(texto), 80);
-        linhas.forEach((l) => {
-          page.drawText(l, { x: 60, y, size: 10, font, color: rgb(0, 0, 0) });
+      // Teste e funcionamento
+      if (botoes.length > 0) {
+        botoes.forEach((btn) => {
+          const label = btn.closest(".options").previousElementSibling?.textContent?.trim() || "";
+          page.drawText(sanitizeText(`- ${btn.textContent}`), { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
           y -= 12;
         });
       }
 
-      y -= 10;
+      // Observações
+      if (observacoes.trim() !== "") {
+        const linhasObs = observacoes.split("\n");
+        linhasObs.forEach((linha) => {
+          page.drawText(sanitizeText(`Obs: ${linha}`), { x: 50, y, size: 10, font, color: rgb(0.2, 0.2, 0.2) });
+          y -= 12;
+        });
+      }
+
+      // Imagens
+      for (const img of imagens) {
+        try {
+          const imgBytes = await fetch(img.src).then((r) => r.arrayBuffer());
+          const imgEmbed = await pdfDoc.embedJpg(imgBytes);
+          const scaled = imgEmbed.scale(150 / imgEmbed.height);
+          if (y < 180) {
+            page = pdfDoc.addPage([595, 842]);
+            y = height - 60;
+          }
+          page.drawImage(imgEmbed, { x: 50, y: y - 150, width: scaled.width, height: scaled.height });
+          y -= 160;
+        } catch (e) {
+          console.warn("Erro ao adicionar imagem:", e);
+        }
+      }
+
+      y -= 20;
       if (y < 100) {
         page = pdfDoc.addPage([595, 842]);
         y = height - 60;
@@ -197,31 +163,45 @@ y -= 20;
     }
 
     // === Assinaturas ===
+    y -= 40;
+    page.drawText("Assinatura do Técnico:", { x: 60, y: y + 70, size: 11, font });
+    page.drawText("Assinatura do Cliente:", { x: 230, y: y + 70, size: 11, font });
+    page.drawText("Treinamento:", { x: 400, y: y + 70, size: 11, font });
+
     const assinaturaTecnico = localStorage.getItem("assinatura_tecnico");
     const assinaturaCliente = localStorage.getItem("assinatura_cliente");
     const assinaturaTreinamento = localStorage.getItem("assinatura_treinamento");
 
-    y -= 20;
-    page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.6, 0.6, 0.6) });
-    y -= 50;
+    const assinaturas = [
+      { data: assinaturaTecnico, x: 60 },
+      { data: assinaturaCliente, x: 230 },
+      { data: assinaturaTreinamento, x: 400 },
+    ];
 
-    if (assinaturaTecnico) await desenharAssinatura(pdfDoc, page, assinaturaTecnico, "Técnico", 60, y);
-    if (assinaturaCliente) await desenharAssinatura(pdfDoc, page, assinaturaCliente, "Cliente", 230, y);
-    if (assinaturaTreinamento) await desenharAssinatura(pdfDoc, page, assinaturaTreinamento, "Treinamento", 400, y);
+    for (const a of assinaturas) {
+      if (a.data) {
+        try {
+          const imgBytes = await fetch(a.data).then((r) => r.arrayBuffer());
+          const imgEmbed = await pdfDoc.embedPng(imgBytes);
+          page.drawImage(imgEmbed, { x: a.x, y, width: 120, height: 60 });
+        } catch (e) {
+          console.warn("Erro ao adicionar assinatura:", e);
+        }
+      }
+    }
 
-    y -= 110;
-    page.drawText("Gerado automaticamente pelo Sistema Brivax Laudos Técnicos", {
-      x: 120,
+    y -= 100;
+    page.drawText("Gerado automaticamente pelo sistema Brivax Laudos Técnicos", {
+      x: width / 2 - 160,
       y,
       size: 9,
       font,
       color: rgb(0.3, 0.3, 0.3),
     });
 
-    const nomeArquivo = `${prefix}_Laudo_${info.nomeLoja.replace(/\s+/g, "_") || "SemNome"}.pdf`;
+    // === Download automático ===
+    const nomeArquivo = `${prefix}_Laudo_${info.nomeCliente.replace(/\s+/g, "_") || "SemNome"}.pdf`;
     const pdfBytes = await pdfDoc.save();
-
-    // Download local
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -229,37 +209,6 @@ y -= 20;
     link.click();
   } catch (error) {
     console.error("Erro ao criar PDF:", error);
-    alert("Erro ao gerar o PDF. Verifique as imagens e tente novamente.");
+    alert("Ocorreu um erro ao gerar o PDF.");
   }
-}
-
-// === Função para desenhar assinaturas ===
-async function desenharAssinatura(pdfDoc, page, dataURL, label, x, y) {
-  const { rgb, StandardFonts } = PDFLib;
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  page.drawText(`Assinatura do ${label}:`, { x, y: y + 65, size: 11, font, color: rgb(0, 0, 0) });
-
-  try {
-    const base64 = dataURL.split(",")[1];
-    const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-    const imgEmbed = await pdfDoc.embedPng(bytes);
-    page.drawImage(imgEmbed, { x, y, width: 120, height: 60 });
-  } catch (err) {
-    console.warn(`Erro ao inserir assinatura ${label}:`, err);
-  }
-}
-
-// === Quebra de texto ===
-function quebraTexto(texto, max) {
-  const palavras = texto.split(" ");
-  const linhas = [];
-  let atual = "";
-  for (let p of palavras) {
-    if ((atual + p).length > max) {
-      linhas.push(atual);
-      atual = p + " ";
-    } else atual += p + " ";
-  }
-  if (atual) linhas.push(atual);
-  return linhas;
 }
