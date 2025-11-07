@@ -1,6 +1,6 @@
 // ==========================
-// 📄 pdf-template.js - v6 (Offline Final)
-// BRIVAX Laudo Técnico - Monocromático com imagens e acentos corrigidos
+// 📄 pdf-template.js - v7 (Final)
+// BRIVAX Laudo Técnico - Monocromático, com imagens, acentuação e assinaturas
 // ==========================
 
 async function gerarPDFFire() {
@@ -34,8 +34,8 @@ async function gerarPDFBase(tipoSistema, prefix) {
     y -= 70;
 
     // 🧾 Informações gerais
-    const normalizar = texto => (texto || "").replace(/[₂³¹°]/g, m =>
-      ({ "₂": "2", "³": "3", "¹": "1", "°": "º" }[m] || m)
+    const normalizar = texto => (texto || "").replace(/[₂³¹°❌]/g, m =>
+      ({ "₂": "2", "³": "3", "¹": "1", "°": "º", "❌": "X" }[m] || m)
     );
 
     const info = [
@@ -121,7 +121,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
         const img = await pdfDoc.embedPng(bytes);
         page.drawImage(img, { x, y, width: 120, height: 60 });
       } else {
-        page.drawText("❌ Não assinada", { x, y: y + 50, size: 9, font, color: rgb(0.4, 0.4, 0.4) });
+        page.drawText("Não assinada", { x, y: y + 50, size: 9, font, color: rgb(0.4, 0.4, 0.4) });
       }
     };
 
