@@ -177,30 +177,47 @@
       <input type="text" id="nomeAjudante" placeholder="Ex: Pedro Santos">
     </div>
 
-    <!-- 🔥 CHECKLIST COMPLETO -->
     <div id="checklist">
+      <!-- Itens do Laudo -->
       <div class="item"><h3>1. Foto da Fachada da Loja</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>2. Foto do Sistema Instalado (Visão Geral)</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>3. Foto do Quadro de Comando do Sistema</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>4. Foto dos Cilindros Instalados</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>5. Tipo de Agente Extintor</h3><div class="options"><button>CO2</button><button>Saponificante</button></div></div>
-      <div class="item"><h3>6. Foto das Linhas de Distribuição</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>2. Foto da Coifa</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>3. Foto do Cilindro de Saponificante</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>4. Foto do Manômetro do Saponificante</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>5. Foto da Solenoide Conectada no Saponificante</h3>
+        <input type="file" multiple onchange="previewImages(this)"><div class="preview"></div>
+        <div class="options"><button>Teste Sim</button><button>Teste Não</button><button>Funcionando Sim</button><button>Funcionando Não</button></div>
+      </div>
+      <div class="item" id="termostatos"><h3>6. Foto dos Termostatos Instalados na Coifa</h3>
+        <input type="file" multiple onchange="previewImages(this)"><div class="preview"></div>
+        <div class="options"><button>Teste Sim</button><button>Teste Não</button><button>Funcionando Sim</button><button>Funcionando Não</button></div>
+        <button onclick="duplicarItem('termostatos')">+ Adicionar</button>
+      </div>
       <div class="item"><h3>7. Foto dos Bicos Difusores</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>8. Teste do Acionamento Manual</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>9. Teste do Acionamento Automático</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>10. Foto do Painel de Alarme</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>11. Foto dos Detectores</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>12. Teste de Comunicação entre Central e Detectores</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>13. Teste de Acionamento dos Cilindros</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>14. Foto dos Módulos de Liberação</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>15. Teste de Funcionamento Geral</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>16. Foto da Central e suas Conexões</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>17. Foto do Quadro Elétrico com Disjuntor Exclusivo</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>18. Teste do Sistema de Alarme Sonoro</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>19. Treinamento Realizado com o Cliente?</h3><div class="options"><button>Sim</button><button>Não</button></div></div>
-      <div class="item"><h3>20. Foto dos Cilindros Lacrados</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>21. Pendências Encontradas</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
-      <div class="item"><h3>22. Observações do Técnico</h3><textarea placeholder="Observações gerais do técnico"></textarea></div>
+      <div class="item"><h3>8. Tipo de Gás da Loja</h3><div class="options"><button>Natural</button><button>GLP</button></div></div>
+      <div class="item" id="detector"><h3>9. Foto do Detector de Gás</h3>
+        <input type="file" multiple onchange="previewImages(this)"><div class="preview"></div>
+        <div class="options"><button>Teste Sim</button><button>Teste Não</button><button>Funcionando Sim</button><button>Funcionando Não</button></div>
+        <button onclick="duplicarItem('detector')">+ Adicionar</button>
+      </div>
+      <div class="item"><h3>10. Foto da Solenoide Conectada</h3>
+        <input type="file" multiple onchange="previewImages(this)"><div class="preview"></div>
+        <div class="options"><button>Teste Sim</button><button>Teste Não</button><button>Funcionando Sim</button><button>Funcionando Não</button></div>
+      </div>
+      <div class="item" id="dumper"><h3>11. Foto do Dumper Corta-Fogo</h3>
+        <input type="file" multiple onchange="previewImages(this)"><div class="preview"></div>
+        <div class="options"><button>Teste Sim</button><button>Teste Não</button><button>Funcionando Sim</button><button>Funcionando Não</button></div>
+        <button onclick="duplicarItem('dumper')">+ Adicionar</button>
+      </div>
+      <div class="item"><h3>12. Foto do Cilindro de CO₂</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>13. Foto da Solenoide Conectada no CO₂</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div><div class="options"><button>Teste Sim</button><button>Teste Não</button><button>Funcionando Sim</button><button>Funcionando Não</button></div></div>
+      <div class="item"><h3>14. Foto dos Termostatos Reguláveis</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>15. Foto da Comunicação pro Módulo do Shopping</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>16. Foto do Quadro Elétrico/Disjuntor Contato Seco N/F</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>17. Foto da Central Aberta e Conectada</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>18. Foto da Central Fechada</h3><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item" id="pendencias"><h3>19. Pendências?</h3><div class="options"><button>Brivax</button><button>Cliente</button></div><textarea placeholder="Descreva as pendências"></textarea><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item" id="treinamento"><h3>20. Treinamento foi passado?</h3><div class="options"><button>Sim</button><button>Não</button></div><textarea placeholder="Detalhes do treinamento"></textarea><input type="file" multiple onchange="previewImages(this)"><div class="preview"></div></div>
+      <div class="item"><h3>21. Observações adicionais do técnico</h3><textarea placeholder="Observações gerais"></textarea></div>
     </div>
 
     <div class="footer">
@@ -211,11 +228,10 @@
     </div>
   </div>
 
-  <!-- 🖊️ Modal de Assinatura -->
   <div class="signature-modal" id="signatureModal">
     <div class="signature-box">
       <canvas id="signaturePad"></canvas>
-      <div style="margin-top:10px;">
+      <div style="text-align:center; margin-top:8px;">
         <button onclick="clearSignature()">Apagar</button>
         <button onclick="saveSignature()">Salvar</button>
         <button onclick="closeSignature()">Fechar</button>
@@ -227,7 +243,6 @@
   <script src="../js/pdf-template.js"></script>
 
   <script>
-    // 🧡 Botões de seleção exclusivos
     document.querySelectorAll('.options button').forEach(btn => {
       btn.addEventListener('click', () => {
         const group = btn.parentNode.querySelectorAll('button');
@@ -236,14 +251,13 @@
       });
     });
 
-    // 📸 Preview das imagens
     function previewImages(input) {
-      const preview = input.parentNode.querySelector(".preview");
-      preview.innerHTML = "";
+      const preview = input.parentNode.querySelector('.preview');
+      preview.innerHTML = '';
       Array.from(input.files).forEach(file => {
         const reader = new FileReader();
         reader.onload = e => {
-          const div = document.createElement("div");
+          const div = document.createElement('div');
           div.innerHTML = `<img src="${e.target.result}"><button onclick="this.parentNode.remove()">×</button>`;
           preview.appendChild(div);
         };
@@ -251,31 +265,29 @@
       });
     }
 
-    // ✍️ Assinaturas individuais
-    const modal = document.getElementById("signatureModal");
-    const canvas = document.getElementById("signaturePad");
-    const ctx = canvas.getContext("2d");
-    let drawing = false, activeField = "";
-
-    function openSignature(field) {
-      activeField = field;
-      modal.style.display = "flex";
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
-    function closeSignature() { modal.style.display = "none"; }
-    function saveSignature() {
-      localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL("image/png"));
-      alert(`✅ Assinatura de ${activeField} salva!`);
-      closeSignature();
+    function duplicarItem(id) {
+      const item = document.getElementById(id);
+      const clone = item.cloneNode(true);
+      clone.id = '';
+      item.parentNode.insertBefore(clone, item.nextSibling);
     }
 
-    canvas.addEventListener("mousedown", e => { drawing = true; ctx.moveTo(e.offsetX, e.offsetY); });
-    canvas.addEventListener("mousemove", e => { if (drawing) { ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); }});
-    canvas.addEventListener("mouseup", () => drawing = false);
-    canvas.addEventListener("touchstart", e => { e.preventDefault(); drawing = true; const rect = canvas.getBoundingClientRect(); ctx.moveTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top); });
-    canvas.addEventListener("touchmove", e => { if (!drawing) return; e.preventDefault(); const rect = canvas.getBoundingClientRect(); ctx.lineTo(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top); ctx.stroke(); });
-    canvas.addEventListener("touchend", () => drawing = false);
+    const modal = document.getElementById('signatureModal');
+    const canvas = document.getElementById('signaturePad');
+    const ctx = canvas.getContext('2d');
+    let drawing = false, activeField = '';
+
+    function openSignature(field){ activeField = field; modal.style.display='flex'; ctx.clearRect(0,0,canvas.width,canvas.height); }
+    function clearSignature(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
+    function closeSignature(){ modal.style.display='none'; }
+    function saveSignature(){ localStorage.setItem(`assinatura_${activeField}`, canvas.toDataURL("image/png")); alert(`✅ Assinatura de ${activeField} salva!`); closeSignature(); }
+
+    canvas.addEventListener('mousedown', e => { drawing = true; ctx.beginPath(); ctx.moveTo(e.offsetX, e.offsetY); });
+    canvas.addEventListener('mousemove', e => { if (!drawing) return; ctx.lineTo(e.offsetX, e.offsetY); ctx.stroke(); });
+    canvas.addEventListener('mouseup', () => { drawing = false; });
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); const rect = canvas.getBoundingClientRect(); const t = e.touches[0]; ctx.beginPath(); ctx.moveTo(t.clientX - rect.left, t.clientY - rect.top); drawing = true; });
+    canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const rect = canvas.getBoundingClientRect(); const t = e.touches[0]; ctx.lineTo(t.clientX - rect.left, t.clientY - rect.top); ctx.stroke(); });
+    canvas.addEventListener('touchend', () => { drawing = false; });
   </script>
 </body>
 </html>
