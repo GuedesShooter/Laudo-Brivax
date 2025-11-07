@@ -1,91 +1,105 @@
-// === BRIVAX LAUDO PROFISSIONAL ===
-// Geração de PDF Monocromático Profissional
-// Funciona para Sistema de Incêndio (Fire)
+// === GERAÇÃO DE PDF BRIVAX ===
+// Atualizado: Revisão completa com limpeza de caracteres, cabeçalho detalhado e layout profissional monocromático
 
 async function gerarPDFFire() {
   await gerarPDFBase("Sistema de Incêndio", "Fire");
 }
 
+async function gerarPDFSmoke() {
+  await gerarPDFBase("Sistema de Fumaça", "Smoke");
+}
+
 async function gerarPDFBase(tipoSistema, prefix) {
   try {
-    const { PDFDocument, StandardFonts, rgb } = PDFLib;
-
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
     const pdfDoc = await PDFDocument.create();
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
+    // 🧹 Sanitiza caracteres incompatíveis com WinAnsi
+    const sanitizeText = (texto) =>
+      (texto || "")
+        .replace(/₂/g, "2")
+        .replace(/₃/g, "3")
+        .replace(/₄/g, "4")
+        .replace(/[^\x00-\x7FÀ-ÿ\s.,:;!?()ºª°-]/g, "");
+
+    // === Página inicial ===
     let page = pdfDoc.addPage([595, 842]); // A4
     const { width, height } = page.getSize();
     let y = height - 50;
 
-    // ===== Cabeçalho =====
-    page.drawRectangle({ x: 0, y: y - 25, width, height: 40, color: rgb(0.2, 0.2, 0.2) });
-    page.drawText(`BRIVAX - Laudo Técnico de ${tipoSistema}`, {
+    // Cabeçalho
+    page.drawText(sanitizeText(`BRIVAX - Laudo de ${tipoSistema}`), {
       x: 40,
-      y: y - 10,
-      size: 16,
+      y,
+      size: 18,
       font: fontBold,
-      color: rgb(1, 1, 1),
+      color: rgb(0, 0, 0),
     });
-    y -= 60;
 
-    page.setFont(font);
-    page.setFontSize(10);
+    y -= 40;
 
-    // ===== Dados do Cliente =====
-    const nomeCliente = document.getElementById("nomeCliente")?.value || "";
-    const responsavelEntrega = document.getElementById("responsavelEntrega")?.value || "";
-    const cnpjCliente = document.getElementById("cnpjCliente")?.value || "";
-    const telefoneCliente = document.getElementById("telefoneCliente")?.value || "";
-    const enderecoInstalacao = document.getElementById("enderecoInstalacao")?.value || "";
-    const cidadeInstalacao = document.getElementById("cidadeInstalacao")?.value || "";
+    // === Informações gerais ===
     const dataEntrega = document.getElementById("dataEntrega")?.value || "";
     const dataLaudo = document.getElementById("dataLaudo")?.value || "";
+    const nomeLoja = document.getElementById("nomeLoja")?.value || "";
+    const localInstalacao = document.getElementById("localInstalacao")?.value || "";
+    const nomeTecnico = document.getElementById("nomeTecnico")?.value || "";
+    const nomeAjudante = document.getElementById("nomeAjudante")?.value || "";
 
     const infoCliente = [
-      ["Cliente / Contrato:", nomeCliente],
-      ["Responsável no Local:", responsavelEntrega],
-      ["CNPJ:", cnpjCliente],
-      ["Telefone:", telefoneCliente],
-      ["Endereço da Instalação:", enderecoInstalacao],
-      ["Cidade:", cidadeInstalacao],
-      ["Data de Entrega:", dataEntrega],
-      ["Data do Laudo:", dataLaudo],
+      `Cliente: ${nomeLoja}`,
+      `Local de Instalação: ${localInstalacao}`,
+      `Data de Entrega do Serviço: ${dataEntrega}`,
+      `Data do Laudo: ${dataLaudo}`,
+      `Técnico Responsável: ${nomeTecnico}`,
+      `Ajudante: ${nomeAjudante}`,
     ];
 
-    infoCliente.forEach(([label, valor]) => {
-      page.drawText(label, { x: 40, y, size: 10, font: fontBold });
-      page.drawText(valor || "-", { x: 200, y, size: 10, font });
-      y -= 15;
+    infoCliente.forEach((linha) => {
+      page.drawText(sanitizeText(linha), {
+        x: 40,
+        y,
+        size: 11,
+        font,
+        color: rgb(0, 0, 0),
+      });
+      y -= 16;
     });
 
-    y -= 10;
+    y -= 15;
     page.drawLine({
       start: { x: 40, y },
       end: { x: width - 40, y },
       thickness: 1,
-      color: rgb(0.6, 0.6, 0.6),
+      color: rgb(0.7, 0.7, 0.7),
     });
-    y -= 25;
 
-    // ===== Dados da Empresa =====
+    y -= 30;
+
+    // === Informações da empresa ===
     const infoEmpresa = [
-      ["Empresa:", "BRIVAX SISTEMAS DE COMBATE A INCÊNDIO"],
-      ["CNPJ:", "34.810.076/0001-02"],
-      ["Especialidade:", "Sistemas de combate e detecção de incêndio"],
-      ["E-mail:", "brivax.adm@gmail.com"],
-      ["Telefone Comercial:", "(83) 98827-7180"],
+      "Empresa: Brivax Sistemas de Combate a Incêndio",
+      "CNPJ: 34.810.076/0001-02",
+      "Especializada em sistemas de combate e detecção de incêndio",
+      "Contato: brivax.adm@gmail.com | (83) 98827-7180",
     ];
 
-    infoEmpresa.forEach(([label, valor]) => {
-      page.drawText(label, { x: 40, y, size: 10, font: fontBold });
-      page.drawText(valor, { x: 200, y, size: 10, font });
-      y -= 15;
+    infoEmpresa.forEach((linha) => {
+      page.drawText(sanitizeText(linha), {
+        x: 40,
+        y,
+        size: 10,
+        font,
+        color: rgb(0.2, 0.2, 0.2),
+      });
+      y -= 14;
     });
 
     y -= 20;
 
-    // ===== Checklist =====
+    // === Checklist e imagens ===
     const itens = document.querySelectorAll(".item");
     for (let i = 0; i < itens.length; i++) {
       const item = itens[i];
@@ -99,98 +113,136 @@ async function gerarPDFBase(tipoSistema, prefix) {
         y = height - 60;
       }
 
-      page.drawText(`${i + 1}. ${titulo}`, {
+      page.drawText(sanitizeText(titulo), {
         x: 40,
         y,
         size: 12,
         font: fontBold,
         color: rgb(0, 0, 0),
       });
-      y -= 12;
+      y -= 15;
 
+      // Botões Sim/Não
       botoesSelecionados.forEach((btn) => {
-        page.drawText(`- ${btn.textContent}`, { x: 55, y, size: 10, font, color: rgb(0, 0, 0) });
-        y -= 10;
+        const label = btn.parentNode.previousElementSibling?.textContent || "";
+        page.drawText(sanitizeText(`${label}: ${btn.textContent}`), {
+          x: 50,
+          y,
+          size: 10,
+          font,
+          color: rgb(0.2, 0.2, 0.2),
+        });
+        y -= 12;
       });
 
+      // Observações
       if (observacoes.trim() !== "") {
-        page.drawText(`Obs: ${observacoes}`, { x: 55, y, size: 10, font, color: rgb(0, 0, 0) });
-        y -= 12;
+        const texto = `Observações: ${observacoes}`;
+        const linhas = quebraTexto(sanitizeText(texto), 85);
+        linhas.forEach((linha) => {
+          page.drawText(linha, {
+            x: 50,
+            y,
+            size: 10,
+            font,
+            color: rgb(0.2, 0.2, 0.2),
+          });
+          y -= 12;
+        });
       }
 
+      // Imagens
       for (let img of imagens) {
-        if (y < 150) {
+        if (y < 160) {
           page = pdfDoc.addPage([595, 842]);
           y = height - 60;
         }
+
         try {
           const imgBytes = await fetch(img.src).then((res) => res.arrayBuffer());
           const imgEmbed = await pdfDoc.embedJpg(imgBytes);
           const scaled = imgEmbed.scale(150 / imgEmbed.height);
-          page.drawImage(imgEmbed, { x: 50, y: y - 150, width: scaled.width, height: scaled.height });
+          page.drawImage(imgEmbed, {
+            x: 50,
+            y: y - 150,
+            width: scaled.width,
+            height: scaled.height,
+          });
           y -= 160;
-        } catch (err) {
-          console.warn("Erro ao adicionar imagem:", err);
+        } catch (error) {
+          console.warn("Erro ao adicionar imagem:", error);
         }
       }
 
-      y -= 10;
-      page.drawLine({
-        start: { x: 40, y },
-        end: { x: width - 40, y },
-        thickness: 0.5,
-        color: rgb(0.7, 0.7, 0.7),
-      });
       y -= 20;
     }
 
-    // ===== Assinaturas =====
-    if (y < 200) {
-      page = pdfDoc.addPage([595, 842]);
-      y = height - 100;
-    }
+    // === Assinaturas ===
+    y -= 30;
+    page.drawLine({
+      start: { x: 40, y },
+      end: { x: width - 40, y },
+      thickness: 1,
+      color: rgb(0.7, 0.7, 0.7),
+    });
+    y -= 40;
 
     const assinaturaTecnico = localStorage.getItem("assinatura_tecnico");
     const assinaturaCliente = localStorage.getItem("assinatura_cliente");
     const assinaturaTreinamento = localStorage.getItem("assinatura_treinamento");
 
-    const drawAssinatura = async (x, label, assinatura) => {
-      page.drawText(label, { x, y: y + 60, size: 10, font: fontBold });
-      if (assinatura) {
+    // Desenha assinaturas
+    const drawAssinatura = async (label, imgData, x) => {
+      page.drawText(sanitizeText(label), { x, y: y + 70, size: 10, font });
+      if (imgData) {
         try {
-          const imgBytes = await fetch(assinatura).then((r) => r.arrayBuffer());
-          const imgEmbed = await pdfDoc.embedPng(imgBytes);
-          page.drawImage(imgEmbed, { x, y, width: 120, height: 50 });
+          const bytes = await fetch(imgData).then((r) => r.arrayBuffer());
+          const img = await pdfDoc.embedPng(bytes);
+          page.drawImage(img, { x, y, width: 120, height: 60 });
         } catch {
-          page.drawText("[Assinatura não carregada]", { x, y: y + 20, size: 9, font });
+          console.warn(`Erro ao carregar assinatura de ${label}`);
         }
       }
     };
 
-    await drawAssinatura(50, "Assinatura do Técnico", assinaturaTecnico);
-    await drawAssinatura(230, "Assinatura do Cliente", assinaturaCliente);
-    await drawAssinatura(410, "Treinamento", assinaturaTreinamento);
+    await drawAssinatura("Assinatura do Técnico", assinaturaTecnico, 60);
+    await drawAssinatura("Assinatura do Cliente", assinaturaCliente, 230);
+    await drawAssinatura("Treinamento", assinaturaTreinamento, 400);
 
-    y -= 80;
-    page.drawText("Sistema Brivax Laudos Técnicos © 2025", {
-      x: width / 2 - 100,
+    y -= 110;
+    page.drawText("Gerado automaticamente pelo sistema Brivax Laudos Técnicos", {
+      x: width / 2 - 160,
       y,
       size: 9,
       font,
-      color: rgb(0.4, 0.4, 0.4),
+      color: rgb(0.3, 0.3, 0.3),
     });
 
-    // ===== Salvar PDF =====
-    const nomeArquivo = `${prefix}_Laudo_${nomeCliente.replace(/\s+/g, "_") || "SemNome"}.pdf`;
+    // === Finaliza e baixa ===
+    const nomeArquivo = `${prefix}_Laudo_${nomeLoja.replace(/\s+/g, "_") || "SemNome"}.pdf`;
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = nomeArquivo;
     link.click();
-
   } catch (e) {
     console.error("Erro ao criar PDF:", e);
-    alert("Erro ao gerar o PDF. Verifique as imagens e tente novamente.");
+    alert("Erro ao gerar o PDF. Verifique o console.");
   }
+}
+
+// === Função auxiliar de quebra de texto ===
+function quebraTexto(texto, max) {
+  const palavras = texto.split(" ");
+  const linhas = [];
+  let atual = "";
+  for (let p of palavras) {
+    if ((atual + p).length > max) {
+      linhas.push(atual);
+      atual = p + " ";
+    } else atual += p + " ";
+  }
+  if (atual) linhas.push(atual);
+  return linhas;
 }
