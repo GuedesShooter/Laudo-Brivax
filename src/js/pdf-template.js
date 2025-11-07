@@ -159,19 +159,37 @@ async function gerarPDFBase(tipoSistema, prefix) {
         }
 
         try {
-          const imgBytes = await fetch(img.src).then((res) => res.arrayBuffer());
-          const imgEmbed = await pdfDoc.embedJpg(imgBytes);
-          const scaled = imgEmbed.scale(150 / imgEmbed.height);
-          page.drawImage(imgEmbed, {
-            x: 50,
-            y: y - 150,
-            width: scaled.width,
-            height: scaled.height,
-          });
-          y -= 160;
-        } catch (error) {
-          console.warn("Erro ao adicionar imagem:", error);
-        }
+  let imgEmbed = null;
+
+  if (img.src.startsWith("data:")) {
+    // Imagem já está em base64 (carregada da galeria)
+    const base64 = img.src.split(",")[1];
+    const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+    imgEmbed = await pdfDoc.embedJpg(bytes);
+  } else if (img.src.startsWith("blob:")) {
+    // Converte blob (imagem carregada via input) para ArrayBuffer
+    const response = await fetch(img.src);
+    const blobData = await response.blob();
+    const arrayBuffer = await blobData.arrayBuffer();
+    imgEmbed = await pdfDoc.embedJpg(arrayBuffer);
+  } else {
+    // Imagem externa normal (URL pública)
+    const imgBytes = await fetch(img.src).then(res => res.arrayBuffer());
+    imgEmbed = await pdfDoc.embedJpg(imgBytes);
+  }
+
+  const scaled = imgEmbed.scale(150 / imgEmbed.height);
+  page.drawImage(imgEmbed, {
+    x: 50,
+    y: y - 150,
+    width: scaled.width,
+    height: scaled.height,
+  });
+  y -= 160;
+} catch (error) {
+  console.warn("Erro ao adicionar imagem:", error);
+}
+
       }
 
       y -= 20;
