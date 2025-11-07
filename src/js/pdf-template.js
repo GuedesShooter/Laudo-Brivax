@@ -1,7 +1,4 @@
-// =============================
-// ✅ TEMPLATE DE GERAÇÃO DE PDF BRIVAX
-// Compatível com celular e desktop
-// =============================
+// === Funções principais para geração dos PDFs da Brivax ===
 
 async function gerarPDFFire() {
   await gerarPDFBase("Sistema de Incêndio", "Fire");
@@ -11,58 +8,73 @@ async function gerarPDFSmoke() {
   await gerarPDFBase("Sistema de Fumaça", "Smoke");
 }
 
-// === FUNÇÃO PRINCIPAL ===
+// === Função base ===
 async function gerarPDFBase(tipoSistema, prefix) {
   try {
-    const { PDFDocument, StandardFonts, rgb } = PDFLib;
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
     const pdfDoc = await PDFDocument.create();
-
-    // 🔤 Fonte nativa (sem precisar do fontkit)
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-    // 📄 Nova página
-    let page = pdfDoc.addPage([595, 842]); // A4
+    let page = pdfDoc.addPage([595, 842]);
     const { width, height } = page.getSize();
-    let y = height - 50;
+    let y = height - 60;
 
-    // 🔶 Cabeçalho
-    page.drawRectangle({ x: 0, y: y - 25, width, height: 40, color: rgb(1, 0.48, 0) });
-    page.drawText(`BRIVAX - Laudo de ${tipoSistema}`, {
-      x: 40,
+    // === Cabeçalho com logo e título ===
+    const logoUrl = "../assets/brivax-logo.png";
+    try {
+      const logoBytes = await fetch(logoUrl).then(res => res.arrayBuffer());
+      const logoImg = await pdfDoc.embedPng(logoBytes);
+      const logoScaled = logoImg.scale(80 / logoImg.height);
+      page.drawImage(logoImg, { x: 40, y: y - 30, width: logoScaled.width, height: logoScaled.height });
+    } catch {
+      // ignora se logo não encontrado
+    }
+
+    page.drawText(`BRIVAX - Laudo Técnico de ${tipoSistema}`, {
+      x: 150,
       y: y - 10,
       size: 16,
       font,
-      color: rgb(1, 1, 1),
+      color: rgb(0, 0, 0),
     });
+
     y -= 70;
 
-    // 🧾 Informações gerais
-    const dataEntrega = document.getElementById("dataEntrega")?.value || "";
-    const dataLaudo = document.getElementById("dataLaudo")?.value || "";
-    const nomeLoja = document.getElementById("nomeLoja")?.value || "";
-    const localInstalacao = document.getElementById("localInstalacao")?.value || "";
-    const nomeTecnico = document.getElementById("nomeTecnico")?.value || "";
-    const nomeAjudante = document.getElementById("nomeAjudante")?.value || "";
+    // === Informações gerais ===
+    const info = {
+      entrega: document.getElementById("dataEntrega")?.value || "",
+      laudo: document.getElementById("dataLaudo")?.value || "",
+      loja: document.getElementById("nomeLoja")?.value || "",
+      local: document.getElementById("localInstalacao")?.value || "",
+      tecnico: document.getElementById("nomeTecnico")?.value || "",
+      ajudante: document.getElementById("nomeAjudante")?.value || ""
+    };
 
-    const info = [
-      `Data de Entrega: ${dataEntrega}`,
-      `Data do Laudo: ${dataLaudo}`,
-      `Loja: ${nomeLoja}`,
-      `Local da Instalação: ${localInstalacao}`,
-      `Técnico: ${nomeTecnico}`,
-      `Ajudante: ${nomeAjudante}`,
+    const linhas = [
+      `Data de Entrega: ${info.entrega}`,
+      `Data do Laudo: ${info.laudo}`,
+      `Loja: ${info.loja}`,
+      `Local: ${info.local}`,
+      `Técnico Responsável: ${info.tecnico}`,
+      `Ajudante: ${info.ajudante}`
     ];
 
-    info.forEach(line => {
-      page.drawText(line, { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
+    page.setFontSize(11);
+    for (const linha of linhas) {
+      page.drawText(linha, { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
       y -= 15;
-    });
+    }
 
     y -= 10;
-    page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.7, 0.7, 0.7) });
-    y -= 20;
+    page.drawLine({
+      start: { x: 40, y },
+      end: { x: width - 40, y },
+      thickness: 1,
+      color: rgb(0.6, 0.6, 0.6)
+    });
+    y -= 25;
 
-    // 🔹 Itens
+    // === Loop pelos itens do checklist ===
     const itens = document.querySelectorAll(".item");
     for (let i = 0; i < itens.length; i++) {
       const item = itens[i];
@@ -71,93 +83,107 @@ async function gerarPDFBase(tipoSistema, prefix) {
       const obs = item.querySelector("textarea")?.value || "";
       const imagens = item.querySelectorAll(".preview img");
 
-      if (y < 150) { page = pdfDoc.addPage([595, 842]); y = height - 60; }
+      // título
+      if (y < 120) { page = pdfDoc.addPage([595, 842]); y = height - 60; }
+      page.drawText(titulo, { x: 40, y, size: 12, font, color: rgb(0, 0, 0) });
+      y -= 14;
 
-      page.drawText(titulo, { x: 40, y, size: 12, font, color: rgb(1, 0.48, 0) });
-      y -= 15;
-
-      botoes.forEach(btn => {
-        const label = btn.parentNode.querySelector("label")?.textContent || "";
-        page.drawText(`${label} ${btn.textContent}`, { x: 50, y, size: 10, font });
+      // botões
+      botoes.forEach(b => {
+        const txt = b.textContent.trim();
+        page.drawText(`• ${txt}`, { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
         y -= 12;
       });
 
+      // observações
       if (obs.trim() !== "") {
-        const linhas = quebraTexto(`Obs: ${obs}`, 80);
-        linhas.forEach(l => {
-          page.drawText(l, { x: 50, y, size: 10, font });
+        const linhasObs = quebrarTexto(`Obs: ${obs}`, 90);
+        linhasObs.forEach(l => {
+          page.drawText(l, { x: 50, y, size: 10, font, color: rgb(0, 0, 0) });
           y -= 12;
         });
       }
 
+      // imagens
       for (let img of imagens) {
-        if (y < 200) { page = pdfDoc.addPage([595, 842]); y = height - 60; }
-        const imgBytes = await fetch(img.src).then(r => r.arrayBuffer());
-        const embed = await pdfDoc.embedJpg(imgBytes);
-        const scaled = embed.scale(150 / embed.height);
-        page.drawImage(embed, { x: 50, y: y - 150, width: scaled.width, height: scaled.height });
+        if (y < 180) { page = pdfDoc.addPage([595, 842]); y = height - 60; }
+        const bytes = await fetch(img.src).then(r => r.arrayBuffer());
+        const imgEmbed = await pdfDoc.embedJpg(bytes);
+        const scale = 150 / imgEmbed.height;
+        page.drawImage(imgEmbed, { x: 50, y: y - 150, width: imgEmbed.width * scale, height: imgEmbed.height * scale });
         y -= 160;
       }
 
-      y -= 20;
+      y -= 15;
     }
 
-    // ✍️ Assinaturas
-    y -= 40;
-    page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.7, 0.7, 0.7) });
-    y -= 50;
+    // === Assinaturas ===
+    y -= 10;
+    page.drawLine({
+      start: { x: 40, y },
+      end: { x: width - 40, y },
+      thickness: 1,
+      color: rgb(0.6, 0.6, 0.6)
+    });
+    y -= 80;
 
     const assinaturaTec = localStorage.getItem("assinatura_tecnico");
     const assinaturaCli = localStorage.getItem("assinatura_cliente");
     const assinaturaTre = localStorage.getItem("assinatura_treinamento");
 
-    if (assinaturaTec) {
-      const bytes = await fetch(assinaturaTec).then(r => r.arrayBuffer());
-      const embed = await pdfDoc.embedPng(bytes);
-      page.drawText("Assinatura do Técnico", { x: 70, y: y + 70, size: 10, font });
-      page.drawImage(embed, { x: 50, y, width: 120, height: 60 });
-    }
+    const assinaturaSet = [
+      { label: "Técnico", img: assinaturaTec, x: 50 },
+      { label: "Cliente", img: assinaturaCli, x: 220 },
+      { label: "Treinamento", img: assinaturaTre, x: 390 }
+    ];
 
-    if (assinaturaCli) {
-      const bytes = await fetch(assinaturaCli).then(r => r.arrayBuffer());
-      const embed = await pdfDoc.embedPng(bytes);
-      page.drawText("Assinatura do Cliente", { x: 260, y: y + 70, size: 10, font });
-      page.drawImage(embed, { x: 250, y, width: 120, height: 60 });
-    }
+    assinaturaSet.forEach(a => {
+      page.drawText(`Assinatura do ${a.label}:`, { x: a.x, y: y + 60, size: 10, font });
+      if (a.img) {
+        try {
+          const bytes = fetch(a.img).then(r => r.arrayBuffer());
+          bytes.then(b => {
+            pdfDoc.embedPng(b).then(imgEmbed => {
+              page.drawImage(imgEmbed, { x: a.x, y, width: 120, height: 60 });
+            });
+          });
+        } catch {}
+      }
+    });
 
-    if (assinaturaTre) {
-      const bytes = await fetch(assinaturaTre).then(r => r.arrayBuffer());
-      const embed = await pdfDoc.embedPng(bytes);
-      page.drawText("Treinamento", { x: 430, y: y + 70, size: 10, font });
-      page.drawImage(embed, { x: 420, y, width: 120, height: 60 });
-    }
-
-    y -= 100;
-    page.drawText("Enviado automaticamente pelo sistema Brivax Laudos Técnicos", {
-      x: width / 2 - 150,
+    y -= 120;
+    page.drawText("Gerado automaticamente pelo sistema Brivax Laudos Técnicos", {
+      x: 100,
       y,
       size: 9,
       font,
-      color: rgb(0.4, 0.4, 0.4),
+      color: rgb(0.2, 0.2, 0.2)
     });
 
-    // 💾 Download automático
-    const nomeArquivo = `${prefix}_Laudo_${nomeLoja.replace(/\s+/g, "_") || "SemNome"}.pdf`;
+    // === Geração e Download ===
+    const nomeLoja = info.loja.replace(/\s+/g, "_") || "SemNome";
+    const data = new Date().toLocaleDateString("pt-BR").replace(/\//g, "-");
+    const nomeArquivo = `Laudo_${prefix}_${nomeLoja}_${data}.pdf`;
+
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+
     const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
+    link.href = url;
     link.download = nomeArquivo;
     link.click();
 
-  } catch (err) {
-    console.error("Erro ao criar PDF:", err);
-    alert("❌ Erro ao criar PDF. Veja o console para detalhes.");
+    URL.revokeObjectURL(url);
+
+  } catch (e) {
+    console.error("Erro ao criar PDF:", e);
+    alert("❌ Erro ao gerar o PDF. Verifique o console.");
   }
 }
 
-// 🔠 Função auxiliar para quebrar texto longo
-function quebraTexto(texto, max) {
+// === Função auxiliar para quebra de texto ===
+function quebrarTexto(texto, max) {
   const palavras = texto.split(" ");
   const linhas = [];
   let atual = "";
