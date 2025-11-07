@@ -1,6 +1,6 @@
 // ==========================
-// 📄 pdf-template.js - v4
-// BRIVAX Laudo Técnico - Monocromático, COM imagens e assinaturas
+// 📄 pdf-template.js - v5 (Final)
+// BRIVAX Laudo Técnico - Monocromático com imagens e acentos
 // ==========================
 
 async function gerarPDFFire() {
@@ -13,12 +13,19 @@ async function gerarPDFSmoke() {
 
 async function gerarPDFBase(tipoSistema, prefix) {
   try {
-    const { PDFDocument, StandardFonts, rgb } = PDFLib;
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
+    const fontkit = window.fontkit;
 
     const pdfDoc = await PDFDocument.create();
+    pdfDoc.registerFontkit(fontkit);
+
+    // === 🔤 Fonte OpenSans que suporta acentos ===
+    const fontUrl = "https://cdn.jsdelivr.net/gh/google/fonts/apache/opensans/OpenSans-Regular.ttf";
+    const fontBytes = await fetch(fontUrl).then(res => res.arrayBuffer());
+    const customFont = await pdfDoc.embedFont(fontBytes);
+
     let page = pdfDoc.addPage([595, 842]); // A4
     const { width, height } = page.getSize();
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
     let y = height - 60;
 
     // 🧯 Cabeçalho
@@ -27,13 +34,11 @@ async function gerarPDFBase(tipoSistema, prefix) {
       x: 40,
       y: y - 10,
       size: 16,
-      font,
+      font: customFont,
       color: rgb(1, 1, 1),
     });
 
     y -= 70;
-    page.setFont(font);
-    page.setFontSize(11);
 
     // 🧾 Informações gerais
     const dataEntrega = document.getElementById("dataEntrega")?.value || "";
@@ -53,7 +58,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
     ];
 
     infoLines.forEach(line => {
-      page.drawText(line, { x: 40, y, size: 11, font, color: rgb(0, 0, 0) });
+      page.drawText(line, { x: 40, y, size: 11, font: customFont, color: rgb(0, 0, 0) });
       y -= 16;
     });
 
@@ -61,7 +66,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
     page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.6, 0.6, 0.6) });
     y -= 20;
 
-    // 🧩 Checklist de Itens
+    // 🧩 Checklist
     const itens = document.querySelectorAll(".item");
 
     for (let i = 0; i < itens.length; i++) {
@@ -71,27 +76,24 @@ async function gerarPDFBase(tipoSistema, prefix) {
       const observacoes = item.querySelector("textarea")?.value || "";
       const imagens = item.querySelectorAll(".preview img");
 
-      page.drawText(titulo, { x: 40, y, size: 12, font, color: rgb(0, 0, 0) });
+      page.drawText(titulo, { x: 40, y, size: 12, font: customFont, color: rgb(0, 0, 0) });
       y -= 15;
 
-      // Botões selecionados (Sim/Não)
       botoesSelecionados.forEach(btn => {
-        const label = btn.parentNode.previousSibling?.textContent?.trim() || "";
-        page.drawText(`${label} ${btn.textContent}`, { x: 50, y, size: 10, font, color: rgb(0.1, 0.1, 0.1) });
+        page.drawText(`• ${btn.textContent}`, { x: 50, y, size: 10, font: customFont, color: rgb(0.1, 0.1, 0.1) });
         y -= 12;
       });
 
-      // Observações
       if (observacoes.trim() !== "") {
         const texto = `Obs: ${observacoes}`;
         const linhas = quebraTexto(texto, 90);
         linhas.forEach(l => {
-          page.drawText(l, { x: 50, y, size: 10, font, color: rgb(0.2, 0.2, 0.2) });
+          page.drawText(l, { x: 50, y, size: 10, font: customFont, color: rgb(0.2, 0.2, 0.2) });
           y -= 12;
         });
       }
 
-      // 🖼️ Inserir imagens do laudo
+      // 🖼️ Inserir imagens reais
       for (let img of imagens) {
         if (y < 160) {
           page = pdfDoc.addPage([595, 842]);
@@ -104,20 +106,22 @@ async function gerarPDFBase(tipoSistema, prefix) {
         } else {
           imgEmbed = await pdfDoc.embedJpg(imgBytes);
         }
-        const scale = imgEmbed.scale(150 / imgEmbed.height);
-        page.drawImage(imgEmbed, { x: 50, y: y - 150, width: scale.width, height: scale.height });
-        y -= 160;
+        const ratio = 150 / imgEmbed.height;
+        const imgWidth = imgEmbed.width * ratio;
+        const imgHeight = imgEmbed.height * ratio;
+        page.drawImage(imgEmbed, { x: 50, y: y - imgHeight, width: imgWidth, height: imgHeight });
+        y -= imgHeight + 10;
       }
 
-      y -= 20;
+      y -= 10;
       if (y < 100) {
         page = pdfDoc.addPage([595, 842]);
         y = height - 60;
       }
     }
 
-    // ✍️ Assinaturas (como imagens)
-    y -= 30;
+    // ✍️ Assinaturas (como imagem)
+    y -= 40;
     page.drawLine({ start: { x: 40, y }, end: { x: width - 40, y }, thickness: 1, color: rgb(0.6, 0.6, 0.6) });
     y -= 40;
 
@@ -125,31 +129,31 @@ async function gerarPDFBase(tipoSistema, prefix) {
     const assinaturaCliente = localStorage.getItem("assinatura_cliente");
     const assinaturaTreinamento = localStorage.getItem("assinatura_treinamento");
 
-    const drawSignature = async (assinatura, label, posX) => {
-      page.drawText(label, { x: posX, y: y + 70, size: 10, font, color: rgb(0, 0, 0) });
+    const drawAssinatura = async (assinatura, label, posX) => {
+      page.drawText(label, { x: posX, y: y + 70, size: 10, font: customFont, color: rgb(0, 0, 0) });
       if (assinatura) {
         const bytes = await fetch(assinatura).then(r => r.arrayBuffer());
         const img = await pdfDoc.embedPng(bytes);
         page.drawImage(img, { x: posX, y, width: 120, height: 60 });
       } else {
-        page.drawText("❌ Não assinada", { x: posX, y: y + 50, size: 9, font, color: rgb(0.4, 0.4, 0.4) });
+        page.drawText("❌ Não assinada", { x: posX, y: y + 50, size: 9, font: customFont, color: rgb(0.4, 0.4, 0.4) });
       }
     };
 
-    await drawSignature(assinaturaTecnico, "Assinatura do Técnico", 50);
-    await drawSignature(assinaturaCliente, "Assinatura do Cliente", 230);
-    await drawSignature(assinaturaTreinamento, "Treinamento", 410);
+    await drawAssinatura(assinaturaTecnico, "Assinatura do Técnico", 50);
+    await drawAssinatura(assinaturaCliente, "Assinatura do Cliente", 230);
+    await drawAssinatura(assinaturaTreinamento, "Treinamento", 410);
 
     y -= 100;
     page.drawText("Gerado automaticamente pelo sistema Brivax Laudos Técnicos", {
       x: width / 2 - 160,
       y,
       size: 9,
-      font,
+      font: customFont,
       color: rgb(0.4, 0.4, 0.4),
     });
 
-    // 📥 Gera e baixa PDF
+    // 📥 Download
     const nomeArquivo = `${prefix}_Laudo_${nomeLoja.replace(/\s+/g, "_") || "SemNome"}.pdf`;
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
@@ -164,7 +168,7 @@ async function gerarPDFBase(tipoSistema, prefix) {
   }
 }
 
-// 🔠 Função quebra linha
+// 🔠 Quebra texto longo
 function quebraTexto(texto, max) {
   const palavras = texto.split(" ");
   const linhas = [];
