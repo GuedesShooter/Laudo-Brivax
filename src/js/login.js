@@ -10,7 +10,7 @@ async function sincronizarBancoLocal(auto = false) {
     const data = await resp.json();
 
     if (Array.isArray(data)) {
-      localStorage.setItem("brivaxUsers", JSON.stringify(data));
+      localStorage.setItem("brivaxUsers.json", JSON.stringify(data));
       if (!auto) alert("✅ Banco de usuários atualizado do GitHub!");
       else console.log("AutoSync: banco atualizado com sucesso do GitHub");
     } else {
@@ -34,7 +34,7 @@ function login() {
   }
 
   // Lê os usuários locais
-  const users = JSON.parse(localStorage.getItem("brivaxUsers")) || [];
+  const users = JSON.parse(localStorage.getItem("brivaxUsers.json")) || [];
 
   // Verifica se existe o usuário e se a senha está correta
   const user = users.find(u => u.username === username && u.password === password);
@@ -74,3 +74,4 @@ window.onload = async function() {
     if (checkbox) checkbox.checked = true;
   }
 };
+
