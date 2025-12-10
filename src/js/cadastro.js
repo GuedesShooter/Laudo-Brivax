@@ -24,8 +24,9 @@ function cadastrar() {
   }
 
   users.push({ nome, sobrenome, celular, username, password: senha, tipo: "usuario" });
-  localStorage.setItem("brivaxUsers", JSON.stringify(users));
+  localStorage.setItem("brivaxUsers.json", JSON.stringify(users));
 
   alert("Usuário cadastrado com sucesso!");
   window.location.href = "LoginScreen.html";
 }
+
