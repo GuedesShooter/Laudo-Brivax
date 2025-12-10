@@ -16,7 +16,7 @@ function cadastrar() {
     return;
   }
 
-  let users = JSON.parse(localStorage.getItem("brivaxUsers")) || [];
+  let users = JSON.parse(localStorage.getItem("brivaxUsers.json")) || [];
 
   if (users.some(u => u.username === username)) {
     alert("Esse nome de usuário já está cadastrado!");
@@ -29,4 +29,5 @@ function cadastrar() {
   alert("Usuário cadastrado com sucesso!");
   window.location.href = "LoginScreen.html";
 }
+
 
