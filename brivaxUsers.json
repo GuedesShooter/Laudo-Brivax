@@ -4,15 +4,23 @@
     "sobrenome": "Brivax",
     "celular": "",
     "username": "ADM",
-    "password": "1234",
+    "password": "Guedes/007",
     "tipo": "admin"
   },
   {
-    "nome": "Fabrício",
+    "nome": "FabrÃ­cio",
     "sobrenome": "Piazza",
     "celular": "15998442928",
     "username": "FABRICIOPIAZZA",
     "password": "f1a2f3a4",
+    "tipo": "usuario"
+  },
+  {
+    "nome": "Sabrina",
+    "sobrenome": "Guedes",
+    "celular": "15996314295",
+    "username": "GUEDEZSHOOTER",
+    "password": "Guedes/007",
     "tipo": "usuario"
   }
 ]
