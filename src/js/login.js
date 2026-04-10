@@ -1,7 +1,7 @@
 // === Login.js (com sincronização automática do GitHub) ===
 
 // 🔁 Configuração da sincronização
-const GITHUB_JSON_URL = "https://raw.githubusercontent.com/GuedesShooter/Laudo-Brivax/refs/heads/main/brivaxUsers.json";
+const GITHUB_JSON_URL = "https://raw.githubusercontent.com/GuedesShooter/Laudo-Brivax/refs/heads/main/brivaxUsers";
 
 // Função para baixar e atualizar o banco local automaticamente
 async function sincronizarBancoLocal(auto = false) {
@@ -10,7 +10,7 @@ async function sincronizarBancoLocal(auto = false) {
     const data = await resp.json();
 
     if (Array.isArray(data)) {
-      localStorage.setItem("brivaxUsers.json", JSON.stringify(data));
+      localStorage.setItem("brivaxUsers", JSON.stringify(data));
       if (!auto) alert("✅ Banco de usuários atualizado do GitHub!");
       else console.log("AutoSync: banco atualizado com sucesso do GitHub");
     } else {
@@ -34,7 +34,7 @@ function login() {
   }
 
   // Lê os usuários locais
-  const users = JSON.parse(localStorage.getItem("brivaxUsers.json")) || [];
+  const users = JSON.parse(localStorage.getItem("brivaxUsers")) || [];
 
   // Verifica se existe o usuário e se a senha está correta
   const user = users.find(u => u.username === username && u.password === password);
